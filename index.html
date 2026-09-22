@@ -4,74 +4,55 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ระบบตรวจความสะอาดโรงเรียน</title>
-
-  <!-- Google Fonts & FontAwesome Icons -->
-  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- FontAwesome Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
   <style>
-    :root {
-      --primary-color: #6c5ce7;
-      --primary-hover: #5a4bcf;
-      --accent-color: #00cec9;
-      --accent-hover: #00b894;
-      --bg-gradient: linear-gradient(135deg, #a8edd9 0%, #fed6e3 100%);
-      --card-bg: rgba(255, 255, 255, 0.92);
-      --text-dark: #2d3436;
-      --text-muted: #636e72;
-      --radius-lg: 24px;
-      --radius-md: 16px;
-      --radius-sm: 10px;
-    }
-
     * {
       box-sizing: border-box;
-      font-family: 'Kanit', sans-serif;
-      transition: all 0.25s ease-in-out;
+      font-family: 'Kanit', Tahoma, Geneva, Verdana, sans-serif;
+      transition: all 0.25s ease;
     }
 
+    /* พื้นหลังสีสันสดใส */
     body {
-      background: var(--bg-gradient);
+      background: linear-gradient(135deg, #a8edd9 0%, #fed6e3 100%) !important;
       min-height: 100vh;
       margin: 0;
-      padding: 30px 15px;
+      padding: 20px 10px;
       display: flex;
       flex-direction: column;
       align-items: center;
-      color: var(--text-dark);
+      color: #2d3436;
     }
 
-    /* Container หลัก */
     .app-container {
       width: 100%;
-      max-width: 960px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
+      max-width: 800px;
     }
 
-    /* แถบเมนูนำทาง (Nav Bar) */
+    /* แถบเมนูนำทาง */
     .nav-bar {
       display: flex;
-      gap: 12px;
+      gap: 10px;
       width: 100%;
-      margin-bottom: 24px;
-      background: rgba(255, 255, 255, 0.6);
-      padding: 8px;
-      border-radius: 20px;
-      backdrop-filter: blur(10px);
-      box-shadow: 0 8px 32px rgba(31, 38, 135, 0.07);
+      margin-bottom: 20px;
+      background: #ffffff;
+      padding: 10px;
+      border-radius: 16px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.08);
     }
 
     .nav-btn {
       flex: 1;
-      padding: 14px 16px;
+      padding: 12px 8px;
       border: none;
-      border-radius: var(--radius-md);
-      font-weight: 600;
+      border-radius: 12px;
+      font-weight: bold;
       font-size: 15px;
-      background: transparent;
-      color: var(--text-dark);
+      background: #f1f2f6;
+      color: #576574;
       cursor: pointer;
       display: flex;
       align-items: center;
@@ -79,66 +60,49 @@
       gap: 8px;
     }
 
-    .nav-btn:hover {
-      background: rgba(255, 255, 255, 0.8);
-      transform: translateY(-2px);
-    }
-
     .nav-btn.active {
-      background: linear-gradient(135deg, #6c5ce7 0%, #8e44ad 100%);
-      color: #ffffff;
-      box-shadow: 0 8px 20px rgba(108, 92, 231, 0.35);
+      background: #6c5ce7 !important;
+      color: #ffffff !important;
+      box-shadow: 0 4px 12px rgba(108, 92, 231, 0.4);
     }
 
-    /* การ์ดเนื้อหา (Glassmorphism Design) */
+    /* กล่องการ์ดเนื้อหา */
     .card {
-      background: var(--card-bg);
+      background: #ffffff !important;
       width: 100%;
-      padding: 35px;
-      border-radius: var(--radius-lg);
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.08);
-      border: 1px solid rgba(255, 255, 255, 0.8);
-      backdrop-filter: blur(16px);
-      animation: fadeIn 0.4s ease-out;
+      padding: 25px;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      margin-bottom: 20px;
     }
 
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(12px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    /* หัวข้อการ์ด */
+    /* กล่องหัวข้อสีฟ้าสดใส */
     .header-box {
-      background: linear-gradient(135deg, #81ecec 0%, #74b9ff 100%);
-      padding: 20px;
-      border-radius: var(--radius-md);
+      background: #74b9ff !important;
+      padding: 15px;
+      border-radius: 12px;
       text-align: center;
-      margin-bottom: 30px;
-      box-shadow: 0 8px 20px rgba(116, 185, 255, 0.3);
-      color: #0984e3;
+      margin-bottom: 25px;
+      color: #ffffff;
+      box-shadow: 0 4px 10px rgba(116, 185, 255, 0.4);
     }
 
     .header-title {
       margin: 0;
-      color: #2d3436;
-      font-size: 24px;
-      font-weight: 700;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
+      font-size: 22px;
+      font-weight: bold;
     }
 
-    /* จัดวางฟอร์ม 2 คอลัมน์ */
+    /* จัดวางฟอร์ม */
     .form-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 20px;
+      gap: 15px;
     }
 
     .full-width { grid-column: span 2; }
 
-    @media (max-width: 640px) {
+    @media (max-width: 600px) {
       .form-grid { grid-template-columns: 1fr; }
       .full-width { grid-column: span 1; }
       .nav-bar { flex-direction: column; }
@@ -147,49 +111,40 @@
     .form-group {
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 6px;
     }
 
     label {
       font-size: 14px;
-      font-weight: 600;
-      color: var(--text-dark);
-      display: flex;
-      align-items: center;
-      gap: 6px;
+      font-weight: bold;
+      color: #2d3436;
     }
 
     input[type="text"], input[type="password"], input[type="number"], select {
       width: 100%;
-      height: 48px;
-      padding: 10px 16px;
+      height: 45px;
+      padding: 8px 12px;
       font-size: 15px;
-      border: 2px solid #e2e8f0;
-      border-radius: var(--radius-sm);
-      outline: none;
+      border: 2px solid #dfe6e9;
+      border-radius: 10px;
       background: #f8fafc;
+      outline: none;
     }
 
     input:focus, select:focus {
-      border-color: var(--primary-color);
+      border-color: #6c5ce7;
       background: #fff;
-      box-shadow: 0 0 0 4px rgba(108, 92, 231, 0.15);
     }
 
-    /* ปุ่มอัปโหลดรูปตกแต่งพิเศษ */
+    /* กล่องอัปโหลดไฟล์ */
     .file-upload-wrapper {
-      position: relative;
-      border: 2px dashed #cbd5e1;
-      border-radius: var(--radius-md);
+      border: 2px dashed #00cec9;
+      border-radius: 12px;
       padding: 20px;
       text-align: center;
-      background: #f8fafc;
+      background: #e6fffa;
       cursor: pointer;
-    }
-
-    .file-upload-wrapper:hover {
-      border-color: var(--primary-color);
-      background: #f1f5f9;
+      position: relative;
     }
 
     .file-upload-wrapper input[type="file"] {
@@ -198,135 +153,73 @@
       opacity: 0; cursor: pointer;
     }
 
-    /* ปุ่มหลัก */
+    /* ปุ่มหลักสีเขียวสดใส */
     .btn-main {
       width: 100%;
-      height: 52px;
-      background: linear-gradient(135deg, #00cec9 0%, #00b894 100%);
-      color: #fff;
+      height: 50px;
+      background: #00b894 !important;
+      color: #ffffff !important;
       border: none;
-      border-radius: var(--radius-md);
+      border-radius: 12px;
       font-size: 16px;
-      font-weight: 700;
+      font-weight: bold;
       cursor: pointer;
-      box-shadow: 0 8px 20px rgba(0, 206, 201, 0.3);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
+      box-shadow: 0 4px 15px rgba(0, 184, 148, 0.4);
     }
 
     .btn-main:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 12px 25px rgba(0, 206, 201, 0.4);
+      background: #00a884 !important;
     }
-
-    .btn-main:active { transform: translateY(0); }
 
     .hidden { display: none !important; }
 
-    /* สไตล์การ์ดแสดงผลรายการข้อมูล */
-    .grid-cards {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
-      gap: 20px;
-    }
-
-    .data-card {
-      background: #ffffff;
-      border: 1px solid #e2e8f0;
-      border-radius: var(--radius-md);
-      padding: 18px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.03);
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-    }
-
-    .data-card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 15px 30px rgba(0,0,0,0.08);
-      border-color: #cbd5e1;
-    }
-
-    .data-card img {
-      width: 100%;
-      height: 160px;
-      object-fit: cover;
-      border-radius: var(--radius-sm);
-      margin: 12px 0;
-    }
-
-    .badge {
-      padding: 6px 12px;
-      border-radius: 30px;
-      font-size: 12px;
-      font-weight: 700;
-    }
-    .badge-pending { background: #ffeaa7; color: #d63031; }
-    .badge-success { background: #55efc4; color: #00b894; }
-
-    /* สลับ Tap เข้าสู่ระบบ / สมัครสมาชิกครู */
+    /* แท็บสลับ เข้าสู่ระบบ/สมัครสมาชิก */
     .auth-tab {
       display: flex;
-      gap: 8px;
+      gap: 5px;
       margin-bottom: 20px;
       background: #f1f2f6;
-      padding: 4px;
-      border-radius: var(--radius-sm);
+      padding: 5px;
+      border-radius: 10px;
     }
 
     .auth-tab-btn {
       flex: 1;
-      padding: 10px;
+      padding: 8px;
       border: none;
       border-radius: 8px;
-      font-weight: 600;
+      font-weight: bold;
       cursor: pointer;
       background: transparent;
-      color: var(--text-muted);
+      color: #636e72;
     }
 
     .auth-tab-btn.active {
       background: #ffffff;
-      color: var(--primary-color);
-      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+      color: #6c5ce7;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
 
-    /* ตารางจัดระบบแอดมิน */
+    /* ตารางแอดมิน */
     .teacher-table {
       width: 100%;
-      border-collapse: separate;
-      border-spacing: 0;
-      margin-top: 15px;
-      border-radius: var(--radius-sm);
-      overflow: hidden;
-      border: 1px solid #e2e8f0;
+      border-collapse: collapse;
+      margin-top: 10px;
     }
 
     .teacher-table th, .teacher-table td {
-      padding: 12px 16px;
+      padding: 10px;
+      border: 1px solid #dfe6e9;
       text-align: left;
     }
 
-    .teacher-table th {
-      background: #f8fafc;
-      color: var(--text-dark);
-      font-weight: 600;
-      border-bottom: 2px solid #e2e8f0;
-    }
-
-    .teacher-table td {
-      border-bottom: 1px solid #f1f5f9;
-      background: #fff;
-    }
+    .teacher-table th { background: #f1f2f6; }
 
     .preview-img {
       max-height: 120px;
-      border-radius: var(--radius-sm);
+      border-radius: 8px;
       margin-top: 10px;
       display: none;
-      object-fit: cover;
     }
   </style>
 </head>
@@ -334,7 +227,7 @@
 
   <div class="app-container">
     
-    <!-- แถบเมนูเปลี่ยนหน้า -->
+    <!-- เมนูเปลี่ยนหน้า -->
     <div class="nav-bar">
       <button class="nav-btn active" onclick="switchPage('form')">
         <i class="fa-solid fa-broom"></i> ฟอร์มตรวจความสะอาด
@@ -347,7 +240,7 @@
       </button>
     </div>
 
-    <!-- 1. หน้าฟอร์มส่งข้อมูล -->
+    <!-- 1. หน้าฟอร์มตรวจความสะอาด -->
     <div id="page-form" class="card">
       <div class="header-box">
         <h2 class="header-title"><i class="fa-solid fa-sparkles"></i> ฟอร์มบันทึกการตรวจความสะอาด</h2>
@@ -355,12 +248,12 @@
       
       <form id="inspectionForm" class="form-grid">
         <div class="form-group">
-          <label><i class="fa-solid fa-user"></i> ชื่อผู้ส่ง (Sender):</label>
-          <input type="text" id="sender" placeholder="กรอกชื่อ-นามสกุล ผู้บันทึก" required>
+          <label>ชื่อผู้ส่ง (Sender):</label>
+          <input type="text" id="sender" placeholder="กรอกชื่อ-นามสกุล" required>
         </div>
 
         <div class="form-group">
-          <label><i class="fa-solid fa-graduation-cap"></i> ระดับชั้น (Class):</label>
+          <label>ระดับชั้น (Class):</label>
           <select id="classVal" required>
             <option value="">-- เลือกระดับชั้น --</option>
             <option value="ม.1">มัธยมศึกษาปีที่ 1</option>
@@ -373,7 +266,7 @@
         </div>
 
         <div class="form-group full-width">
-          <label><i class="fa-solid fa-location-dot"></i> สถานที่/บริเวณ (Area):</label>
+          <label>สถานที่/บริเวณ (Area):</label>
           <select id="area" required>
             <option value="">-- เลือกสถานที่ตรวจ --</option>
             <option value="ตรวจห้องเรียน">ตรวจห้องเรียน</option>
@@ -390,10 +283,10 @@
         </div>
 
         <div class="form-group full-width">
-          <label><i class="fa-solid fa-camera"></i> แนบรูปภาพแนบการตรวจ:</label>
+          <label>แนบรูปภาพการตรวจ:</label>
           <div class="file-upload-wrapper">
-            <i class="fa-solid fa-cloud-arrow-up" style="font-size: 32px; color: var(--primary-color);"></i>
-            <p style="margin: 8px 0 0 0; font-size: 14px; color: var(--text-muted);" id="file-label">คลิกหรือลากไฟล์รูปภาพมาวางที่นี่</p>
+            <i class="fa-solid fa-cloud-arrow-up" style="font-size: 28px; color: #00cec9;"></i>
+            <p style="margin: 5px 0 0 0; font-size: 14px; color: #636e72;" id="file-label">กดเลือกรูปภาพแนบไฟล์</p>
             <input type="file" id="imageFile" accept="image/*" required onchange="handleFileSelect(event)">
           </div>
           <img id="img-preview" class="preview-img" alt="ตัวอย่างรูปภาพ">
@@ -409,102 +302,90 @@
 
     <!-- 2. หน้าระบบครู -->
     <div id="page-teacher" class="card hidden">
-      <div class="header-box" style="background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%);">
-        <h2 class="header-title" style="color: #2b5283;"><i class="fa-solid fa-clipboard-check"></i> ระบบครูตรวจประเมินคะแนน</h2>
+      <div class="header-box" style="background: #a29bfe !important;">
+        <h2 class="header-title"><i class="fa-solid fa-clipboard-check"></i> ระบบครูตรวจประเมินคะแนน</h2>
       </div>
       
-      <div id="teacher-auth" style="max-width: 400px; margin: 0 auto;">
+      <div id="teacher-auth" style="max-width: 350px; margin: 0 auto;">
         <div class="auth-tab">
           <button id="tab-login-btn" class="auth-tab-btn active" onclick="toggleTeacherAuth('login')">เข้าสู่ระบบ</button>
           <button id="tab-reg-btn" class="auth-tab-btn" onclick="toggleTeacherAuth('register')">สมัครสมาชิกครู</button>
         </div>
 
         <div id="form-teacher-login">
-          <div class="form-group" style="margin-bottom: 15px;">
+          <div class="form-group" style="margin-bottom: 10px;">
             <label>ชื่อผู้ใช้งานครู:</label>
             <input type="text" id="teacher-login-user" placeholder="กรอกชื่อเข้าใช้งาน">
           </div>
-          <div class="form-group" style="margin-bottom: 20px;">
+          <div class="form-group" style="margin-bottom: 15px;">
             <label>รหัสผ่าน:</label>
             <input type="password" id="teacher-login-pass" placeholder="กรอกรหัสผ่าน">
           </div>
-          <button type="button" class="btn-main" style="background: linear-gradient(135deg, #6c5ce7 0%, #a29bfe 100%);" onclick="loginTeacher()">
-            <i class="fa-solid fa-right-to-bracket"></i> เข้าสู่ระบบครู
+          <button type="button" class="btn-main" style="background: #6c5ce7 !important;" onclick="loginTeacher()">
+            เข้าสู่ระบบครู
           </button>
         </div>
 
         <div id="form-teacher-reg" class="hidden">
-          <div class="form-group" style="margin-bottom: 15px;">
+          <div class="form-group" style="margin-bottom: 10px;">
             <label>ตั้งชื่อผู้ใช้งานครู:</label>
             <input type="text" id="teacher-reg-user" placeholder="ตั้งชื่อผู้ใช้งาน">
           </div>
-          <div class="form-group" style="margin-bottom: 20px;">
+          <div class="form-group" style="margin-bottom: 15px;">
             <label>ตั้งรหัสผ่าน:</label>
             <input type="password" id="teacher-reg-pass" placeholder="ตั้งรหัสผ่าน">
           </div>
-          <button type="button" class="btn-main" style="background: linear-gradient(135deg, #fd79a8 0%, #e84393 100%);" onclick="registerTeacherInline()">
-            <i class="fa-solid fa-user-plus"></i> ยืนยันสมัครสมาชิกครู
+          <button type="button" class="btn-main" style="background: #e84393 !important;" onclick="registerTeacherInline()">
+            ยืนยันสมัครสมาชิกครู
           </button>
         </div>
       </div>
 
       <div id="teacher-panel" class="hidden">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; background:#f8fafc; padding:12px 20px; border-radius:var(--radius-sm);">
-          <span id="teacher-welcome" style="font-weight:700; color:var(--text-dark); font-size: 16px;"></span>
-          <button onclick="logout('teacher')" style="padding:8px 16px; background:#e2e8f0; border:none; border-radius:8px; cursor:pointer; font-weight:600; color:#475569;">
-            <i class="fa-solid fa-right-from-bracket"></i> ออกจากระบบ
-          </button>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; background:#f1f2f6; padding:10px 15px; border-radius:10px;">
+          <span id="teacher-welcome" style="font-weight:bold;"></span>
+          <button onclick="logout('teacher')" style="padding:6px 12px; background:#dfe6e9; border:none; border-radius:6px; cursor:pointer;">ออกจากระบบ</button>
         </div>
-        <button onclick="loadSheetData('teacher')" style="width:100%; padding:14px; margin-bottom:20px; background:#f1f5f9; border:1px solid #cbd5e1; border-radius:var(--radius-sm); font-weight:700; cursor:pointer; color:#334155; display:flex; align-items:center; justify-content:center; gap:8px;">
-          <i class="fa-solid fa-rotate-right"></i> รีเฟรชรายการข้อมูล
-        </button>
-        <div id="teacher-list" class="grid-cards">กดรีเฟรชเพื่อโหลดข้อมูล...</div>
+        <p style="text-align:center; color:#636e72;">เข้าสู่ระบบครูเรียบร้อยแล้ว</p>
       </div>
     </div>
 
     <!-- 3. หน้าระบบแอดมิน -->
     <div id="page-admin" class="card hidden">
-      <div class="header-box" style="background: linear-gradient(135deg, #ff758c 0%, #ff7eb3 100%);">
-        <h2 class="header-title" style="color: #fff;"><i class="fa-solid fa-user-gear"></i> ระบบผู้ดูแลระบบ (Admin)</h2>
+      <div class="header-box" style="background: #ff7675 !important;">
+        <h2 class="header-title"><i class="fa-solid fa-user-gear"></i> ระบบผู้ดูแลระบบ (Admin)</h2>
       </div>
 
-      <div id="admin-auth" style="max-width: 400px; margin: 0 auto;">
-        <div class="form-group" style="margin-bottom: 20px;">
+      <div id="admin-auth" style="max-width: 350px; margin: 0 auto;">
+        <div class="form-group" style="margin-bottom: 15px;">
           <label>กรอกรหัสผ่านผู้ดูแลระบบ:</label>
-          <input type="password" id="admin-pass" placeholder="กรอกรหัสผ่าน Admin">
+          <input type="password" id="admin-pass" placeholder="กรอกรหัสผ่าน (8888)">
         </div>
-        <button type="button" class="btn-main" style="background: linear-gradient(135deg, #d63031 0%, #ff7675 100%);" onclick="loginAdmin()">
-          <i class="fa-solid fa-lock"></i> เข้าสู่ระบบแอดมิน
+        <button type="button" class="btn-main" style="background: #d63031 !important;" onclick="loginAdmin()">
+          เข้าสู่ระบบ Admin
         </button>
       </div>
 
       <div id="admin-panel" class="hidden">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; background:#fff5f5; padding:12px 20px; border-radius:var(--radius-sm); border:1px solid #fed7d7;">
-          <span style="font-weight:700; color:#c53030;"><i class="fa-solid fa-sliders"></i> แผงควบคุมระบบแอดมิน</span>
-          <button onclick="logout('admin')" style="padding:8px 16px; background:#e2e8f0; border:none; border-radius:8px; cursor:pointer; font-weight:600;">ออกจากระบบ</button>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; background:#ffeaa7; padding:10px 15px; border-radius:10px;">
+          <span style="font-weight:bold; color:#d63031;">แผงควบคุมระบบแอดมิน</span>
+          <button onclick="logout('admin')" style="padding:6px 12px; background:#dfe6e9; border:none; border-radius:6px; cursor:pointer;">ออกจากระบบ</button>
         </div>
-
-        <div style="background:#fff; padding:20px; border-radius:var(--radius-md); border:1px solid #e2e8f0; margin-bottom:25px;">
-          <h3 style="margin-top:0; color:var(--text-dark); font-size:16px;"><i class="fa-solid fa-users-gear"></i> จัดการรายชื่อครู (เพิ่ม / ลบ บัญชีครู)</h3>
-          <div style="display:flex; gap:10px; margin-bottom:15px; flex-wrap:wrap;">
-            <input type="text" id="new-teacher-user" placeholder="ชื่อผู้ใช้งานครู" style="flex:1; min-width:140px;">
-            <input type="password" id="new-teacher-pass" placeholder="รหัสผ่าน" style="flex:1; min-width:140px;">
-            <button onclick="adminAddTeacher()" style="padding:0 20px; background:#00b894; color:#fff; border:none; border-radius:var(--radius-sm); font-weight:700; cursor:pointer; height:48px; min-width:100px;">
-              <i class="fa-solid fa-plus"></i> เพิ่มครู
-            </button>
+        
+        <div style="background:#f8fafc; padding:15px; border-radius:10px; border:1px solid #dfe6e9;">
+          <h4 style="margin-top:0;">จัดการรายชื่อครู</h4>
+          <div style="display:flex; gap:10px; margin-bottom:10px;">
+            <input type="text" id="new-teacher-user" placeholder="ชื่อครู">
+            <input type="password" id="new-teacher-pass" placeholder="รหัสผ่าน">
+            <button onclick="adminAddTeacher()" style="padding:0 15px; background:#00b894; color:#fff; border:none; border-radius:8px; cursor:pointer; font-weight:bold;">เพิ่ม</button>
           </div>
           <table class="teacher-table">
             <thead>
-              <tr><th>ชื่อผู้ใช้ครู</th><th style="width: 80px; text-align:center;">จัดการ</th></tr>
+              <tr><th>ชื่อผู้ใช้ครู</th><th style="width: 70px;">จัดการ</th></tr>
             </thead>
             <tbody id="admin-teacher-list"></tbody>
           </table>
         </div>
-
-        <button onclick="loadSheetData('admin')" style="width:100%; padding:14px; margin-bottom:20px; background:#f1f5f9; border:1px solid #cbd5e1; border-radius:var(--radius-sm); font-weight:700; cursor:pointer; color:#334155; display:flex; align-items:center; justify-content:center; gap:8px;">
-          <i class="fa-solid fa-database"></i> โหลดข้อมูลรายการตรวจทั้งหมด
-        </button>
-        <div id="admin-list" class="grid-cards">กดปุ่มด้านบนเพื่อดึงข้อมูลรายการ...</div>
       </div>
     </div>
 
@@ -560,7 +441,7 @@
       }
 
       btn.disabled = true;
-      btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> กำลังส่งข้อมูล...`;
+      btn.innerText = "กำลังส่งข้อมูล...";
 
       try {
         const imageBase64 = await getBase64(fileInput.files[0]);
@@ -584,12 +465,12 @@
         alert("🎉 บันทึกข้อมูลเรียบร้อยแล้ว!");
         document.getElementById("inspectionForm").reset();
         document.getElementById("img-preview").style.display = 'none';
-        document.getElementById('file-label').innerText = "คลิกหรือลากไฟล์รูปภาพมาวางที่นี่";
+        document.getElementById('file-label').innerText = "กดเลือกรูปภาพแนบไฟล์";
       } catch (error) {
         alert("เกิดข้อผิดพลาด: " + error);
       } finally {
         btn.disabled = false;
-        btn.innerHTML = `<i class="fa-solid fa-paper-plane"></i> ส่งข้อมูลตรวจความสะอาด`;
+        btn.innerText = "ส่งข้อมูลตรวจความสะอาด";
       }
     }
 
@@ -614,7 +495,7 @@
       if(!u || !p) { alert("กรุณากรอกชื่อผู้ใช้และรหัสผ่านให้ครบครับ"); return; }
 
       localStorage.setItem("teacher_" + u, p);
-      alert("🎉 สมัครสมาชิกครูสำเร็จ! ระบบจะสลับไปหน้าเข้าสู่ระบบให้อัตโนมัติ");
+      alert("🎉 สมัครสมาชิกครูสำเร็จ!");
       document.getElementById("teacher-reg-user").value = "";
       document.getElementById("teacher-reg-pass").value = "";
       toggleTeacherAuth('login');
@@ -629,8 +510,7 @@
       if (savedPass && savedPass === p) {
         document.getElementById("teacher-auth").classList.add("hidden");
         document.getElementById("teacher-panel").classList.remove("hidden");
-        document.getElementById("teacher-welcome").innerHTML = `<i class="fa-solid fa-user-tie"></i> สวัสดีคุณครู ${u}`;
-        loadSheetData('teacher');
+        document.getElementById("teacher-welcome").innerText = "สวัสดีคุณครู " + u;
       } else {
         alert("ชื่อผู้ใช้งานหรือรหัสผ่านไม่ถูกต้อง!");
       }
@@ -642,7 +522,6 @@
         document.getElementById("admin-auth").classList.add("hidden");
         document.getElementById("admin-panel").classList.remove("hidden");
         renderAdminTeacherList();
-        loadSheetData('admin');
       } else {
         alert("รหัสผ่านไม่ถูกต้อง!");
       }
@@ -688,74 +567,15 @@
           const username = key.replace("teacher_", "");
           tbody.innerHTML += `
             <tr>
-              <td><i class="fa-solid fa-circle-user" style="color:var(--primary-color);"></i> ${username}</td>
-              <td style="text-align:center;"><button onclick="adminDeleteTeacher('${username}')" style="background:#ff7675; color:#fff; border:none; padding:6px 12px; border-radius:6px; cursor:pointer;"><i class="fa-solid fa-trash-can"></i> ลบ</button></td>
+              <td>${username}</td>
+              <td><button onclick="adminDeleteTeacher('${username}')" style="background:#ff7675; color:#fff; border:none; padding:4px 8px; border-radius:4px; cursor:pointer;">ลบ</button></td>
             </tr>
           `;
         }
       }
       if(count === 0) {
-        tbody.innerHTML = `<tr><td colspan="2" style="text-align:center; color:var(--text-muted);">ยังไม่มีบัญชีครูในระบบ</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="2" style="text-align:center; color:#636e72;">ยังไม่มีบัญชีครู</td></tr>`;
       }
-    }
-
-    async function loadSheetData(role) {
-      const container = document.getElementById(role + "-list");
-      container.innerHTML = `<div style="grid-column: 1/-1; text-align:center; padding:20px; color:var(--text-muted);"><i class="fa-solid fa-spinner fa-spin"></i> กำลังดึงข้อมูล...</div>`;
-
-      try {
-        const res = await fetch(SCRIPT_URL);
-        const json = await res.json();
-        
-        if (json.status === "success" && json.data.length > 1) {
-          let html = "";
-          for (let i = 1; i < json.data.length; i++) {
-            const row = json.data[i];
-            const date = row[1] || "-";
-            const sender = row[2] || "-";
-            const area = row[3] || "-";
-            const classVal = row[4] || "-";
-            const status = row[6] || "รอครูตรวจ";
-            const imgUrl = row[7] || "";
-            const score = row[8] || "-";
-
-            html += `
-              <div class="data-card">
-                <div>
-                  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-                    <strong style="font-size:15px; color:var(--text-dark);">${classVal} - ${area}</strong>
-                    <span class="badge ${score !== '-' ? 'badge-success' : 'badge-pending'}">${status}</span>
-                  </div>
-                  <div style="font-size:13px; color:var(--text-muted); line-height:1.6;">
-                    <div><b>ผู้ส่ง:</b> ${sender}</div>
-                    <div><b>วันที่:</b> ${date}</div>
-                    <div style="color:var(--primary-color); font-weight:700; margin-top:4px; font-size:14px;">คะแนน: ${score}</div>
-                  </div>
-                  ${imgUrl ? `<a href="${imgUrl}" target="_blank"><img src="${imgUrl}" alt="รูปตรวจ"></a>` : ''}
-                </div>
-                
-                ${role === 'teacher' ? `
-                  <div style="margin-top:10px; display:flex; gap:6px;">
-                    <input type="number" id="score-input-${i}" placeholder="คะแนน (0-10)" min="0" max="10" style="height:38px;">
-                    <button onclick="saveScore(${i})" style="padding:0 14px; background:var(--primary-color); color:#fff; border:none; border-radius:var(--radius-sm); cursor:pointer; font-size:13px; font-weight:600; white-space:nowrap;">บันทึก</button>
-                  </div>
-                ` : ''}
-              </div>
-            `;
-          }
-          container.innerHTML = html || "ยังไม่มีข้อมูลเข้ามาครับ";
-        } else {
-          container.innerHTML = `<div style="grid-column: 1/-1; text-align:center; padding:20px; color:var(--text-muted);">ยังไม่มีข้อมูลในระบบ</div>`;
-        }
-      } catch (err) {
-        container.innerHTML = `<div style="grid-column: 1/-1; text-align:center; padding:20px; color:#d63031;"><i class="fa-solid fa-triangle-exclamation"></i> ไม่สามารถโหลดข้อมูลได้</div>`;
-      }
-    }
-
-    function saveScore(rowIndex) {
-      const score = document.getElementById(`score-input-${rowIndex}`).value;
-      if (!score) { alert("กรุณากรอกคะแนนก่อนครับ"); return; }
-      alert(`🎉 บันทึกคะแนน ${score} คะแนน เรียบร้อยแล้ว`);
     }
   </script>
 </body>
