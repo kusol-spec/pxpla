@@ -1,0 +1,1698 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ระบบตรวจความสะอาดโรงเรียนกุศลวิทยา</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts (Mali & Kanit) -->
+    <link href="https://fonts.googleapis.com/css2?family=Mali:wght@400;500;600;700&family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Mali', 'Kanit', 'sans-serif'],
+                    },
+                    boxShadow: {
+                        'glass': '0 8px 32px 0 rgba(255, 182, 193, 0.15)',
+                        'card': '0 10px 25px -5px rgba(255, 182, 193, 0.2), 0 8px 10px -6px rgba(186, 230, 253, 0.2)',
+                        'cute': '0 6px 20px rgba(244, 114, 182, 0.25)',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { 
+            font-family: 'Mali', 'Kanit', sans-serif; 
+            -webkit-tap-highlight-color: transparent;
+            background: linear-gradient(180deg, #fff5f8 0%, #f0f9ff 50%, #f5f3ff 100%);
+            background-attachment: fixed;
+        }
+        .top-nav-btn {
+            position: relative;
+            padding: 0.75rem 0.6rem;
+            color: #64748b;
+            font-size: 0.88rem;
+            font-weight: 600;
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            border-radius: 1.25rem;
+        }
+        .top-nav-btn-active {
+            color: #ec4899;
+            font-weight: 700;
+            background-color: #fce7f3;
+            box-shadow: 0 4px 12px rgba(236, 72, 153, 0.2);
+            transform: translateY(-1px);
+        }
+        .sub-nav-btn {
+            padding: 0.55rem 1.1rem;
+            font-size: 0.82rem;
+            font-weight: 600;
+            border-radius: 1rem;
+            transition: all 0.25s ease;
+            color: #64748b;
+        }
+        .sub-nav-btn-active {
+            background: linear-gradient(135deg, #f472b6 0%, #a855f7 100%);
+            color: #ffffff;
+            box-shadow: 0 4px 15px rgba(244, 114, 182, 0.35);
+        }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.88);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+        }
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #fdf2f8;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #f472b6;
+            border-radius: 9999px;
+        }
+        .animate-bounce-gentle {
+            animation: bounceGentle 2s infinite ease-in-out;
+        }
+        @keyframes bounceGentle {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-4px); }
+        }
+        .animate-fade-in {
+            animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px) scale(0.98); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col text-slate-700 antialiased selection:bg-pink-300 selection:text-pink-900">
+
+    <header id="mainHeader" class="bg-gradient-to-r from-pink-300 via-rose-200 to-purple-200 text-slate-800 shadow-lg sticky top-0 z-30 transition-all duration-300 border-b border-white/60 backdrop-blur-lg">
+        <div class="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="bg-white/90 p-2.5 rounded-2xl ring-4 ring-white/80 shadow-md animate-bounce-gentle flex items-center justify-center">
+                    <span class="text-2xl filter drop-shadow-sm">✨🧹</span>
+                </div>
+                <div>
+                    <div class="flex items-center gap-1.5">
+                        <h1 id="appTitleText" class="font-black text-base sm:text-lg leading-tight tracking-wide text-slate-800 drop-shadow-sm">ระบบตรวจความสะอาด</h1>
+                        <span class="bg-gradient-to-r from-pink-500 to-rose-400 text-white text-[10px] font-extrabold px-2.5 py-0.5 rounded-full shadow-sm border border-white/40 tracking-wider">v3.5 🌸</span>
+                    </div>
+                    <div class="flex items-center gap-1 mt-1">
+                        <span class="bg-white/80 backdrop-blur-md text-pink-700 text-[11px] font-bold px-2.5 py-0.5 rounded-full border border-pink-200/80 shadow-xs flex items-center gap-1">
+                            <span>🏫</span>
+                            <span id="schoolNameText">โรงเรียนกุศลวิทยา</span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Profile Badge for Teacher -->
+            <div id="headerProfileBadge" class="hidden items-center gap-2 bg-white/90 backdrop-blur-md px-3.5 py-1.5 rounded-2xl border border-pink-200 shadow-md text-xs font-bold text-pink-700 animate-fade-in">
+                <div class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></div>
+                <i class="fa-solid fa-user-check text-pink-500"></i>
+                <span id="headerTeacherName">ครู</span>
+            </div>
+        </div>
+
+        <!-- TOP NAVIGATION BAR -->
+        <nav class="bg-white/70 backdrop-blur-md border-t border-pink-100/60 shadow-inner px-2 py-1.5">
+            <div class="max-w-4xl mx-auto flex items-center justify-between gap-1.5 p-1 bg-pink-100/40 rounded-2xl border border-white/80 shadow-xs">
+                <button onclick="switchTab('classroom')" id="nav-classroom" class="top-nav-btn top-nav-btn-active flex-1 flex items-center justify-center gap-1.5 py-2 px-2 sm:px-3 text-xs sm:text-sm transition-all duration-300">
+                    <span class="text-base sm:text-lg">🏫</span>
+                    <span class="font-bold">ตรวจเวรห้อง</span>
+                </button>
+                <button onclick="switchTab('area')" id="nav-area" class="top-nav-btn flex-1 flex items-center justify-center gap-1.5 py-2 px-2 sm:px-3 text-xs sm:text-sm transition-all duration-300">
+                    <span class="text-base sm:text-lg">📍</span>
+                    <span class="font-bold">ตรวจพื้นที่</span>
+                </button>
+                <button onclick="switchTab('teacher')" id="nav-teacher" class="top-nav-btn flex-1 flex items-center justify-center gap-1.5 py-2 px-2 sm:px-3 text-xs sm:text-sm relative transition-all duration-300">
+                    <span class="text-base sm:text-lg">👩‍🏫</span>
+                    <span class="font-bold">ระบบครู</span>
+                    <span id="navPendingBadge" class="hidden absolute top-1.5 right-3 w-3 h-3 bg-rose-500 rounded-full ring-2 ring-white animate-ping"></span>
+                </button>
+                <button onclick="switchTab('admin')" id="nav-admin" class="top-nav-btn flex-1 flex items-center justify-center gap-1.5 py-2 px-2 sm:px-3 text-xs sm:text-sm transition-all duration-300 text-purple-700">
+                    <span class="text-base sm:text-lg">👑</span>
+                    <span class="font-bold">แอดมิน</span>
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Role Indicator Strip -->
+    <div id="roleStrip" class="bg-pink-50/80 backdrop-blur border-b border-pink-100 text-pink-700 px-4 py-2 text-xs text-center flex items-center justify-center gap-2 font-medium shadow-inner">
+        <span class="inline-block w-2.5 h-2.5 rounded-full bg-pink-400 animate-pulse ring-4 ring-pink-100"></span>
+        <span>โหมดผู้ใช้งาน: <strong id="currentRoleText" class="text-pink-900 font-bold">นักเรียน / ผู้ใช้งานทั่วไป 👧👦</strong></span>
+    </div>
+
+    <main class="flex-grow max-w-4xl w-full mx-auto px-3 sm:px-4 py-5 space-y-4">
+
+        <!-- VIEW 1: CLASSROOM INSPECTION -->
+        <section id="view-classroom" class="space-y-4 animate-fade-in">
+            <div class="glass-panel p-3.5 rounded-2xl shadow-card border border-slate-200/80 flex items-center justify-between text-indigo-800 font-bold text-sm">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-500 to-indigo-700 text-white flex items-center justify-center shadow-md shadow-indigo-500/20">
+                        <i class="fa-solid fa-chalkboard-user text-base"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-sm font-bold text-slate-800">ส่งตรวจทำความสะอาดห้องเรียน</h2>
+                        <p class="text-[11px] text-slate-500 font-normal">บันทึกผลความสะอาดประจำห้องเรียน</p>
+                    </div>
+                </div>
+                <span class="text-xs bg-indigo-50 text-indigo-700 px-2.5 py-1 rounded-xl border border-indigo-200/60 font-medium">ม.1 - ม.6</span>
+            </div>
+
+            <div class="bg-white p-4 sm:p-6 rounded-2xl shadow-card border border-slate-200/80">
+                <form onsubmit="handleClassroomSubmit(event)" class="space-y-5">
+                    
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1.5">ชื่อหัวหน้าเวรประจำห้อง <span class="text-red-500">*</span></label>
+                        <input type="text" id="classSubmitterName" required class="w-full rounded-xl border-slate-200 border p-3 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:outline-none bg-slate-50/50 shadow-sm" placeholder="เช่น ด.ญ.สุดา (เวรประจำวัน)">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1.5">ระดับชั้น / ห้องเรียน <span class="text-red-500">*</span></label>
+                        <select id="classGradeSelect" required class="w-full rounded-xl border-slate-200 border p-3 text-sm font-medium focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:outline-none bg-slate-50/50 shadow-sm transition">
+                            <option value="">-- เลือกระดับชั้น --</option>
+                        </select>
+                    </div>
+
+                    <div class="bg-gradient-to-br from-indigo-50/80 via-slate-50 to-purple-50/40 p-4 rounded-2xl border border-indigo-100 shadow-inner space-y-3.5">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-1.5">
+                                <i class="fa-solid fa-list-check text-indigo-600 text-xs"></i>
+                                <h3 class="text-xs font-bold text-indigo-900 uppercase tracking-wider">รายการตรวจสอบห้องเรียน</h3>
+                            </div>
+                            <button type="button" onclick="checkAllClassItems()" class="text-xs bg-emerald-500 hover:bg-emerald-600 active:scale-95 text-white font-bold px-3 py-1.5 rounded-xl shadow-md shadow-emerald-500/20 transition flex items-center gap-1">
+                                <i class="fa-solid fa-check-double"></i>
+                                <span>เลือกครบทุกข้อ</span>
+                            </button>
+                        </div>
+
+                        <div class="space-y-2 text-xs">
+                            <label class="flex items-center justify-between gap-3 bg-white p-3 rounded-xl border border-slate-200 shadow-sm hover:border-indigo-200 transition cursor-pointer">
+                                <span class="font-medium text-slate-700">1. กวาด/ถูพื้น และเทขยะในห้องเรียบร้อย</span>
+                                <input type="checkbox" id="classCheck1" checked class="w-5 h-5 accent-indigo-600 rounded cursor-pointer">
+                            </label>
+                            <label class="flex items-center justify-between gap-3 bg-white p-3 rounded-xl border border-slate-200 shadow-sm hover:border-indigo-200 transition cursor-pointer">
+                                <span class="font-medium text-slate-700">2. ลบกระดาน & จัดโต๊ะเก้าอี้เรียบร้อย</span>
+                                <input type="checkbox" id="classCheck2" checked class="w-5 h-5 accent-indigo-600 rounded cursor-pointer">
+                            </label>
+                            <label class="flex items-center justify-between gap-3 bg-white p-3 rounded-xl border border-slate-200 shadow-sm hover:border-indigo-200 transition cursor-pointer">
+                                <span class="font-medium text-slate-700">3. ปิดไฟ พัดลม เครื่องปรับอากาศ หน้าต่าง</span>
+                                <input type="checkbox" id="classCheck3" checked class="w-5 h-5 accent-indigo-600 rounded cursor-pointer">
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Photo Upload for Classroom -->
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1.5">แนบรูปถ่ายห้องเรียน (หลังทำความสะอาด)</label>
+                        <div class="relative">
+                            <label for="classPhotoInput" class="w-full flex items-center justify-center gap-2 p-3.5 bg-indigo-50/70 hover:bg-indigo-100/70 text-indigo-700 font-bold rounded-2xl border-2 border-dashed border-indigo-300 cursor-pointer active:scale-98 transition text-sm shadow-sm">
+                                <i class="fa-solid fa-camera text-lg"></i>
+                                <span id="classPhotoLabel">ถ่ายภาพ หรือ เลือกรูปจากมือถือ</span>
+                                <input id="classPhotoInput" type="file" accept="image/*" class="sr-only" onchange="handleImageSelected(event, 'class')">
+                            </label>
+                        </div>
+                        <div id="classPhotoPreviewBox" class="hidden mt-3 relative rounded-2xl overflow-hidden border border-slate-200 max-h-52 bg-slate-900 shadow-md">
+                            <img id="classPhotoPreviewImg" src="" alt="พรีวิวภาพ" class="w-full h-52 object-cover">
+                            <button type="button" onclick="clearPhoto('class')" class="absolute top-2 right-2 bg-rose-600/90 text-white rounded-full p-2 shadow-lg hover:bg-rose-700 active:scale-90 transition backdrop-blur-md">
+                                <i class="fa-solid fa-xmark text-sm w-4 h-4 flex items-center justify-center"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="w-full bg-gradient-to-r from-indigo-600 via-indigo-650 to-purple-650 hover:from-indigo-700 hover:to-purple-700 text-white font-bold py-4 rounded-2xl shadow-lg shadow-indigo-600/25 active:scale-98 transition text-sm flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-paper-plane text-base"></i>
+                        <span>ส่งแบบฟอร์มตรวจห้องเรียน</span>
+                    </button>
+                </form>
+            </div>
+        </section>
+
+        <!-- VIEW 2: AREA INSPECTION -->
+        <section id="view-area" class="hidden space-y-4 animate-fade-in">
+            <div class="glass-panel p-3.5 rounded-2xl shadow-card border border-slate-200/80 flex items-center justify-between text-sky-800 font-bold text-sm">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-sky-400 to-sky-600 text-white flex items-center justify-center shadow-md shadow-sky-500/20">
+                        <i class="fa-solid fa-map-location-dot text-base"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-sm font-bold text-slate-800">ส่งตรวจเขตพื้นที่รับผิดชอบ</h2>
+                        <p class="text-[11px] text-slate-500 font-normal">บันทึกผลความสะอาดพื้นที่ส่วนกลางประจำวัน</p>
+                    </div>
+                </div>
+                <span class="text-xs bg-sky-50 text-sky-700 px-2.5 py-1 rounded-xl border border-sky-200/60 font-medium">9 บริเวณ</span>
+            </div>
+
+            <div class="bg-white p-4 sm:p-6 rounded-2xl shadow-card border border-slate-200/80">
+                <form onsubmit="handleAreaSubmit(event)" class="space-y-5">
+                    
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1.5">ชื่อผู้ส่งตรวจ / หัวหน้าเวร <span class="text-red-500">*</span></label>
+                        <input type="text" id="areaSubmitterName" required class="w-full rounded-xl border-slate-200 border p-3 text-sm focus:ring-2 focus:ring-sky-500 focus:border-sky-500 focus:outline-none bg-slate-50/50 shadow-sm" placeholder="เช่น ด.ช.สมชาย (เวรพื้นที่)">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1.5">เลือกเขตพื้นที่รับผิดชอบ <span class="text-red-500">*</span></label>
+                        <select id="inspectAreaSelect" required class="w-full rounded-xl border-slate-200 border p-3 text-sm font-medium focus:ring-2 focus:ring-sky-500 focus:border-sky-500 focus:outline-none bg-slate-50/50 shadow-sm transition">
+                            <option value="">-- เลือกบริเวณที่ต้องการส่งตรวจ --</option>
+                        </select>
+                    </div>
+
+                    <!-- Checklist Options -->
+                    <div class="bg-gradient-to-br from-sky-50/80 via-slate-50 to-indigo-50/40 p-4 rounded-2xl border border-sky-100 shadow-inner space-y-3.5">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-1.5">
+                                <i class="fa-solid fa-list-check text-sky-600 text-xs"></i>
+                                <h3 class="text-xs font-bold text-slate-700 uppercase tracking-wider">รายการตรวจสอบความสะอาด</h3>
+                            </div>
+                            <button type="button" onclick="checkAllAreaItems()" class="text-xs bg-emerald-500 hover:bg-emerald-600 active:scale-95 text-white font-bold px-3 py-1.5 rounded-xl shadow-md shadow-emerald-500/20 transition flex items-center gap-1">
+                                <i class="fa-solid fa-check-double"></i>
+                                <span>เลือกครบทุกข้อ</span>
+                            </button>
+                        </div>
+
+                        <div class="space-y-2 text-xs">
+                            <label class="flex items-center justify-between gap-3 bg-white p-3 rounded-xl border border-slate-200 shadow-sm hover:border-sky-200 transition cursor-pointer">
+                                <span class="font-medium text-slate-700">1. การจัดเก็บขยะ/เศษใบไม้เรียบร้อย</span>
+                                <input type="checkbox" id="areaCheck1" checked class="w-5 h-5 accent-sky-600 rounded cursor-pointer">
+                            </label>
+                            <label class="flex items-center justify-between gap-3 bg-white p-3 rounded-xl border border-slate-200 shadow-sm hover:border-sky-200 transition cursor-pointer">
+                                <span class="font-medium text-slate-700">2. พื้นผิว/ทางเดิน/โต๊ะสะอาด ปราศจากคราบ</span>
+                                <input type="checkbox" id="areaCheck2" checked class="w-5 h-5 accent-sky-600 rounded cursor-pointer">
+                            </label>
+                            <label class="flex items-center justify-between gap-3 bg-white p-3 rounded-xl border border-slate-200 shadow-sm hover:border-sky-200 transition cursor-pointer">
+                                <span class="font-medium text-slate-700">3. จัดวางอุปกรณ์และสิ่งของเป็นระเบียบ</span>
+                                <input type="checkbox" id="areaCheck3" checked class="w-5 h-5 accent-sky-600 rounded cursor-pointer">
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Photo Upload -->
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1.5">แนบรูปถ่ายพื้นที่ (ถ้ามี)</label>
+                        <div class="relative">
+                            <label for="areaPhotoInput" class="w-full flex items-center justify-center gap-2 p-3.5 bg-sky-50/70 hover:bg-sky-100/70 text-sky-700 font-bold rounded-2xl border-2 border-dashed border-sky-300 cursor-pointer active:scale-98 transition text-sm shadow-sm">
+                                <i class="fa-solid fa-camera text-lg"></i>
+                                <span id="areaPhotoLabel">ถ่ายภาพ หรือ เลือกรูปจากมือถือ</span>
+                                <input id="areaPhotoInput" type="file" accept="image/*" class="sr-only" onchange="handleImageSelected(event, 'area')">
+                            </label>
+                        </div>
+                        <div id="areaPhotoPreviewBox" class="hidden mt-3 relative rounded-2xl overflow-hidden border border-slate-200 max-h-52 bg-slate-900 shadow-md">
+                            <img id="areaPhotoPreviewImg" src="" alt="พรีวิวภาพ" class="w-full h-52 object-cover">
+                            <button type="button" onclick="clearPhoto('area')" class="absolute top-2 right-2 bg-rose-600/90 text-white rounded-full p-2 shadow-lg hover:bg-rose-700 active:scale-90 transition backdrop-blur-md">
+                                <i class="fa-solid fa-xmark text-sm w-4 h-4 flex items-center justify-center"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="w-full bg-gradient-to-r from-sky-600 via-sky-650 to-indigo-650 hover:from-sky-700 hover:to-indigo-750 text-white font-bold py-4 rounded-2xl shadow-lg shadow-sky-600/25 active:scale-98 transition text-sm flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-paper-plane text-base"></i>
+                        <span>ส่งแบบฟอร์มตรวจเขตพื้นที่</span>
+                    </button>
+                </form>
+            </div>
+        </section>
+
+        <!-- VIEW 3: TEACHER SYSTEM -->
+        <section id="view-teacher" class="hidden space-y-4 animate-fade-in">
+            
+            <!-- TEACHER LOGIN / REGISTER FORM -->
+            <div id="teacherLoginPrompt" class="bg-white border border-pink-200 p-6 sm:p-8 rounded-3xl text-center space-y-4 shadow-card max-w-md mx-auto">
+                <div class="w-14 h-14 bg-pink-100 text-pink-600 rounded-2xl flex items-center justify-center mx-auto text-2xl shadow-inner">
+                    <i class="fa-solid fa-user-shield"></i>
+                </div>
+                <div>
+                    <h2 class="text-base font-bold text-slate-800">ระบบคุณครูผู้ตรวจ</h2>
+                    <p class="text-xs text-slate-500 mt-1">กรุณาเข้าสู่ระบบ หรือ สมัครสมาชิกครูใหม่เพื่อเข้าใช้งาน</p>
+                </div>
+
+                <!-- Toggle Login / Register -->
+                <div class="bg-slate-100 p-1 rounded-2xl flex items-center gap-1 text-xs">
+                    <button type="button" id="authTabLogin" onclick="setAuthMode('login')" class="flex-1 py-2 text-xs font-bold rounded-xl transition bg-white text-pink-600 shadow-sm border border-pink-100">
+                        <i class="fa-solid fa-right-to-bracket mr-1"></i> เข้าสู่ระบบ
+                    </button>
+                    <button type="button" id="authTabRegister" onclick="setAuthMode('register')" class="flex-1 py-2 text-xs font-bold rounded-xl transition text-slate-500 hover:text-slate-700">
+                        <i class="fa-solid fa-user-plus mr-1"></i> สมัครสมาชิกครูใหม่
+                    </button>
+                </div>
+
+                <form onsubmit="handleAuthSubmit(event)" class="space-y-3 text-left pt-1">
+                    <div>
+                        <label class="block text-[11px] font-bold text-slate-600 mb-1">ชื่อ-นามสกุล คุณครู <span class="text-red-500">*</span></label>
+                        <input type="text" id="adminNameInput" required class="w-full rounded-xl border border-slate-200 p-2.5 text-xs font-semibold focus:ring-2 focus:ring-pink-400 focus:outline-none bg-slate-50" placeholder="เช่น ครูสมศักดิ์ รักเรียน">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-bold text-slate-600 mb-1">รหัสผ่าน <span class="text-red-500">*</span></label>
+                        <input type="password" id="adminPinInput" required class="w-full rounded-xl border border-slate-200 p-2.5 text-xs font-semibold focus:ring-2 focus:ring-pink-400 focus:outline-none bg-slate-50" placeholder="กรอกรหัสผ่านของคุณครู">
+                    </div>
+                    <div id="confirmPasswordContainer" class="hidden">
+                        <label class="block text-[11px] font-bold text-slate-600 mb-1">ยืนยันรหัสผ่านอีกครั้ง <span class="text-red-500">*</span></label>
+                        <input type="password" id="confirmPinInput" class="w-full rounded-xl border border-slate-200 p-2.5 text-xs font-semibold focus:ring-2 focus:ring-pink-400 focus:outline-none bg-slate-50" placeholder="กรอกรหัสผ่านอีกครั้งเพื่อยืนยัน">
+                    </div>
+                    <button type="submit" class="w-full bg-gradient-to-r from-pink-500 to-rose-400 hover:from-pink-600 hover:to-rose-500 text-white font-bold py-3 rounded-xl shadow-cute transition text-xs active:scale-95 mt-2 flex items-center justify-center gap-2">
+                        <i id="authSubmitBtnIcon" class="fa-solid fa-right-to-bracket"></i>
+                        <span id="authSubmitBtnText">เข้าสู่ระบบครู</span>
+                    </button>
+                </form>
+            </div>
+
+            <!-- TEACHER DASHBOARD CONTENT -->
+            <div id="teacherDashboardContent" class="hidden space-y-4">
+                
+                <!-- Teacher Profile Header & Logout -->
+                <div class="bg-gradient-to-r from-pink-500 to-rose-400 p-4 rounded-2xl text-white flex items-center justify-between shadow-cute">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-white/20 backdrop-blur-md flex items-center justify-center text-lg">
+                            👩‍🏫
+                        </div>
+                        <div>
+                            <p class="text-[11px] text-pink-100 font-medium">ยินดีต้อนรับคุณครู</p>
+                            <h3 id="dashTeacherName" class="font-bold text-sm text-white">ครูผู้ตรวจ</h3>
+                        </div>
+                    </div>
+                    <button onclick="logoutTeacher()" class="bg-white/20 hover:bg-white/30 text-white text-xs font-bold px-3 py-1.5 rounded-xl transition active:scale-95 flex items-center gap-1 border border-white/30">
+                        <i class="fa-solid fa-right-from-bracket"></i>
+                        <span>ออกจากระบบ</span>
+                    </button>
+                </div>
+                
+                <!-- Sub Navigation inside Teacher Hub -->
+                <div class="bg-slate-200/80 p-1 rounded-2xl flex items-center gap-1 shadow-inner">
+                    <button onclick="switchTeacherSubTab('approve')" id="subnav-approve" class="sub-nav-btn sub-nav-btn-active flex-1 flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-clipboard-check"></i>
+                        <span>อนุมัติผลตรวจ</span>
+                        <span id="subPendingBadge" class="bg-amber-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">0</span>
+                    </button>
+                    <button onclick="switchTeacherSubTab('summary')" id="subnav-summary" class="sub-nav-btn flex-1 flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-chart-pie"></i>
+                        <span>รายงาน & สรุป</span>
+                    </button>
+                </div>
+
+                <!-- SUB-VIEW A: APPROVAL PANEL -->
+                <div id="teacher-subview-approve" class="bg-white p-5 rounded-2xl shadow-card border border-slate-200/80 space-y-4">
+                    <div class="flex items-center justify-between border-b border-slate-100 pb-3.5">
+                        <div>
+                            <h2 class="font-bold text-base text-slate-800 flex items-center gap-2">
+                                <i class="fa-solid fa-user-check text-sky-600"></i>
+                                <span>รายการรอครูตรวจอนุมัติ</span>
+                            </h2>
+                            <p class="text-xs text-slate-500">อนุมัติผ่าน หรือสั่งการให้ส่งแก้ไขใหม่ได้ทันที</p>
+                        </div>
+                        <span id="pendingBadgeCount" class="bg-gradient-to-r from-amber-500 to-orange-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-md shadow-amber-500/20">0 รออนุมัติ</span>
+                    </div>
+
+                    <div id="pendingList" class="space-y-3.5">
+                        <!-- Injected via JS -->
+                    </div>
+                </div>
+
+                <!-- SUB-VIEW B: SUMMARY & HISTORY -->
+                <div id="teacher-subview-summary" class="hidden space-y-4">
+                    <!-- Stats Cards -->
+                    <div class="grid grid-cols-3 gap-3 text-center">
+                        <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-card relative overflow-hidden">
+                            <div class="absolute top-0 left-0 w-full h-1 bg-slate-400"></div>
+                            <p class="text-[11px] text-slate-400 font-bold uppercase">ส่งตรวจทั้งหมด</p>
+                            <h3 id="statTotal" class="text-2xl font-black text-slate-800 mt-1">0</h3>
+                        </div>
+                        <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-card relative overflow-hidden">
+                            <div class="absolute top-0 left-0 w-full h-1 bg-emerald-500"></div>
+                            <p class="text-[11px] text-emerald-600 font-bold uppercase">อนุมัติแล้ว</p>
+                            <h3 id="statApproved" class="text-2xl font-black text-emerald-600 mt-1">0</h3>
+                        </div>
+                        <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-card relative overflow-hidden">
+                            <div class="absolute top-0 left-0 w-full h-1 bg-amber-500"></div>
+                            <p class="text-[11px] text-amber-600 font-bold uppercase">รอครูตรวจ</p>
+                            <h3 id="statPending" class="text-2xl font-black text-amber-500 mt-1">0</h3>
+                        </div>
+                    </div>
+
+                    <!-- Google Sheets Integration Setting -->
+                    <div class="bg-gradient-to-r from-emerald-50 to-teal-50 p-4 rounded-2xl border border-emerald-200 space-y-2.5">
+                        <div class="flex items-center gap-2 text-emerald-800 font-bold text-xs">
+                            <i class="fa-solid fa-file-csv text-base"></i>
+                            <span>เชื่อมต่อ Google Sheets & Drive (ออนไลน์)</span>
+                        </div>
+                        <div class="flex gap-2">
+                            <input type="url" id="gasUrlInput" class="flex-1 rounded-xl border border-emerald-200 p-2.5 text-xs font-mono focus:ring-2 focus:ring-emerald-400 focus:outline-none bg-white" placeholder="วาง Web App URL จาก Google Apps Script ที่นี่">
+                            <button onclick="saveGasUrl()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-4 py-2.5 rounded-xl text-xs shadow-sm transition active:scale-95 shrink-0">
+                                บันทึก URL
+                            </button>
+                        </div>
+                        <p class="text-[10px] text-emerald-600">เชื่อมต่อเรียบร้อย! ข้อมูลการส่งตรวจจะถูกบันทึกลง Google Sheets โดยอัตโนมัติ</p>
+                    </div>
+
+                    <!-- History List -->
+                    <div class="bg-white p-5 rounded-2xl shadow-card border border-slate-200/80 space-y-4">
+                        <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                            <h2 class="font-bold text-base text-slate-800 flex items-center gap-2">
+                                <i class="fa-solid fa-list-check text-sky-600"></i>
+                                <span>ประวัติการบันทึกทั้งหมด</span>
+                            </h2>
+                            <button onclick="exportToCSV()" class="text-xs bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-bold px-3.5 py-2 rounded-xl transition flex items-center gap-1.5 shadow-md shadow-emerald-600/20">
+                                <i class="fa-solid fa-file-excel text-sm"></i>
+                                <span>ส่งออก CSV</span>
+                            </button>
+                        </div>
+
+                        <div id="historyList" class="space-y-3">
+                            <!-- Injected JS -->
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </section>
+
+        <!-- VIEW 4: ADMIN SYSTEM -->
+        <section id="view-admin" class="hidden space-y-4 animate-fade-in">
+            
+            <!-- ADMIN LOGIN PROMPT -->
+            <div id="adminLoginPrompt" class="bg-white border border-purple-200 p-6 sm:p-8 rounded-3xl text-center space-y-4 shadow-card max-w-md mx-auto">
+                <div class="w-16 h-16 bg-gradient-to-tr from-purple-500 to-indigo-500 text-white rounded-2xl flex items-center justify-center mx-auto text-3xl shadow-lg shadow-purple-500/30">
+                    👑
+                </div>
+                <div>
+                    <h2 class="text-base font-bold text-slate-800">เข้าสู่ระบบผู้ดูแลระบบ (Admin)</h2>
+                    <p class="text-xs text-slate-500 mt-1">เข้าถึงการจัดการครู พื้นที่ ระดับชั้น และการตั้งค่าระบบ</p>
+                </div>
+
+                <form onsubmit="handleAdminLogin(event)" class="space-y-3 text-left pt-1">
+                    <div>
+                        <label class="block text-[11px] font-bold text-slate-600 mb-1">รหัสผ่านแอดมิน (Admin PIN) <span class="text-red-500">*</span></label>
+                        <input type="password" id="adminMasterPinInput" required class="w-full rounded-xl border border-slate-200 p-3 text-xs font-bold focus:ring-2 focus:ring-purple-500 focus:outline-none bg-slate-50 text-center tracking-widest text-lg" placeholder="••••••••">
+                    </div>
+                    <p class="text-[10px] text-slate-400 text-center">* รหัสผ่านเริ่มต้นคือ <code class="bg-purple-100 text-purple-700 px-1.5 py-0.5 rounded font-mono font-bold">8888</code></p>
+                    <button type="submit" class="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-purple-600/25 transition text-xs active:scale-95 flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-key"></i>
+                        <span>ปลดล็อกเข้าสู่ระบบแอดมิน</span>
+                    </button>
+                </form>
+            </div>
+
+            <!-- ADMIN DASHBOARD PANEL -->
+            <div id="adminDashboardContent" class="hidden space-y-4">
+                
+                <!-- Admin Profile Banner -->
+                <div class="bg-gradient-to-r from-purple-700 via-indigo-700 to-slate-800 p-4 sm:p-5 rounded-3xl text-white flex items-center justify-between shadow-xl">
+                    <div class="flex items-center gap-3">
+                        <div class="w-11 h-11 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center text-xl shadow-inner">
+                            👑
+                        </div>
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <h3 class="font-bold text-sm sm:text-base text-white">ผู้ดูแลระบบสูงสุด (Super Admin)</h3>
+                                <span class="bg-amber-400 text-slate-900 text-[10px] font-black px-2 py-0.5 rounded-full">FULL ACCESS</span>
+                            </div>
+                            <p class="text-[11px] text-purple-200 mt-0.5">บริหารจัดการผู้ใช้ พื้นที่ และการตั้งค่าส่วนกลาง</p>
+                        </div>
+                    </div>
+                    <button onclick="logoutAdmin()" class="bg-white/15 hover:bg-white/25 text-white text-xs font-bold px-3.5 py-2 rounded-xl transition active:scale-95 flex items-center gap-1.5 border border-white/20">
+                        <i class="fa-solid fa-power-off"></i>
+                        <span>ออกจากแอดมิน</span>
+                    </button>
+                </div>
+
+                <!-- Admin Sub Nav Tabs -->
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-1.5 bg-slate-200/80 p-1.5 rounded-2xl shadow-inner text-xs font-bold">
+                    <button onclick="switchAdminSubTab('teachers')" id="adminNav-teachers" class="py-2.5 px-3 rounded-xl transition bg-white text-purple-700 shadow-sm flex items-center justify-center gap-1.5">
+                        <i class="fa-solid fa-user-gear"></i>
+                        <span>จัดการครู</span>
+                    </button>
+                    <button onclick="switchAdminSubTab('locations')" id="adminNav-locations" class="py-2.5 px-3 rounded-xl transition text-slate-600 hover:text-slate-900 flex items-center justify-center gap-1.5">
+                        <i class="fa-solid fa-map-location-dot"></i>
+                        <span>พื้นที่ & ห้องเรียน</span>
+                    </button>
+                    <button onclick="switchAdminSubTab('settings')" id="adminNav-settings" class="py-2.5 px-3 rounded-xl transition text-slate-600 hover:text-slate-900 flex items-center justify-center gap-1.5">
+                        <i class="fa-solid fa-sliders"></i>
+                        <span>ตั้งค่าระบบ</span>
+                    </button>
+                    <button onclick="switchAdminSubTab('data')" id="adminNav-data" class="py-2.5 px-3 rounded-xl transition text-slate-600 hover:text-slate-900 flex items-center justify-center gap-1.5">
+                        <i class="fa-solid fa-database"></i>
+                        <span>จัดการข้อมูล</span>
+                    </button>
+                </div>
+
+                <!-- ADMIN SUB-TAB 1: TEACHERS MANAGEMENT -->
+                <div id="adminTab-teachers" class="bg-white p-5 rounded-3xl shadow-card border border-slate-200/80 space-y-4">
+                    <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                        <div>
+                            <h2 class="font-bold text-sm sm:text-base text-slate-800 flex items-center gap-2">
+                                <i class="fa-solid fa-users-gear text-purple-600"></i>
+                                <span>รายชื่อบัญชีคุณครูในระบบ</span>
+                            </h2>
+                            <p class="text-xs text-slate-500">คุณสามารถเพิ่ม รีเซ็ตรหัสผ่าน หรือลบบัญชีครูได้ที่นี่</p>
+                        </div>
+                        <button onclick="openAddTeacherModal()" class="bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs px-3.5 py-2 rounded-xl shadow-md transition active:scale-95 flex items-center gap-1.5">
+                            <i class="fa-solid fa-user-plus"></i>
+                            <span>เพิ่มครูใหม่</span>
+                        </button>
+                    </div>
+
+                    <div id="adminTeacherList" class="space-y-2.5">
+                        <!-- Injected JS -->
+                    </div>
+                </div>
+
+                <!-- ADMIN SUB-TAB 2: LOCATIONS & CLASSROOMS MANAGEMENT -->
+                <div id="adminTab-locations" class="hidden space-y-4">
+                    
+                    <!-- Area Management Card -->
+                    <div class="bg-white p-5 rounded-3xl shadow-card border border-slate-200/80 space-y-4">
+                        <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                            <div>
+                                <h2 class="font-bold text-sm sm:text-base text-slate-800 flex items-center gap-2">
+                                    <i class="fa-solid fa-map-pin text-sky-600"></i>
+                                    <span>จัดการบริเวณเขตพื้นที่รับผิดชอบ</span>
+                                </h2>
+                                <p class="text-xs text-slate-500">เพิ่มหรือแก้ไขบริเวณส่วนกลางที่ใช้อยู่ในแบบฟอร์มตรวจพื้นที่</p>
+                            </div>
+                        </div>
+
+                        <!-- Add Area Input -->
+                        <div class="flex gap-2">
+                            <input type="text" id="newAreaInput" class="flex-1 rounded-xl border border-slate-200 p-2.5 text-xs font-medium focus:ring-2 focus:ring-sky-500 focus:outline-none bg-slate-50" placeholder="ระบุชื่อบริเวณใหม่ เช่น โรงอาหาร 🍱">
+                            <button onclick="addNewArea()" class="bg-sky-600 hover:bg-sky-700 text-white font-bold px-4 py-2.5 rounded-xl text-xs shadow-md transition active:scale-95 shrink-0 flex items-center gap-1">
+                                <i class="fa-solid fa-plus"></i>
+                                <span>เพิ่มพื้นที่</span>
+                            </button>
+                        </div>
+
+                        <div id="adminAreasList" class="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
+                            <!-- Injected JS -->
+                        </div>
+                    </div>
+
+                    <!-- Classroom Management Card -->
+                    <div class="bg-white p-5 rounded-3xl shadow-card border border-slate-200/80 space-y-4">
+                        <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                            <div>
+                                <h2 class="font-bold text-sm sm:text-base text-slate-800 flex items-center gap-2">
+                                    <i class="fa-solid fa-school text-indigo-600"></i>
+                                    <span>จัดการระดับชั้นเรียน / ห้องเรียน</span>
+                                </h2>
+                                <p class="text-xs text-slate-500">เพิ่มหรือลบระดับชั้นที่แสดงในแบบฟอร์มตรวจห้องเรียน</p>
+                            </div>
+                        </div>
+
+                        <!-- Add Class Input -->
+                        <div class="flex gap-2">
+                            <input type="text" id="newClassInput" class="flex-1 rounded-xl border border-slate-200 p-2.5 text-xs font-medium focus:ring-2 focus:ring-indigo-500 focus:outline-none bg-slate-50" placeholder="ระบุระดับชั้น เช่น ม.1/1 หรือ ประถมศึกษาปีที่ 1">
+                            <button onclick="addNewClassroom()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-4 py-2.5 rounded-xl text-xs shadow-md transition active:scale-95 shrink-0 flex items-center gap-1">
+                                <i class="fa-solid fa-plus"></i>
+                                <span>เพิ่มชั้นเรียน</span>
+                            </button>
+                        </div>
+
+                        <div id="adminClassList" class="grid grid-cols-2 sm:grid-cols-3 gap-2 pt-1">
+                            <!-- Injected JS -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ADMIN SUB-TAB 3: SYSTEM SETTINGS -->
+                <div id="adminTab-settings" class="hidden bg-white p-5 rounded-3xl shadow-card border border-slate-200/80 space-y-4">
+                    <div class="border-b border-slate-100 pb-3">
+                        <h2 class="font-bold text-sm sm:text-base text-slate-800 flex items-center gap-2">
+                            <i class="fa-solid fa-gears text-purple-600"></i>
+                            <span>ตั้งค่าชื่อโรงเรียน & ความปลอดภัย</span>
+                        </h2>
+                        <p class="text-xs text-slate-500">ปรับเปลี่ยนข้อมูลองค์กรและรหัสผ่านเข้าใช้ผู้ดูแลระบบ</p>
+                    </div>
+
+                    <form onsubmit="saveAdminSettings(event)" class="space-y-4 text-xs">
+                        <div>
+                            <label class="block font-bold text-slate-700 mb-1">ชื่อโรงเรียน</label>
+                            <input type="text" id="settingSchoolName" required class="w-full rounded-xl border border-slate-200 p-3 text-xs font-semibold focus:ring-2 focus:ring-purple-500 focus:outline-none bg-slate-50" placeholder="โรงเรียนกุศลวิทยา">
+                        </div>
+
+                        <div>
+                            <label class="block font-bold text-slate-700 mb-1">ชื่อระบบงาน</label>
+                            <input type="text" id="settingAppTitle" required class="w-full rounded-xl border border-slate-200 p-3 text-xs font-semibold focus:ring-2 focus:ring-purple-500 focus:outline-none bg-slate-50" placeholder="ระบบตรวจความสะอาด">
+                        </div>
+
+                        <div>
+                            <label class="block font-bold text-slate-700 mb-1">รหัสผ่านแอดมินใหม่ (Admin Master PIN)</label>
+                            <input type="password" id="settingMasterPin" required class="w-full rounded-xl border border-slate-200 p-3 text-xs font-semibold focus:ring-2 focus:ring-purple-500 focus:outline-none bg-slate-50 tracking-wider" placeholder="รหัสผ่านปัจจุบัน 8888">
+                        </div>
+
+                        <div>
+                            <label class="block font-bold text-slate-700 mb-1">Google Apps Script Web App URL</label>
+                            <input type="url" id="settingGasUrl" class="w-full rounded-xl border border-slate-200 p-3 text-xs font-mono focus:ring-2 focus:ring-purple-500 focus:outline-none bg-slate-50" placeholder="https://script.google.com/macros/s/.../exec">
+                        </div>
+
+                        <button type="submit" class="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-bold py-3.5 rounded-xl shadow-lg transition active:scale-98 text-xs flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-floppy-disk"></i>
+                            <span>บันทึกการตั้งค่าระบบ</span>
+                        </button>
+                    </form>
+                </div>
+
+                <!-- ADMIN SUB-TAB 4: DATA MANAGEMENT & RESET -->
+                <div id="adminTab-data" class="hidden bg-white p-5 rounded-3xl shadow-card border border-slate-200/80 space-y-4">
+                    <div class="border-b border-slate-100 pb-3">
+                        <h2 class="font-bold text-sm sm:text-base text-slate-800 flex items-center gap-2">
+                            <i class="fa-solid fa-triangle-exclamation text-rose-500"></i>
+                            <span>จัดการข้อมูลระบบ & รีเซ็ต</span>
+                        </h2>
+                        <p class="text-xs text-slate-500">สำรอง ลบประวัติส่งตรวจ หรือคืนค่าระบบกลับสู่เริ่มต้น</p>
+                    </div>
+
+                    <div class="space-y-3 pt-1">
+                        <div class="p-4 rounded-2xl bg-amber-50 border border-amber-200 text-amber-900 flex items-center justify-between gap-3">
+                            <div>
+                                <h4 class="font-bold text-xs">ลบประวัติการตรวจทั้งหมด</h4>
+                                <p class="text-[11px] text-amber-700 mt-0.5">ลบเฉพาะข้อมูลรายการตรวจเวรและพื้นที่ โดยเก็บสร้างบัญชีครูไว้</p>
+                            </div>
+                            <button onclick="clearInspectionHistory()" class="bg-amber-600 hover:bg-amber-700 text-white font-bold px-3.5 py-2 rounded-xl text-xs transition active:scale-95 shrink-0 shadow-sm">
+                                ลบประวัติ
+                            </button>
+                        </div>
+
+                        <div class="p-4 rounded-2xl bg-rose-50 border border-rose-200 text-rose-900 flex items-center justify-between gap-3">
+                            <div>
+                                <h4 class="font-bold text-xs">รีเซ็ตระบบทั้งหมด (Factory Reset)</h4>
+                                <p class="text-[11px] text-rose-700 mt-0.5">ลบบัญชีครู ประวัติ และคืนค่าเริ่มต้นของแอปพลิเคชัน</p>
+                            </div>
+                            <button onclick="factoryResetSystem()" class="bg-rose-600 hover:bg-rose-700 text-white font-bold px-3.5 py-2 rounded-xl text-xs transition active:scale-95 shrink-0 shadow-sm">
+                                ล้างระบบทั้งหมด
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- ADD TEACHER MODAL -->
+    <div id="addTeacherModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md hidden items-center justify-center z-50 p-4" onclick="closeAddTeacherModal()">
+        <div class="relative max-w-sm w-full bg-white rounded-3xl overflow-hidden shadow-2xl p-6 border border-slate-100 space-y-4" onclick="event.stopPropagation()">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                <h3 class="font-bold text-slate-800 text-sm flex items-center gap-2">
+                    <i class="fa-solid fa-user-plus text-purple-600"></i>
+                    <span>เพิ่มบัญชีครูใหม่</span>
+                </h3>
+                <button onclick="closeAddTeacherModal()" class="text-slate-400 hover:text-slate-600 text-sm">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <form onsubmit="handleAdminAddTeacher(event)" class="space-y-3 text-xs">
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">ชื่อ-นามสกุล คุณครู <span class="text-red-500">*</span></label>
+                    <input type="text" id="modalTeacherName" required class="w-full rounded-xl border border-slate-200 p-2.5 text-xs font-medium focus:ring-2 focus:ring-purple-500 focus:outline-none bg-slate-50" placeholder="เช่น ครูเพ็ญศรี สุขใจ">
+                </div>
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">รหัสผ่าน <span class="text-red-500">*</span></label>
+                    <input type="password" id="modalTeacherPin" required class="w-full rounded-xl border border-slate-200 p-2.5 text-xs font-medium focus:ring-2 focus:ring-purple-500 focus:outline-none bg-slate-50" placeholder="กำหนดรหัสผ่าน">
+                </div>
+                <button type="submit" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 rounded-xl shadow-md transition active:scale-95 text-xs">
+                    สร้างบัญชีครู
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- PHOTO ZOOM MODAL -->
+    <div id="photoModal" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md hidden items-center justify-center z-50 p-4" onclick="closePhotoModal()">
+        <div class="relative max-w-lg w-full bg-slate-900 rounded-3xl overflow-hidden shadow-2xl border border-white/10" onclick="event.stopPropagation()">
+            <button onclick="closePhotoModal()" class="absolute top-3 right-3 bg-black/60 text-white rounded-full p-2.5 hover:bg-black/80 backdrop-blur-md z-10">
+                <i class="fa-solid fa-xmark text-sm w-4 h-4 flex items-center justify-center"></i>
+            </button>
+            <img id="modalZoomImg" src="" alt="ภาพขยาย" class="max-h-[75vh] w-full object-contain bg-black">
+            <div class="p-4 bg-slate-900 text-white text-center text-xs font-medium border-t border-slate-800" id="modalZoomCaption"></div>
+        </div>
+    </div>
+
+    <!-- TOAST NOTIFICATION -->
+    <div id="toast" class="fixed bottom-6 left-4 right-4 max-w-sm mx-auto transform translate-y-20 opacity-0 transition-all duration-300 bg-slate-900/95 text-white p-4 rounded-2xl shadow-2xl backdrop-blur-md flex items-center space-x-3.5 z-50 border border-white/10 pointer-events-none">
+        <div class="w-9 h-9 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0">
+            <i class="fa-solid fa-circle-check text-lg"></i>
+        </div>
+        <div class="text-xs">
+            <p id="toastTitle" class="font-bold text-white text-sm">สำเร็จ</p>
+            <p id="toastBody" class="text-slate-300">บันทึกข้อมูลเรียบร้อยแล้ว</p>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let DEFAULT_AREAS = [
+            { id: 'a1', name: 'โรงอาหาร 🍱' },
+            { id: 'a2', name: 'สนามบาสเกตบอล 🏀' },
+            { id: 'a3', name: 'อาคารกล่องนม 🥛' },
+            { id: 'a4', name: 'ใต้ตึกเรียน 🏫' },
+            { id: 'a5', name: 'ทางเดินถนน 🛣️' },
+            { id: 'a6', name: 'ทางเดินศาลาแดง ⛩️' },
+            { id: 'a7', name: 'โดมเอนกประสงค์ 🎪' },
+            { id: 'a8', name: 'สนามฟุตบอล ⚽' },
+            { id: 'a9', name: 'บริเวณองค์หลวงปู่ 🙏' }
+        ];
+
+        let DEFAULT_CLASSROOMS = [
+            'ม.1', 'ม.2', 'ม.3', 'ม.4', 'ม.5', 'ม.6'
+        ];
+
+        let AREAS = [...DEFAULT_AREAS];
+        let CLASSROOMS = [...DEFAULT_CLASSROOMS];
+
+        let userRole = 'GUEST'; // GUEST, TEACHER, ADMIN
+        let teacherName = '';
+        let teacherAccounts = {};
+        let masterAdminPin = '8888';
+        let schoolName = 'โรงเรียนกุศลวิทยา';
+        let appTitle = 'ระบบตรวจความสะอาด';
+        let isAdminLoggedIn = false;
+
+        let areaPhotoBase64 = null;
+        let classPhotoBase64 = null;
+        let inspectionData = [];
+        let authMode = 'login';
+        
+        let googleScriptUrl = 'https://script.google.com/a/macros/wsk.ac.th/s/AKfycby1UnYmPZLzhWae9MetcdWQ2IEgCc0kVnZV4c38CWfclX4hf34NrNSvc57tY9exzd4/exec';
+
+        // Toast Notification System
+        function showToast(title, message) {
+            const toast = document.getElementById('toast');
+            const toastTitle = document.getElementById('toastTitle');
+            const toastBody = document.getElementById('toastBody');
+            if (!toast) return;
+            
+            if (toastTitle) toastTitle.textContent = title;
+            if (toastBody) toastBody.textContent = message;
+
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            toast.classList.add('translate-y-0', 'opacity-100');
+
+            setTimeout(() => {
+                toast.classList.remove('translate-y-0', 'opacity-100');
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 3000);
+        }
+
+        // Navigation
+        window.switchTab = function(tabId) {
+            const tabs = ['classroom', 'area', 'teacher', 'admin'];
+            tabs.forEach(id => {
+                const viewEl = document.getElementById(`view-${id}`);
+                const navEl = document.getElementById(`nav-${id}`);
+                if (viewEl) {
+                    if (id === tabId) viewEl.classList.remove('hidden');
+                    else viewEl.classList.add('hidden');
+                }
+                if (navEl) {
+                    if (id === tabId) navEl.classList.add('top-nav-btn-active');
+                    else navEl.classList.remove('top-nav-btn-active');
+                }
+            });
+        };
+
+        window.switchTeacherSubTab = function(subTabId) {
+            const approveView = document.getElementById('teacher-subview-approve');
+            const summaryView = document.getElementById('teacher-subview-summary');
+            const btnApprove = document.getElementById('subnav-approve');
+            const btnSummary = document.getElementById('subnav-summary');
+
+            if (subTabId === 'approve') {
+                if (approveView) approveView.classList.remove('hidden');
+                if (summaryView) summaryView.classList.add('hidden');
+                if (btnApprove) btnApprove.classList.add('sub-nav-btn-active');
+                if (btnSummary) btnSummary.classList.remove('sub-nav-btn-active');
+            } else if (subTabId === 'summary') {
+                if (summaryView) summaryView.classList.remove('hidden');
+                if (approveView) approveView.classList.add('hidden');
+                if (btnSummary) btnSummary.classList.add('sub-nav-btn-active');
+                if (btnApprove) btnApprove.classList.remove('sub-nav-btn-active');
+            }
+        };
+
+        window.switchAdminSubTab = function(subTabId) {
+            const subTabs = ['teachers', 'locations', 'settings', 'data'];
+            subTabs.forEach(id => {
+                const tabEl = document.getElementById(`adminTab-${id}`);
+                const navEl = document.getElementById(`adminNav-${id}`);
+                if (tabEl) {
+                    if (id === subTabId) tabEl.classList.remove('hidden');
+                    else tabEl.classList.add('hidden');
+                }
+                if (navEl) {
+                    if (id === subTabId) {
+                        navEl.className = "py-2.5 px-3 rounded-xl transition bg-white text-purple-700 shadow-sm flex items-center justify-center gap-1.5 font-bold";
+                    } else {
+                        navEl.className = "py-2.5 px-3 rounded-xl transition text-slate-600 hover:text-slate-900 flex items-center justify-center gap-1.5 font-bold";
+                    }
+                }
+            });
+        };
+
+        // Modal Photo Zoom
+        window.openPhotoModal = function(imgSrc, caption) {
+            const modal = document.getElementById('photoModal');
+            const img = document.getElementById('modalZoomImg');
+            const cap = document.getElementById('modalZoomCaption');
+            if (modal && img) {
+                img.src = imgSrc;
+                if (cap) cap.textContent = caption || '';
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+            }
+        };
+
+        window.closePhotoModal = function() {
+            const modal = document.getElementById('photoModal');
+            if (modal) {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }
+        };
+
+        // Admin Auth
+        window.handleAdminLogin = function(e) {
+            e.preventDefault();
+            const pinInput = document.getElementById('adminMasterPinInput');
+            const inputPin = pinInput ? pinInput.value.trim() : '';
+
+            if (inputPin === masterAdminPin) {
+                isAdminLoggedIn = true;
+                userRole = 'ADMIN';
+                updateRoleUI();
+                showToast('เข้าสู่ระบบแอดมินสำเร็จ 👑', 'ยินดีต้อนรับผู้ดูแลระบบ');
+                if (pinInput) pinInput.value = '';
+            } else {
+                showToast('รหัสผ่านไม่ถูกต้อง ❌', 'กรุณาตรวจสอบรหัสผ่านแอดมินอีกครั้ง');
+            }
+        };
+
+        window.logoutAdmin = function() {
+            isAdminLoggedIn = false;
+            userRole = 'GUEST';
+            updateRoleUI();
+            showToast('ออกจากระบบแอดมินแล้ว', 'สลับกลับสู่โหมดผู้ใช้ทั่วไป');
+        };
+
+        window.setAuthMode = function(mode) {
+            authMode = mode;
+            const loginTab = document.getElementById('authTabLogin');
+            const registerTab = document.getElementById('authTabRegister');
+            const confirmBox = document.getElementById('confirmPasswordContainer');
+            const submitBtnText = document.getElementById('authSubmitBtnText');
+            const submitBtnIcon = document.getElementById('authSubmitBtnIcon');
+            const confirmInput = document.getElementById('confirmPinInput');
+
+            if (mode === 'login') {
+                if (loginTab) loginTab.className = "flex-1 py-2 text-xs font-bold rounded-xl transition bg-white text-pink-600 shadow-sm border border-pink-100";
+                if (registerTab) registerTab.className = "flex-1 py-2 text-xs font-bold rounded-xl transition text-slate-500 hover:text-slate-700";
+                if (confirmBox) confirmBox.classList.add('hidden');
+                if (confirmInput) confirmInput.required = false;
+                if (submitBtnText) submitBtnText.textContent = "เข้าสู่ระบบครู";
+                if (submitBtnIcon) submitBtnIcon.className = "fa-solid fa-right-to-bracket";
+            } else {
+                if (registerTab) registerTab.className = "flex-1 py-2 text-xs font-bold rounded-xl transition bg-white text-pink-600 shadow-sm border border-pink-100";
+                if (loginTab) loginTab.className = "flex-1 py-2 text-xs font-bold rounded-xl transition text-slate-500 hover:text-slate-700";
+                if (confirmBox) confirmBox.classList.remove('hidden');
+                if (confirmInput) confirmInput.required = true;
+                if (submitBtnText) submitBtnText.textContent = "ยืนยันลงทะเบียนครูใหม่";
+                if (submitBtnIcon) submitBtnIcon.className = "fa-solid fa-user-plus";
+            }
+        };
+
+        window.handleAuthSubmit = function(e) {
+            e.preventDefault();
+            const nameInput = document.getElementById('adminNameInput');
+            const pinInput = document.getElementById('adminPinInput');
+            const name = nameInput ? nameInput.value.trim() : '';
+            const password = pinInput ? pinInput.value.trim() : '';
+
+            if (!name || !password) {
+                showToast('กรอกข้อมูลไม่ครบ', 'กรุณากรอกชื่อและรหัสผ่าน');
+                return;
+            }
+
+            if (authMode === 'register') {
+                const confirmInput = document.getElementById('confirmPinInput');
+                const confirmPassword = confirmInput ? confirmInput.value.trim() : '';
+                if (password !== confirmPassword) {
+                    showToast('รหัสผ่านไม่ตรงกัน', 'กรุณาตรวจสอบรหัสผ่านทั้งสองช่องให้ตรงกัน');
+                    return;
+                }
+                if (teacherAccounts[name]) {
+                    showToast('พบชื่อนี้ในระบบแล้ว', 'คุณครูมีบัญชีอยู่แล้ว กรุณาสลับไปที่แท็บ "เข้าสู่ระบบ"');
+                    return;
+                }
+                teacherAccounts[name] = password;
+                saveStorage();
+                userRole = 'TEACHER';
+                teacherName = name;
+                updateRoleUI();
+                showToast('สมัครสมาชิกสำเร็จ 🌸', `ยินดีต้อนรับ คุณครู${name}`);
+                if (pinInput) pinInput.value = '';
+                if (confirmInput) confirmInput.value = '';
+            } else {
+                if (!teacherAccounts[name]) {
+                    teacherAccounts[name] = password;
+                    saveStorage();
+                } else if (teacherAccounts[name] !== password) {
+                    showToast('รหัสผ่านไม่ถูกต้อง', 'กรุณาตรวจสอบรหัสผ่านอีกครั้ง');
+                    return;
+                }
+                userRole = 'TEACHER';
+                teacherName = name;
+                updateRoleUI();
+                showToast('เข้าสู่ระบบสำเร็จ 🌸', `ยินดีต้อนรับ คุณครู${name}`);
+                if (pinInput) pinInput.value = '';
+            }
+        };
+
+        window.logoutTeacher = function() {
+            userRole = 'GUEST';
+            teacherName = '';
+            updateRoleUI();
+            showToast('ออกจากระบบแล้ว', 'สลับกลับสู่โหมดผู้ใช้ทั่วไป');
+        };
+
+        window.handleImageSelected = function(event, type) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = new Image();
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    let width = img.width;
+                    let height = img.height;
+                    const maxDim = 800;
+
+                    if (width > height && width > maxDim) {
+                        height = Math.round((height * maxDim) / width);
+                        width = maxDim;
+                    } else if (height > maxDim) {
+                        width = Math.round((width * maxDim) / height);
+                        height = maxDim;
+                    }
+
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+
+                    const compressedBase64 = canvas.toDataURL('image/jpeg', 0.7);
+
+                    if (type === 'class') {
+                        classPhotoBase64 = compressedBase64;
+                        document.getElementById('classPhotoPreviewImg').src = compressedBase64;
+                        document.getElementById('classPhotoPreviewBox').classList.remove('hidden');
+                        document.getElementById('classPhotoLabel').textContent = 'เปลี่ยนรูปภาพถ่าย';
+                    } else {
+                        areaPhotoBase64 = compressedBase64;
+                        document.getElementById('areaPhotoPreviewImg').src = compressedBase64;
+                        document.getElementById('areaPhotoPreviewBox').classList.remove('hidden');
+                        document.getElementById('areaPhotoLabel').textContent = 'เปลี่ยนรูปภาพถ่าย';
+                    }
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        };
+
+        window.clearPhoto = function(type) {
+            if (type === 'class') {
+                classPhotoBase64 = null;
+                document.getElementById('classPhotoInput').value = '';
+                document.getElementById('classPhotoPreviewBox').classList.add('hidden');
+                document.getElementById('classPhotoLabel').textContent = 'ถ่ายภาพ หรือ เลือกรูปจากมือถือ';
+            } else {
+                areaPhotoBase64 = null;
+                document.getElementById('areaPhotoInput').value = '';
+                document.getElementById('areaPhotoPreviewBox').classList.add('hidden');
+                document.getElementById('areaPhotoLabel').textContent = 'ถ่ายภาพ หรือ เลือกรูปจากมือถือ';
+            }
+        };
+
+        window.checkAllClassItems = function() {
+            document.getElementById('classCheck1').checked = true;
+            document.getElementById('classCheck2').checked = true;
+            document.getElementById('classCheck3').checked = true;
+            showToast('เลือกครบทุกข้อ', 'ติ๊กเลือกรายการตรวจห้องเรียนทั้งหมดเรียบร้อย');
+        };
+
+        window.checkAllAreaItems = function() {
+            document.getElementById('areaCheck1').checked = true;
+            document.getElementById('areaCheck2').checked = true;
+            document.getElementById('areaCheck3').checked = true;
+            showToast('เลือกครบทุกข้อ', 'ติ๊กเลือกรายการตรวจพื้นที่ทั้งหมดเรียบร้อย');
+        };
+
+        window.handleClassroomSubmit = function(e) {
+            e.preventDefault();
+            const submitter = document.getElementById('classSubmitterName').value.trim();
+            const grade = document.getElementById('classGradeSelect').value;
+            const c1 = document.getElementById('classCheck1').checked;
+            const c2 = document.getElementById('classCheck2').checked;
+            const c3 = document.getElementById('classCheck3').checked;
+
+            if (!submitter || !grade) {
+                showToast('กรอกข้อมูลไม่ครบ', 'กรุณาระบุชื่อหัวหน้าเวรและเลือกห้องเรียน');
+                return;
+            }
+
+            const now = new Date();
+            const timeStr = `${now.toLocaleDateString('th-TH')} ${now.toLocaleTimeString('th-TH', {hour: '2-digit', minute:'2-digit'})}`;
+
+            const newItem = {
+                id: 'insp_' + Date.now(),
+                type: 'ตรวจห้องเรียน',
+                target: grade,
+                submitter: submitter,
+                checklist: [
+                    { title: 'กวาด/ถูพื้น และเทขยะ', pass: c1 },
+                    { title: 'ลบกระดาน & จัดโต๊ะเก้าอี้', pass: c2 },
+                    { title: 'ปิดไฟ พัดลม หน้าต่าง', pass: c3 }
+                ],
+                photo: classPhotoBase64,
+                time: timeStr,
+                status: 'รอครูตรวจ',
+                approver: '-'
+            };
+
+            inspectionData.unshift(newItem);
+            saveStorage();
+            renderAll();
+            sendToGoogleSheets(newItem);
+
+            document.getElementById('classSubmitterName').value = '';
+            document.getElementById('classGradeSelect').value = '';
+            clearPhoto('class');
+
+            showToast('ส่งผลตรวจสำเร็จ ✨', `บันทึกข้อมูลการตรวจห้อง ${grade} เรียบร้อยแล้ว`);
+        };
+
+        window.handleAreaSubmit = function(e) {
+            e.preventDefault();
+            const submitter = document.getElementById('areaSubmitterName').value.trim();
+            const area = document.getElementById('inspectAreaSelect').value;
+            const c1 = document.getElementById('areaCheck1').checked;
+            const c2 = document.getElementById('areaCheck2').checked;
+            const c3 = document.getElementById('areaCheck3').checked;
+
+            if (!submitter || !area) {
+                showToast('กรอกข้อมูลไม่ครบ', 'กรุณาระบุชื่อผู้ส่งและเลือกเขตพื้นที่');
+                return;
+            }
+
+            const now = new Date();
+            const timeStr = `${now.toLocaleDateString('th-TH')} ${now.toLocaleTimeString('th-TH', {hour: '2-digit', minute:'2-digit'})}`;
+
+            const newItem = {
+                id: 'insp_' + Date.now(),
+                type: 'ตรวจพื้นที่',
+                target: area,
+                submitter: submitter,
+                checklist: [
+                    { title: 'จัดเก็บขยะ/เศษใบไม้', pass: c1 },
+                    { title: 'ทางเดิน/โต๊ะสะอาด ปราศจากคราบ', pass: c2 },
+                    { title: 'จัดวางอุปกรณ์เป็นระเบียบ', pass: c3 }
+                ],
+                photo: areaPhotoBase64,
+                time: timeStr,
+                status: 'รอครูตรวจ',
+                approver: '-'
+            };
+
+            inspectionData.unshift(newItem);
+            saveStorage();
+            renderAll();
+            sendToGoogleSheets(newItem);
+
+            document.getElementById('areaSubmitterName').value = '';
+            document.getElementById('inspectAreaSelect').value = '';
+            clearPhoto('area');
+
+            showToast('ส่งผลตรวจสำเร็จ ✨', `บันทึกข้อมูลการตรวจ ${area} เรียบร้อยแล้ว`);
+        };
+
+        async function sendToGoogleSheets(data) {
+            if (!googleScriptUrl) return;
+            try {
+                await fetch(googleScriptUrl, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify({ action: 'submit_inspection', ...data })
+                });
+                console.log('ส่งข้อมูลเข้า Google Sheets สำเร็จ');
+            } catch (e) {
+                console.error('ส่งข้อมูลลง Google Sheets ไม่สำเร็จ:', e);
+            }
+        }
+
+        window.saveGasUrl = function() {
+            const input = document.getElementById('gasUrlInput');
+            if (!input) return;
+            googleScriptUrl = input.value.trim();
+            saveStorage();
+            showToast('บันทึกสำเร็จ 🌸', 'เชื่อมต่อกับ Google Sheets เรียบร้อยแล้ว');
+        };
+
+        // Approval Actions
+        window.approveInspection = function(id) {
+            const item = inspectionData.find(i => i.id === id);
+            if (item) {
+                item.status = 'อนุมัติผ่าน';
+                item.approver = teacherName || 'ครูผู้ตรวจ';
+                saveStorage();
+                renderAll();
+                showToast('อนุมัติเรียบร้อย ✅', `อนุมัติผลตรวจของ ${item.target} แล้ว`);
+            }
+        };
+
+        window.rejectInspection = function(id) {
+            const item = inspectionData.find(i => i.id === id);
+            if (item) {
+                item.status = 'แก้ไข';
+                item.approver = teacherName || 'ครูผู้ตรวจ';
+                saveStorage();
+                renderAll();
+                showToast('ส่งกลับแก้ไข ⚠️', `สั่งแก้ไขผลตรวจของ ${item.target} แล้ว`);
+            }
+        };
+
+        function renderPendingList() {
+            const pendingListEl = document.getElementById('pendingList');
+            const pendingBadgeCount = document.getElementById('pendingBadgeCount');
+            const subPendingBadge = document.getElementById('subPendingBadge');
+            const navPendingBadge = document.getElementById('navPendingBadge');
+
+            if (!pendingListEl) return;
+
+            const pendingItems = inspectionData.filter(i => i.status === 'รอครูตรวจ');
+            const count = pendingItems.length;
+
+            if (pendingBadgeCount) pendingBadgeCount.textContent = `${count} รออนุมัติ`;
+            if (subPendingBadge) subPendingBadge.textContent = count;
+            
+            if (navPendingBadge) {
+                if (count > 0) navPendingBadge.classList.remove('hidden');
+                else navPendingBadge.classList.add('hidden');
+            }
+
+            if (count === 0) {
+                pendingListEl.innerHTML = `
+                    <div class="text-center py-8 text-slate-400 text-xs bg-slate-50/80 rounded-2xl border border-dashed border-slate-200">
+                        <i class="fa-solid fa-circle-check text-2xl text-emerald-400 mb-2 block"></i>
+                        ไม่มีรายการรออนุมัติในขณะนี้
+                    </div>
+                `;
+                return;
+            }
+
+            pendingListEl.innerHTML = pendingItems.map(item => `
+                <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm hover:border-pink-200 transition space-y-3">
+                    <div class="flex items-start justify-between gap-2">
+                        <div>
+                            <span class="text-[10px] font-bold px-2 py-0.5 rounded-md ${item.type === 'ตรวจห้องเรียน' ? 'bg-indigo-100 text-indigo-700' : 'bg-sky-100 text-sky-700'}">${item.type}</span>
+                            <h3 class="font-bold text-slate-800 text-sm mt-1">${item.target}</h3>
+                            <p class="text-[11px] text-slate-500">ผู้ส่ง: ${item.submitter} • ${item.time}</p>
+                        </div>
+                        <span class="text-[10px] font-bold bg-amber-100 text-amber-800 px-2.5 py-1 rounded-full shrink-0">⏳ รอตรวจ</span>
+                    </div>
+
+                    <div class="bg-slate-50 p-2.5 rounded-xl text-xs space-y-1">
+                        ${item.checklist.map(c => `
+                            <div class="flex items-center gap-2">
+                                <i class="fa-solid ${c.pass ? 'fa-check text-emerald-500' : 'fa-xmark text-rose-500'}"></i>
+                                <span class="${c.pass ? 'text-slate-700' : 'text-slate-400 font-normal'}">${c.title}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+
+                    ${item.photo ? `
+                        <div>
+                            <img src="${item.photo}" onclick="openPhotoModal('${item.photo}', '${item.target} - ${item.submitter}')" class="w-full h-32 object-cover rounded-xl cursor-pointer hover:opacity-90 transition border border-slate-200" alt="รูปถ่าย">
+                        </div>
+                    ` : ''}
+
+                    <div class="flex gap-2 pt-1">
+                        <button onclick="approveInspection('${item.id}')" class="flex-1 bg-emerald-500 hover:bg-emerald-600 active:scale-95 text-white font-bold py-2 rounded-xl text-xs transition shadow-sm flex items-center justify-center gap-1">
+                            <i class="fa-solid fa-check"></i> อนุมัติผ่าน
+                        </button>
+                        <button onclick="rejectInspection('${item.id}')" class="flex-1 bg-rose-500 hover:bg-rose-600 active:scale-95 text-white font-bold py-2 rounded-xl text-xs transition shadow-sm flex items-center justify-center gap-1">
+                            <i class="fa-solid fa-arrow-rotate-left"></i> ให้แก้ไข
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderHistoryList() {
+            const historyListEl = document.getElementById('historyList');
+            if (!historyListEl) return;
+
+            if (inspectionData.length === 0) {
+                historyListEl.innerHTML = `
+                    <div class="text-center py-8 text-slate-400 text-xs bg-slate-50 rounded-2xl border border-dashed border-slate-200">
+                        ยังไม่มีประวัติการส่งตรวจในระบบ
+                    </div>
+                `;
+                return;
+            }
+
+            historyListEl.innerHTML = inspectionData.map(item => {
+                let badgeClass = 'bg-amber-100 text-amber-800';
+                if (item.status === 'อนุมัติผ่าน') badgeClass = 'bg-emerald-100 text-emerald-800';
+                if (item.status === 'แก้ไข') badgeClass = 'bg-rose-100 text-rose-800';
+
+                return `
+                    <div class="bg-slate-50 border border-slate-200 rounded-2xl p-3.5 flex items-center justify-between gap-3 text-xs">
+                        <div class="space-y-1">
+                            <div class="flex items-center gap-2">
+                                <span class="font-bold text-slate-800 text-sm">${item.target}</span>
+                                <span class="text-[10px] font-bold px-2 py-0.5 rounded-full ${badgeClass}">${item.status}</span>
+                            </div>
+                            <p class="text-[11px] text-slate-500">ผู้ส่ง: ${item.submitter} | ${item.time}</p>
+                            <p class="text-[10px] text-slate-400">ผู้ตรวจ: ${item.approver}</p>
+                        </div>
+                        ${item.photo ? `
+                            <button onclick="openPhotoModal('${item.photo}', '${item.target}')" class="bg-white border border-slate-200 hover:border-pink-300 text-pink-600 p-2 rounded-xl shrink-0 font-bold flex items-center gap-1 shadow-2xs">
+                                <i class="fa-solid fa-image"></i>
+                                <span class="text-[10px]">ดูรูป</span>
+                            </button>
+                        ` : ''}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function renderStats() {
+            const statTotal = document.getElementById('statTotal');
+            const statApproved = document.getElementById('statApproved');
+            const statPending = document.getElementById('statPending');
+
+            const total = inspectionData.length;
+            const approved = inspectionData.filter(i => i.status === 'อนุมัติผ่าน').length;
+            const pending = inspectionData.filter(i => i.status === 'รอครูตรวจ').length;
+
+            if (statTotal) statTotal.textContent = total;
+            if (statApproved) statApproved.textContent = approved;
+            if (statPending) statPending.textContent = pending;
+        }
+
+        window.exportToCSV = function() {
+            if (inspectionData.length === 0) {
+                showToast('ไม่มีข้อมูล', 'ไม่มีประวัติสำหรับการส่งออก');
+                return;
+            }
+
+            let csvContent = "\uFEFF"; // UTF-8 BOM
+            csvContent += "ID,ประเภท,บริเวณ/ห้องเรียน,ผู้ส่งตรวจ,เวลา,สถานะ,ผู้ตรวจ\n";
+
+            inspectionData.forEach(row => {
+                csvContent += `"${row.id}","${row.type}","${row.target}","${row.submitter}","${row.time}","${row.status}","${row.approver}"\n`;
+            });
+
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.setAttribute("href", url);
+            link.setAttribute("download", `รายงานตรวจความสะอาด_${Date.now()}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            showToast('ส่งออกสำเร็จ 📄', 'ดาวน์โหลดไฟล์ CSV เรียบร้อยแล้ว');
+        };
+
+        function updateRoleUI() {
+            const roleText = document.getElementById('currentRoleText');
+            const loginPrompt = document.getElementById('teacherLoginPrompt');
+            const dashboardContent = document.getElementById('teacherDashboardContent');
+            const adminPrompt = document.getElementById('adminLoginPrompt');
+            const adminDashboard = document.getElementById('adminDashboardContent');
+            const headerBadge = document.getElementById('headerProfileBadge');
+            const headerTeacherName = document.getElementById('headerTeacherName');
+            const dashTeacherName = document.getElementById('dashTeacherName');
+            const schoolNameText = document.getElementById('schoolNameText');
+            const appTitleText = document.getElementById('appTitleText');
+
+            if (schoolNameText) schoolNameText.textContent = schoolName;
+            if (appTitleText) appTitleText.textContent = appTitle;
+
+            if (userRole === 'ADMIN') {
+                if (roleText) {
+                    roleText.textContent = `ผู้ดูแลระบบสูงสุด (Admin) 👑`;
+                    roleText.className = "text-purple-900 font-bold";
+                }
+                if (adminPrompt) adminPrompt.classList.add('hidden');
+                if (adminDashboard) adminDashboard.classList.remove('hidden');
+            } else {
+                if (adminPrompt) adminPrompt.classList.remove('hidden');
+                if (adminDashboard) adminDashboard.classList.add('hidden');
+            }
+
+            if (userRole === 'TEACHER') {
+                if (roleText) {
+                    roleText.textContent = `ครูผู้ตรวจ (${teacherName}) 👩‍🏫`;
+                    roleText.className = "text-pink-900 font-bold";
+                }
+                if (headerBadge) {
+                    headerBadge.classList.remove('hidden');
+                    headerBadge.classList.add('flex');
+                }
+                if (headerTeacherName) headerTeacherName.textContent = teacherName;
+                if (dashTeacherName) dashTeacherName.textContent = teacherName;
+                if (loginPrompt) loginPrompt.classList.add('hidden');
+                if (dashboardContent) dashboardContent.classList.remove('hidden');
+            } else {
+                if (userRole !== 'ADMIN' && roleText) {
+                    roleText.textContent = 'นักเรียน / ผู้ใช้งานทั่วไป 👧👦';
+                    roleText.className = "text-pink-900 font-bold";
+                }
+                if (headerBadge && userRole !== 'TEACHER') {
+                    headerBadge.classList.add('hidden');
+                    headerBadge.classList.remove('flex');
+                }
+                if (loginPrompt) loginPrompt.classList.remove('hidden');
+                if (dashboardContent) dashboardContent.classList.add('hidden');
+            }
+
+            renderAll();
+        }
+
+        function renderAll() {
+            renderPendingList();
+            renderHistoryList();
+            renderStats();
+            renderAdminTeachers();
+            renderAdminAreas();
+            renderAdminClassrooms();
+            populateAreasSelect();
+            populateClassSelect();
+            loadSettingsToUI();
+        }
+
+        function renderAdminTeachers() {
+            const listEl = document.getElementById('adminTeacherList');
+            if (!listEl) return;
+
+            const teacherKeys = Object.keys(teacherAccounts);
+            if (teacherKeys.length === 0) {
+                listEl.innerHTML = `
+                    <div class="text-center py-6 text-slate-400 text-xs bg-slate-50 rounded-2xl border border-dashed border-slate-200">
+                        ยังไม่มีบัญชีคุณครูในระบบ
+                    </div>
+                `;
+                return;
+            }
+
+            listEl.innerHTML = teacherKeys.map(name => `
+                <div class="bg-slate-50 border border-slate-200 p-3 rounded-2xl flex items-center justify-between text-xs shadow-2xs">
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-8 h-8 rounded-xl bg-purple-100 text-purple-700 font-bold flex items-center justify-center">
+                            👩‍🏫
+                        </div>
+                        <div>
+                            <p class="font-bold text-slate-800">${name}</p>
+                            <p class="text-[10px] text-slate-400 font-mono">PIN: ${teacherAccounts[name]}</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-1">
+                        <button onclick="promptResetTeacherPin('${name}')" class="text-purple-600 hover:text-purple-800 bg-purple-50 p-2 rounded-xl text-xs font-bold transition">
+                            <i class="fa-solid fa-key"></i>
+                        </button>
+                        <button onclick="deleteTeacherAccount('${name}')" class="text-rose-500 hover:text-rose-700 bg-rose-50 p-2 rounded-xl text-xs font-bold transition">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderAdminAreas() {
+            const listEl = document.getElementById('adminAreasList');
+            if (!listEl) return;
+
+            listEl.innerHTML = AREAS.map((area, idx) => `
+                <div class="bg-slate-50 border border-slate-200 p-2.5 rounded-2xl flex items-center justify-between text-xs">
+                    <span class="font-bold text-slate-700">${area.name}</span>
+                    <button onclick="deleteAreaItem(${idx})" class="text-rose-500 hover:text-rose-700 p-1.5 transition">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function renderAdminClassrooms() {
+            const listEl = document.getElementById('adminClassList');
+            if (!listEl) return;
+
+            listEl.innerHTML = CLASSROOMS.map((cls, idx) => `
+                <div class="bg-slate-50 border border-slate-200 p-2.5 rounded-2xl flex items-center justify-between text-xs">
+                    <span class="font-bold text-indigo-900">${cls}</span>
+                    <button onclick="deleteClassroomItem(${idx})" class="text-rose-500 hover:text-rose-700 p-1.5 transition">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function loadSettingsToUI() {
+            const schoolInput = document.getElementById('settingSchoolName');
+            const titleInput = document.getElementById('settingAppTitle');
+            const pinInput = document.getElementById('settingMasterPin');
+            const gasInput = document.getElementById('settingGasUrl');
+
+            if (schoolInput) schoolInput.value = schoolName;
+            if (titleInput) titleInput.value = appTitle;
+            if (pinInput) pinInput.value = masterAdminPin;
+            if (gasInput) gasInput.value = googleScriptUrl;
+        }
+
+        window.openAddTeacherModal = function() {
+            const modal = document.getElementById('addTeacherModal');
+            if (modal) {
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+            }
+        };
+
+        window.closeAddTeacherModal = function() {
+            const modal = document.getElementById('addTeacherModal');
+            if (modal) {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }
+        };
+
+        window.handleAdminAddTeacher = function(e) {
+            e.preventDefault();
+            const name = document.getElementById('modalTeacherName').value.trim();
+            const pin = document.getElementById('modalTeacherPin').value.trim();
+
+            if (!name || !pin) return;
+
+            teacherAccounts[name] = pin;
+            saveStorage();
+            renderAll();
+            closeAddTeacherModal();
+            document.getElementById('modalTeacherName').value = '';
+            document.getElementById('modalTeacherPin').value = '';
+            showToast('เพิ่มครูเรียบร้อย 🌸', `เพิ่มบัญชี ${name} เข้าสู่ระบบแล้ว`);
+        };
+
+        window.promptResetTeacherPin = function(name) {
+            const newPin = prompt(`กำหนดรหัสผ่านใหม่สำหรับ ${name}:`, teacherAccounts[name]);
+            if (newPin && newPin.trim()) {
+                teacherAccounts[name] = newPin.trim();
+                saveStorage();
+                renderAll();
+                showToast('เปลี่ยนรหัสผ่านเรียบร้อย', `อัปเดตรหัสผ่านของ ${name} แล้ว`);
+            }
+        };
+
+        window.deleteTeacherAccount = function(name) {
+            if (confirm(`คุณต้องการลบบัญชี ${name} ใช่หรือไม่?`)) {
+                delete teacherAccounts[name];
+                saveStorage();
+                renderAll();
+                showToast('ลบบัญชีครูเรียบร้อย', `ลบบัญชี ${name} แล้ว`);
+            }
+        };
+
+        window.addNewArea = function() {
+            const input = document.getElementById('newAreaInput');
+            const val = input ? input.value.trim() : '';
+            if (!val) return;
+
+            AREAS.push({ id: 'a_' + Date.now(), name: val });
+            saveStorage();
+            renderAll();
+            if (input) input.value = '';
+            showToast('เพิ่มพื้นที่สำเร็จ 📍', `เพิ่ม ${val} ในรายการแล้ว`);
+        };
+
+        window.deleteAreaItem = function(idx) {
+            AREAS.splice(idx, 1);
+            saveStorage();
+            renderAll();
+            showToast('ลบพื้นที่เรียบร้อย', 'ลบบริเวณพื้นที่เรียบร้อยแล้ว');
+        };
+
+        window.addNewClassroom = function() {
+            const input = document.getElementById('newClassInput');
+            const val = input ? input.value.trim() : '';
+            if (!val) return;
+
+            CLASSROOMS.push(val);
+            saveStorage();
+            renderAll();
+            if (input) input.value = '';
+            showToast('เพิ่มชั้นเรียนสำเร็จ 🏫', `เพิ่ม ${val} ในรายการแล้ว`);
+        };
+
+        window.deleteClassroomItem = function(idx) {
+            CLASSROOMS.splice(idx, 1);
+            saveStorage();
+            renderAll();
+            showToast('ลบชั้นเรียนเรียบร้อย', 'ลบระดับชั้นเรียบร้อยแล้ว');
+        };
+
+        window.saveAdminSettings = function(e) {
+            e.preventDefault();
+            schoolName = document.getElementById('settingSchoolName').value.trim() || 'โรงเรียนกุศลวิทยา';
+            appTitle = document.getElementById('settingAppTitle').value.trim() || 'ระบบตรวจความสะอาด';
+            masterAdminPin = document.getElementById('settingMasterPin').value.trim() || '8888';
+            googleScriptUrl = document.getElementById('settingGasUrl').value.trim();
+
+            saveStorage();
+            updateRoleUI();
+            showToast('บันทึกการตั้งค่าสำเร็จ 🌸', 'อัปเดตข้อมูลระบบเรียบร้อยแล้ว');
+        };
+
+        window.clearInspectionHistory = function() {
+            if (confirm('คุณแน่ใจหรือไม่ที่จะลบประวัติการส่งตรวจทั้งหมด?')) {
+                inspectionData = [];
+                saveStorage();
+                renderAll();
+                showToast('ลบประวัติเรียบร้อย', 'ล้างข้อมูลประวัติทั้งหมดแล้ว');
+            }
+        };
+
+        window.factoryResetSystem = function() {
+            if (confirm('⚠️ เตือน: คุณต้องการรีเซ็ตระบบทั้งหมดกลับเป็นค่าเริ่มต้นหรือไม่?')) {
+                localStorage.removeItem('school_clean_mobile_data');
+                localStorage.removeItem('school_clean_teacher_accounts');
+                localStorage.removeItem('school_clean_gas_url');
+                localStorage.removeItem('school_clean_areas');
+                localStorage.removeItem('school_clean_classrooms');
+                localStorage.removeItem('school_clean_admin_pin');
+                localStorage.removeItem('school_clean_school_name');
+                localStorage.removeItem('school_clean_app_title');
+
+                inspectionData = [];
+                teacherAccounts = {};
+                AREAS = [...DEFAULT_AREAS];
+                CLASSROOMS = [...DEFAULT_CLASSROOMS];
+                masterAdminPin = '8888';
+                schoolName = 'โรงเรียนกุศลวิทยา';
+                appTitle = 'ระบบตรวจความสะอาด';
+                isAdminLoggedIn = false;
+                userRole = 'GUEST';
+
+                updateRoleUI();
+                showToast('รีเซ็ตระบบสำเร็จ', 'ระบบถูกคืนค่าเริ่มต้นเรียบร้อยแล้ว');
+            }
+        };
+
+        function saveStorage() {
+            try {
+                localStorage.setItem('school_clean_mobile_data', JSON.stringify(inspectionData));
+                localStorage.setItem('school_clean_teacher_accounts', JSON.stringify(teacherAccounts));
+                localStorage.setItem('school_clean_gas_url', googleScriptUrl);
+                localStorage.setItem('school_clean_areas', JSON.stringify(AREAS));
+                localStorage.setItem('school_clean_classrooms', JSON.stringify(CLASSROOMS));
+                localStorage.setItem('school_clean_admin_pin', masterAdminPin);
+                localStorage.setItem('school_clean_school_name', schoolName);
+                localStorage.setItem('school_clean_app_title', appTitle);
+            } catch(e) {
+                console.warn('Storage limit reached', e);
+            }
+        }
+
+        function loadStorage() {
+            try {
+                const data = localStorage.getItem('school_clean_mobile_data');
+                const accounts = localStorage.getItem('school_clean_teacher_accounts');
+                const gasUrl = localStorage.getItem('school_clean_gas_url');
+                const storedAreas = localStorage.getItem('school_clean_areas');
+                const storedClassrooms = localStorage.getItem('school_clean_classrooms');
+                const storedPin = localStorage.getItem('school_clean_admin_pin');
+                const storedSchool = localStorage.getItem('school_clean_school_name');
+                const storedTitle = localStorage.getItem('school_clean_app_title');
+
+                if (data) inspectionData = JSON.parse(data);
+                if (accounts) teacherAccounts = JSON.parse(accounts);
+                if (gasUrl) googleScriptUrl = gasUrl;
+                if (storedAreas) AREAS = JSON.parse(storedAreas);
+                if (storedClassrooms) CLASSROOMS = JSON.parse(storedClassrooms);
+                if (storedPin) masterAdminPin = storedPin;
+                if (storedSchool) schoolName = storedSchool;
+                if (storedTitle) appTitle = storedTitle;
+
+                const gasInput = document.getElementById('gasUrlInput');
+                if (gasInput) gasInput.value = googleScriptUrl;
+            } catch(e) {}
+        }
+
+        function populateAreasSelect() {
+            const select = document.getElementById('inspectAreaSelect');
+            if (!select) return;
+            const currentVal = select.value;
+            select.innerHTML = '<option value="">-- เลือกบริเวณที่ต้องการส่งตรวจ --</option>';
+            AREAS.forEach(a => {
+                const opt = document.createElement('option');
+                opt.value = a.name;
+                opt.textContent = a.name;
+                if (a.name === currentVal) opt.selected = true;
+                select.appendChild(opt);
+            });
+        }
+
+        function populateClassSelect() {
+            const select = document.getElementById('classGradeSelect');
+            if (!select) return;
+            const currentVal = select.value;
+            select.innerHTML = '<option value="">-- เลือกระดับชั้น --</option>';
+            CLASSROOMS.forEach(c => {
+                const opt = document.createElement('option');
+                opt.value = c;
+                opt.textContent = c;
+                if (c === currentVal) opt.selected = true;
+                select.appendChild(opt);
+            });
+        }
+
+        // Initialize application when window is loaded
+        window.addEventListener('DOMContentLoaded', () => {
+            loadStorage();
+            updateRoleUI();
+        });
+    </script>
+</body>
+</html>
