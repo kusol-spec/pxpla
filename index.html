@@ -7,73 +7,77 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Prompt', sans-serif; background-color: #fff5f7; }
-        .glass-card { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); border: 1px solid #fecdd3; }
-        .tab-active { background: #f43f5e !important; color: #ffffff !important; font-weight: 600; }
+        body { font-family: 'Prompt', sans-serif; background: linear-gradient(135deg, #fff5f7 0%, #ffe4e6 100%); }
+        .glass-card { background: rgba(255, 255, 255, 0.92); backdrop-filter: blur(12px); border: 1px solid rgba(254, 205, 211, 0.7); }
+        .tab-active { background: #f43f5e !important; color: #ffffff !important; font-weight: 600; shadow: 0 4px 12px rgba(244, 63, 94, 0.3); }
     </style>
 </head>
 <body class="p-3 md:p-6 flex flex-col items-center min-h-screen text-slate-700">
 
+    <!-- Header Section -->
     <div class="text-center my-4 space-y-1">
-        <h1 class="text-2xl md:text-3xl font-bold text-rose-600 flex items-center justify-center gap-2">
+        <h1 class="text-2xl md:text-3xl font-extrabold text-rose-600 tracking-tight flex items-center justify-center gap-2">
             <span>✨</span> ระบบตรวจความสะอาด <span>✨</span>
         </h1>
-        <p class="text-xs text-rose-400 font-medium">บันทึกและติดตามผลการตรวจความสะอาด</p>
+        <p class="text-xs md:text-sm text-rose-400 font-medium">บันทึก ให้คะแนน และติดตามผลความสะอาดโรงเรียน</p>
     </div>
 
-    <!-- เมนู 3 แท็บ -->
-    <div class="flex gap-1.5 mb-5 w-full max-w-lg bg-pink-100/70 p-1.5 rounded-2xl text-xs md:text-sm shadow-inner">
+    <!-- Tab Navigation -->
+    <div class="flex gap-1.5 mb-5 w-full max-w-lg bg-white/80 backdrop-blur p-1.5 rounded-2xl text-xs md:text-sm shadow-sm border border-rose-100">
         <button onclick="switchTab('student')" id="tab-student" class="tab-btn tab-active flex-1 py-2.5 rounded-xl transition-all text-rose-700 font-medium">📤 ส่งงาน (นักเรียน)</button>
         <button onclick="switchTab('teacher')" id="tab-teacher" class="tab-btn flex-1 py-2.5 rounded-xl transition-all text-rose-700 font-medium">👩‍🏫 ตรวจงาน (ครู)</button>
-        <button onclick="switchTab('admin')" id="tab-admin" class="tab-btn flex-1 py-2.5 rounded-xl transition-all text-rose-700 font-medium">⚙️ แอดมิน (8888)</button>
+        <button onclick="switchTab('admin')" id="tab-admin" class="tab-btn flex-1 py-2.5 rounded-xl transition-all text-rose-700 font-medium">⚙️ แอดมิน</button>
     </div>
 
-    <div class="max-w-xl w-full glass-card p-5 md:p-7 rounded-3xl shadow-xl shadow-rose-100">
+    <!-- Main Container -->
+    <div class="max-w-xl w-full glass-card p-5 md:p-7 rounded-3xl shadow-xl shadow-rose-100/50">
 
-        <!-- แท็บ 1: นักเรียน -->
+        <!-- 1. แท็บนักเรียน -->
         <div id="content-student" class="tab-content space-y-4">
             <div class="border-b border-rose-100 pb-3">
-                <h2 class="font-bold text-rose-600 text-base">📤 ส่งงานทำความสะอาด</h2>
-                <p class="text-xs text-slate-400">กรอกข้อมูลสถานที่และแนบรูปภาพผลงาน</p>
+                <h2 class="font-bold text-rose-600 text-base flex items-center gap-1.5">
+                    <span>📤</span> ส่งผลงานทำความสะอาด
+                </h2>
+                <p class="text-xs text-slate-400">เลือกรูปถ่ายความสะอาดและระบุข้อมูลให้ครบถ้วน</p>
             </div>
 
-            <form onsubmit="submitStudentWork(event)" class="space-y-3 text-xs md:text-sm">
-                <div class="grid grid-cols-2 gap-2.5">
+            <form onsubmit="submitStudentWork(event)" class="space-y-3.5 text-xs md:text-sm">
+                <div class="grid grid-cols-2 gap-3">
                     <div>
-                        <label class="block text-slate-600 font-medium mb-1">วันที่ส่ง</label>
-                        <input type="date" id="st-date" required class="p-2.5 border border-rose-200 rounded-xl w-full">
+                        <label class="block text-slate-600 font-semibold mb-1">วันที่ส่ง</label>
+                        <input type="date" id="st-date" required class="p-2.5 border border-rose-200 rounded-xl w-full focus:outline-none focus:ring-2 focus:ring-rose-400 bg-white">
                     </div>
                     <div>
-                        <label class="block text-slate-600 font-medium mb-1">ชั้น/ห้อง</label>
-                        <input type="text" id="st-class" placeholder="เช่น ม.3/1" required class="p-2.5 border border-rose-200 rounded-xl w-full">
+                        <label class="block text-slate-600 font-semibold mb-1">ชั้น / ห้อง</label>
+                        <input type="text" id="st-class" placeholder="เช่น ม.3/1" required class="p-2.5 border border-rose-200 rounded-xl w-full focus:outline-none focus:ring-2 focus:ring-rose-400 bg-white">
                     </div>
                 </div>
 
                 <div>
-                    <label class="block text-slate-600 font-medium mb-1">ชื่อผู้ส่ง</label>
-                    <input type="text" id="st-sender" placeholder="ระบุชื่อ-นามสกุล" required class="p-2.5 border border-rose-200 rounded-xl w-full">
+                    <label class="block text-slate-600 font-semibold mb-1">ชื่อผู้ส่งงาน</label>
+                    <input type="text" id="st-sender" placeholder="ระบุชื่อ-นามสกุล นักเรียน" required class="p-2.5 border border-rose-200 rounded-xl w-full focus:outline-none focus:ring-2 focus:ring-rose-400 bg-white">
                 </div>
 
                 <div>
-                    <label class="block text-slate-600 font-medium mb-1">สถานที่ / บริเวณที่รับผิดชอบ</label>
-                    <input type="text" id="st-area" placeholder="เช่น ห้อง 101" required class="p-2.5 border border-rose-200 rounded-xl w-full">
+                    <label class="block text-slate-600 font-semibold mb-1">บริเวณ / ถ่ายรูปสถานที่รับผิดชอบ</label>
+                    <input type="text" id="st-area" placeholder="เช่น บริเวณหน้าห้องเรียน / ลานกิจกรรม" required class="p-2.5 border border-rose-200 rounded-xl w-full focus:outline-none focus:ring-2 focus:ring-rose-400 bg-white">
                 </div>
 
                 <div>
-                    <label class="block text-slate-600 font-medium mb-1">📸 ถ่ายภาพ / แนบรูปภาพ</label>
-                    <input type="file" id="st-image" accept="image/*" required onchange="previewUploadImage(event)" class="p-1.5 border border-rose-200 rounded-xl w-full text-xs text-slate-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:bg-rose-100 file:text-rose-700">
-                    <div id="upload-preview-box" class="mt-2 hidden text-center bg-rose-50/50 p-2 rounded-xl border border-dashed border-rose-200">
-                        <img id="upload-preview-img" src="" class="max-h-40 mx-auto rounded-lg object-contain shadow-sm">
+                    <label class="block text-slate-600 font-semibold mb-1">📸 ถ่ายภาพ / แนบรูปภาพผลงาน</label>
+                    <input type="file" id="st-image" accept="image/*" required onchange="previewUploadImage(event)" class="p-1.5 border border-rose-200 rounded-xl w-full text-xs text-slate-500 bg-white file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:bg-rose-100 file:text-rose-700 font-medium">
+                    <div id="upload-preview-box" class="mt-3 hidden text-center bg-rose-50/60 p-3 rounded-2xl border border-dashed border-rose-300">
+                        <img id="upload-preview-img" src="" class="max-h-48 mx-auto rounded-xl object-contain shadow-md">
                     </div>
                 </div>
 
-                <button type="submit" id="btn-st" class="w-full bg-rose-500 hover:bg-rose-600 text-white py-3 rounded-xl font-bold transition-all shadow-md shadow-rose-200 mt-2">
+                <button type="submit" id="btn-st" class="w-full bg-rose-500 hover:bg-rose-600 text-white py-3 rounded-xl font-bold transition-all shadow-md shadow-rose-200 mt-2 active:scale-95">
                     🚀 ส่งงานเข้าระบบ
                 </button>
             </form>
         </div>
 
-        <!-- แท็บ 2: ครูตรวจงาน -->
+        <!-- 2. แท็บครูตรวจงาน -->
         <div id="content-teacher" class="tab-content hidden space-y-4">
             <div id="tc-auth" class="space-y-4">
                 <div class="flex justify-between items-center border-b border-rose-100 pb-3">
@@ -82,77 +86,76 @@
                 </div>
 
                 <form id="tc-login-form" onsubmit="loginTeacher(event)" class="space-y-3">
-                    <input type="text" id="tc-user" placeholder="ระบุชื่อคุณครูที่ลงทะเบียนไว้" required class="p-2.5 border border-rose-200 rounded-xl w-full text-xs md:text-sm">
-                    <button type="submit" class="w-full bg-rose-500 hover:bg-rose-600 text-white py-2.5 rounded-xl font-bold text-xs md:text-sm">เข้าสู่ระบบ</button>
+                    <input type="text" id="tc-user" placeholder="ระบุชื่อคุณครูที่ลงทะเบียนไว้" required class="p-2.5 border border-rose-200 rounded-xl w-full text-xs md:text-sm focus:outline-none focus:ring-2 focus:ring-rose-400">
+                    <button type="submit" class="w-full bg-rose-500 hover:bg-rose-600 text-white py-2.5 rounded-xl font-bold text-xs md:text-sm shadow-md shadow-rose-200">เข้าสู่ระบบ</button>
                 </form>
 
                 <form id="tc-reg-form" onsubmit="registerTeacher(event)" class="space-y-3 hidden">
-                    <input type="text" id="tc-reg-name" placeholder="ชื่อ-นามสกุล คุณครูท่านใหม่" required class="p-2.5 border border-rose-200 rounded-xl w-full text-xs md:text-sm">
-                    <button type="submit" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2.5 rounded-xl text-xs md:text-sm">📝 ยืนยันการลงทะเบียน</button>
+                    <input type="text" id="tc-reg-name" placeholder="ชื่อ-นามสกุล คุณครูท่านใหม่" required class="p-2.5 border border-rose-200 rounded-xl w-full text-xs md:text-sm focus:outline-none focus:ring-2 focus:ring-emerald-400">
+                    <button type="submit" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2.5 rounded-xl text-xs md:text-sm shadow-md shadow-emerald-100">📝 ยืนยันลงทะเบียน</button>
                 </form>
             </div>
 
             <div id="tc-main" class="hidden space-y-4">
                 <div class="flex justify-between items-center border-b border-rose-100 pb-2">
                     <span id="tc-welcome" class="font-bold text-rose-600 text-sm">📋 รายการรอตรวจ</span>
-                    <button onclick="loadJobs()" class="text-xs bg-rose-100 text-rose-700 px-2.5 py-1 rounded-lg font-medium">🔄 รีเฟรชข้อมูล</button>
+                    <button onclick="loadJobs()" class="text-xs bg-rose-100 text-rose-700 px-3 py-1 rounded-lg font-medium hover:bg-rose-200">🔄 รีเฟรช</button>
                 </div>
 
                 <div>
-                    <label class="block text-xs font-semibold text-slate-600 mb-1">เลือกลิสต์นักเรียนที่ต้องการตรวจ:</label>
-                    <select id="job-select" onchange="showSelectedJob()" class="p-2.5 border border-rose-200 rounded-xl w-full text-xs md:text-sm">
-                        <option value="">-- กรุณาเลือกงานที่รอตรวจ --</option>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">เลือกลิสต์งานนักเรียนที่ต้องการตรวจ:</label>
+                    <select id="job-select" onchange="showSelectedJob()" class="p-2.5 border border-rose-200 rounded-xl w-full text-xs md:text-sm bg-white font-medium focus:ring-2 focus:ring-rose-400">
+                        <option value="">-- กรุณาเลือกรายการเพื่อตรวจ --</option>
                     </select>
                 </div>
 
-                <div class="bg-slate-50 p-3 rounded-2xl border border-slate-200 text-center">
+                <div class="bg-slate-50/80 p-3.5 rounded-2xl border border-slate-200 text-center">
                     <p class="text-xs text-slate-400 mb-2 font-medium">📸 ภาพถ่ายผลงานจากนักเรียน</p>
                     <div id="tc-img-container" class="min-h-[160px] flex items-center justify-center">
-                        <img id="tc-img" src="" class="max-h-52 mx-auto object-contain rounded-xl shadow-sm border border-slate-200 cursor-pointer hidden" onclick="openImgModal(this.src)" title="คลิกเพื่อขยายรูป">
-                        <a id="tc-link" href="#" target="_blank" class="hidden text-xs text-rose-600 underline font-semibold mt-1">🔗 เปิดดูรูปภาพต้นฉบับใน Tap ใหม่</a>
-                        <span id="tc-no-img" class="text-xs text-slate-400">โปรดเลือกงานด้านบนเพื่อแสดงรูปภาพ</span>
+                        <img id="tc-img" src="" class="max-h-56 mx-auto object-contain rounded-xl shadow-md border border-slate-200 cursor-pointer hidden transition-transform hover:scale-105" onclick="openImgModal(this.src)" title="คลิกเพื่อขยายรูปภาพ">
+                        <span id="tc-no-img" class="text-xs text-slate-400">โปรดเลือกรายการงานด้านบนเพื่อแสดงรูปภาพ</span>
                     </div>
                 </div>
 
                 <form onsubmit="submitGrade(event)" class="space-y-3 text-xs md:text-sm">
                     <div>
-                        <label class="block text-xs font-bold text-rose-700 mb-1">💯 ให้คะแนน (0-10):</label>
-                        <input type="number" id="tc-score" min="0" max="10" placeholder="10" required class="p-2 border border-rose-200 rounded-xl w-full text-center font-bold text-xl text-rose-600">
+                        <label class="block text-xs font-bold text-rose-700 mb-1">💯 ให้คะแนนความสะอาด (0 - 10 คะแนน):</label>
+                        <input type="number" id="tc-score" min="0" max="10" placeholder="10" required class="p-2 border-2 border-rose-300 rounded-xl w-full text-center font-bold text-2xl text-rose-600 bg-white focus:outline-none focus:border-rose-500">
                     </div>
                     <div>
-                        <label class="block text-xs font-medium text-slate-600 mb-1">💬 คำแนะนำเพิ่มเติม (ถ้ามี):</label>
-                        <textarea id="tc-comment" rows="2" placeholder="เช่น ทำความสะอาดเรียบร้อยดีมาก..." class="p-2.5 border border-rose-200 rounded-xl w-full text-xs"></textarea>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">💬 คำแนะนำเพิ่มเติม (ถ้ามี):</label>
+                        <textarea id="tc-comment" rows="2" placeholder="เช่น ทำความสะอาดได้เรียบร้อย สะอาดมาก..." class="p-2.5 border border-rose-200 rounded-xl w-full text-xs bg-white focus:outline-none focus:ring-2 focus:ring-rose-400"></textarea>
                     </div>
-                    <button type="submit" class="w-full bg-rose-500 hover:bg-rose-600 text-white py-2.5 rounded-xl font-bold shadow-md shadow-rose-200">✅ บันทึกคะแนน</button>
+                    <button type="submit" class="w-full bg-rose-500 hover:bg-rose-600 text-white py-2.5 rounded-xl font-bold shadow-md shadow-rose-200 active:scale-95">✅ บันทึกการตรวจงาน</button>
                 </form>
             </div>
         </div>
 
-        <!-- แท็บ 3: แอดมิน -->
+        <!-- 3. แท็บแอดมิน -->
         <div id="content-admin" class="tab-content hidden space-y-4">
             <div id="admin-auth" class="space-y-3 text-center">
                 <h2 class="font-bold text-rose-600 text-sm">🔒 ยืนยันสิทธิ์แอดมิน</h2>
-                <input type="password" id="admin-pass" placeholder="ใส่รหัสผ่าน 8888" maxlength="4" class="p-2.5 border border-rose-200 rounded-xl text-center font-bold text-base w-full">
-                <button onclick="loginAdmin()" class="w-full bg-rose-500 hover:bg-rose-600 text-white py-2.5 rounded-xl font-bold text-xs md:text-sm">เข้าสู่ระบบแอดมิน</button>
+                <input type="password" id="admin-pass" placeholder="ใส่รหัสผ่าน (รหัสเริ่มต้น: 8888)" maxlength="8" class="p-2.5 border border-rose-200 rounded-xl text-center font-bold text-base w-full focus:outline-none focus:ring-2 focus:ring-rose-400">
+                <button onclick="loginAdmin()" class="w-full bg-rose-500 hover:bg-rose-600 text-white py-2.5 rounded-xl font-bold text-xs md:text-sm shadow-md shadow-rose-200">เข้าสู่ระบบแอดมิน</button>
             </div>
 
             <div id="admin-main" class="hidden space-y-5">
                 <div class="space-y-2">
                     <div class="flex justify-between items-center">
-                        <h2 class="font-bold text-rose-600 text-xs md:text-sm">📊 รายการส่งงานของนักเรียนทั้งหมด</h2>
-                        <button onclick="loadAdmin()" class="text-xs bg-rose-100 text-rose-700 px-2.5 py-1 rounded-lg font-medium">🔄 รีเฟรช</button>
+                        <h2 class="font-bold text-rose-600 text-xs md:text-sm">📊 ตารางประวัติการส่งงานทั้งหมด</h2>
+                        <button onclick="loadAdmin()" class="text-xs bg-rose-100 text-rose-700 px-2.5 py-1 rounded-lg font-medium hover:bg-rose-200">🔄 รีเฟรช</button>
                     </div>
                     
-                    <div class="overflow-x-auto rounded-xl border border-rose-100 shadow-sm text-xs">
-                        <table class="w-full text-left border-collapse bg-white">
+                    <div class="overflow-x-auto rounded-2xl border border-rose-100 shadow-sm text-xs bg-white">
+                        <table class="w-full text-left border-collapse">
                             <thead>
-                                <tr class="bg-rose-100/70 text-rose-800">
-                                    <th class="p-2 border-b border-rose-100">วันที่</th>
-                                    <th class="p-2 border-b border-rose-100">นักเรียน/ชั้น</th>
-                                    <th class="p-2 border-b border-rose-100">สถานที่</th>
-                                    <th class="p-2 border-b border-rose-100 text-center">รูปภาพ</th>
-                                    <th class="p-2 border-b border-rose-100 text-center">สถานะ</th>
-                                    <th class="p-2 border-b border-rose-100 text-center">คะแนน</th>
+                                <tr class="bg-rose-100/70 text-rose-800 font-semibold">
+                                    <th class="p-2.5 border-b border-rose-100">วันที่</th>
+                                    <th class="p-2.5 border-b border-rose-100">ชื่อนักเรียน / ชั้น</th>
+                                    <th class="p-2.5 border-b border-rose-100">สถานที่</th>
+                                    <th class="p-2.5 border-b border-rose-100 text-center">รูป</th>
+                                    <th class="p-2.5 border-b border-rose-100 text-center">สถานะ</th>
+                                    <th class="p-2.5 border-b border-rose-100 text-center">คะแนน</th>
                                 </tr>
                             </thead>
                             <tbody id="admin-table"></tbody>
@@ -162,11 +165,11 @@
 
                 <hr class="border-rose-100">
 
-                <div class="bg-rose-50/50 p-4 rounded-2xl border border-rose-200 space-y-3">
+                <div class="bg-rose-50/60 p-4 rounded-2xl border border-rose-200 space-y-3">
                     <h3 class="font-bold text-rose-700 text-xs md:text-sm">👩‍🏫 จัดการรายชื่อคุณครู</h3>
                     <div class="flex gap-2">
-                        <input type="text" id="add-tc-name" placeholder="เพิ่มชื่อคุณครูท่านใหม่" class="p-2 border border-rose-200 rounded-xl text-xs flex-1">
-                        <button onclick="addTeacher()" class="bg-emerald-500 hover:bg-emerald-600 text-white font-bold px-4 py-2 rounded-xl text-xs">เพิ่มครู</button>
+                        <input type="text" id="add-tc-name" placeholder="เพิ่มชื่อคุณครูท่านใหม่" class="p-2 border border-rose-200 rounded-xl text-xs flex-1 focus:outline-none focus:ring-2 focus:ring-rose-400">
+                        <button onclick="addTeacher()" class="bg-emerald-500 hover:bg-emerald-600 text-white font-bold px-4 py-2 rounded-xl text-xs shadow-md shadow-emerald-100">เพิ่มครู</button>
                     </div>
                     <div class="pt-1">
                         <ul id="admin-tc-list" class="space-y-1.5 text-xs">
@@ -177,24 +180,26 @@
             </div>
         </div>
 
+        <!-- Status Alert Message -->
         <div id="status" class="mt-3 text-center text-xs font-semibold p-2.5 rounded-xl hidden"></div>
     </div>
 
-    <!-- Modal ดูรูปใหญ่ -->
+    <!-- Modal ดูรูปภาพขนาดใหญ่ -->
     <div id="img-modal" class="fixed inset-0 bg-black/80 hidden items-center justify-center p-4 z-50 backdrop-blur-sm" onclick="closeImgModal()">
-        <div class="bg-white p-3 rounded-2xl max-w-lg w-full text-center space-y-3 relative shadow-2xl" onclick="event.stopPropagation()">
+        <div class="bg-white p-3 md:p-4 rounded-3xl max-w-lg w-full text-center space-y-3 relative shadow-2xl" onclick="event.stopPropagation()">
             <div class="flex justify-between items-center border-b pb-2">
-                <span class="font-bold text-xs text-rose-600">🖼️ รูปภาพผลงาน</span>
-                <button onclick="closeImgModal()" class="text-slate-400 hover:text-slate-600 font-bold px-2 text-xl">&times;</button>
+                <span class="font-bold text-xs text-rose-600 flex items-center gap-1">🖼️ รูปภาพผลงานฉบับเต็ม</span>
+                <button onclick="closeImgModal()" class="text-slate-400 hover:text-slate-600 font-bold px-2 text-2xl leading-none">&times;</button>
             </div>
-            <img id="modal-preview" src="" class="max-h-[75vh] mx-auto rounded-xl object-contain">
+            <img id="modal-preview" src="" class="max-h-[75vh] mx-auto rounded-2xl object-contain shadow-sm">
         </div>
     </div>
 
     <script>
+        // ❌ กรุณาเปลี่ยน URL นี้ให้เป็น URL Web App ของคุณเองที่ Deploy เรียบร้อยแล้ว
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxY4vdnTjB9hHFvrc28Rry6NfvLBJex22pR-Ir7psRSZFHhT-22PuSkMMH4YHQVf_4F/exec";
+        
         let jobs = [];
-
         document.getElementById('st-date').valueAsDate = new Date();
 
         function switchTab(t) {
@@ -207,7 +212,7 @@
             if (t === 'admin' && !document.getElementById('admin-main').classList.contains('hidden')) loadAdmin();
         }
 
-        // ย่อขนาดรูปภาพก่อนส่งเพื่อป้องกันเน็ตค้าง
+        // ย่อขนาดรูปภาพก่อนส่ง ป้องกันระบบค้างและส่งไวขึ้น
         function compressAndResizeImage(file) {
             return new Promise((resolve) => {
                 const reader = new FileReader();
@@ -218,7 +223,7 @@
                     img.onload = () => {
                         const canvas = document.createElement('canvas');
                         const ctx = canvas.getContext('2d');
-                        const maxSide = 800;
+                        const maxSide = 900;
                         let width = img.width;
                         let height = img.height;
 
@@ -237,7 +242,7 @@
                         canvas.width = width;
                         canvas.height = height;
                         ctx.drawImage(img, 0, 0, width, height);
-                        resolve(canvas.toDataURL('image/jpeg', 0.7));
+                        resolve(canvas.toDataURL('image/jpeg', 0.75));
                     };
                 };
             });
@@ -254,7 +259,7 @@
 
         async function submitStudentWork(e) {
             e.preventDefault();
-            showMsg("⏳ กำลังอัปโหลดรูปภาพและส่งข้อมูล...", "blue");
+            showMsg("⏳ กำลังอัปโหลดรูปภาพลง Drive และส่งข้อมูล...", "blue");
             const file = document.getElementById('st-image').files[0];
             let imgBase64 = "";
 
@@ -277,7 +282,7 @@
                 e.target.reset();
                 document.getElementById('upload-preview-box').classList.add('hidden');
             } catch (err) {
-                showMsg("❌ เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง", "red");
+                showMsg("❌ เกิดข้อผิดพลาด กรุณาตรวจสอบอินเทอร์เน็ตแล้วลองใหม่", "red");
             }
         }
 
@@ -308,7 +313,7 @@
                 method: 'POST',
                 body: JSON.stringify({ action: "addTeacher", name: name })
             });
-            showMsg("✅ สมัครสมาชิกเรียบร้อยแล้ว!", "green");
+            showMsg("✅ ลงทะเบียนสำเร็จแล้ว! สามารถเข้าสู่ระบบได้ทันที", "green");
             document.getElementById('tc-reg-name').value = '';
             toggleTcAuth();
         }
@@ -326,23 +331,27 @@
 
         async function loadJobs() {
             showMsg("⏳ กำลังดึงรายการรอตรวจ...", "blue");
-            const res = await fetch(SCRIPT_URL + "?action=getJobs");
-            const data = await res.json();
-            if (data.result === 'success') {
-                jobs = data.data;
-                const select = document.getElementById('job-select');
-                select.innerHTML = '<option value="">-- กรุณาเลือกงานที่รอตรวจ --</option>';
-                
-                const pendingJobs = jobs.filter(j => j.status === 'รอตรวจ');
-                if(pendingJobs.length === 0) {
-                    showMsg("🎉 ไม่มีงานค้างตรวจในขณะนี้", "green");
-                } else {
-                    document.getElementById('status').classList.add('hidden');
-                }
+            try {
+                const res = await fetch(SCRIPT_URL + "?action=getJobs");
+                const data = await res.json();
+                if (data.result === 'success') {
+                    jobs = data.data;
+                    const select = document.getElementById('job-select');
+                    select.innerHTML = '<option value="">-- กรุณาเลือกรายการเพื่อตรวจ --</option>';
+                    
+                    const pendingJobs = jobs.filter(j => j.status === 'รอตรวจ');
+                    if(pendingJobs.length === 0) {
+                        showMsg("🎉 ไม่มีงานค้างตรวจในขณะนี้", "green");
+                    } else {
+                        document.getElementById('status').classList.add('hidden');
+                    }
 
-                pendingJobs.forEach(j => {
-                    select.innerHTML += `<option value="${j.id}">[${j.classVal}] ${j.sender} - ${j.area}</option>`;
-                });
+                    pendingJobs.forEach(j => {
+                        select.innerHTML += `<option value="${j.id}">[${j.classVal}] ${j.sender} - ${j.area}</option>`;
+                    });
+                }
+            } catch(e) {
+                showMsg("❌ ไม่สามารถดึงข้อมูลได้ กรุณาเช็ค SCRIPT_URL", "red");
             }
         }
 
@@ -350,33 +359,23 @@
             const id = document.getElementById('job-select').value;
             const job = jobs.find(j => j.id == id);
             const imgEl = document.getElementById('tc-img');
-            const linkEl = document.getElementById('tc-link');
             const noImgEl = document.getElementById('tc-no-img');
 
             if (job && job.imageUrl && job.imageUrl.length > 10) {
-                if (job.imageUrl.startsWith("http")) {
-                    imgEl.classList.add('hidden');
-                    linkEl.href = job.imageUrl;
-                    linkEl.classList.remove('hidden');
-                    noImgEl.classList.add('hidden');
-                } else {
-                    imgEl.src = job.imageUrl;
-                    imgEl.classList.remove('hidden');
-                    linkEl.classList.add('hidden');
-                    noImgEl.classList.add('hidden');
-                }
+                imgEl.src = job.imageUrl;
+                imgEl.classList.remove('hidden');
+                noImgEl.classList.add('hidden');
             } else {
                 imgEl.classList.add('hidden');
-                linkEl.classList.add('hidden');
                 noImgEl.classList.remove('hidden');
-                noImgEl.innerText = job ? "นักเรียนไม่ได้แนบรูปภาพ" : "โปรดเลือกงานด้านบนเพื่อแสดงรูปภาพ";
+                noImgEl.innerText = job ? "นักเรียนไม่ได้แนบรูปภาพมา" : "โปรดเลือกรายการงานด้านบนเพื่อแสดงรูปภาพ";
             }
         }
 
         async function submitGrade(e) {
             e.preventDefault();
             const id = document.getElementById('job-select').value;
-            if (!id) return alert("กรุณาเลือกรายการงานก่อนครับ");
+            if (!id) return alert("กรุณาเลือกรายการงานนักเรียนก่อนครับ");
             
             showMsg("⏳ กำลังบันทึกคะแนน...", "blue");
             await fetch(SCRIPT_URL, {
@@ -388,56 +387,54 @@
                     comment: document.getElementById('tc-comment').value
                 })
             });
-            showMsg("✅ บันทึกคะแนนสำเร็จ!", "green");
+            showMsg("✅ บันทึกคะแนนสำเร็จแล้ว!", "green");
             document.getElementById('tc-score').value = '';
             document.getElementById('tc-comment').value = '';
             document.getElementById('tc-img').classList.add('hidden');
-            document.getElementById('tc-link').classList.add('hidden');
             document.getElementById('tc-no-img').classList.remove('hidden');
             loadJobs();
         }
 
         function loginAdmin() {
-            if (document.getElementById('admin-pass').value === '8888') {
+            const pass = document.getElementById('admin-pass').value;
+            if (pass === '8888') { // ตั้งรหัสแอดมินตรงนี้ (สามารถเปลี่ยนได้)
                 document.getElementById('admin-auth').classList.add('hidden');
                 document.getElementById('admin-main').classList.remove('hidden');
                 loadAdmin();
             } else {
-                alert('รหัสผ่านไม่ถูกต้อง');
+                alert('รหัสผ่านแอดมินไม่ถูกต้อง!');
             }
         }
 
         async function loadAdmin() {
-            const res = await fetch(SCRIPT_URL + "?action=getJobs");
-            const data = await res.json();
-            if (data.result === 'success') {
-                const tbody = document.getElementById('admin-table');
-                tbody.innerHTML = '';
-                data.data.forEach(j => {
-                    const hasImg = j.imageUrl && j.imageUrl.length > 10;
-                    let imgBtn = '<span class="text-slate-300 text-[10px]">ไม่มีรูป</span>';
-                    
-                    if (hasImg) {
-                        if (j.imageUrl.startsWith("http")) {
-                            imgBtn = `<a href="${j.imageUrl}" target="_blank" class="bg-rose-500 text-white px-2 py-1 rounded-lg text-[10px] font-semibold hover:bg-rose-600">🔗 ดูรูปภาพ</a>`;
-                        } else {
-                            imgBtn = `<button onclick="openImgModal('${j.imageUrl}')" class="bg-rose-500 text-white px-2 py-1 rounded-lg text-[10px] font-semibold hover:bg-rose-600">🖼️ ดูรูปภาพ</button>`;
+            try {
+                const res = await fetch(SCRIPT_URL + "?action=getJobs");
+                const data = await res.json();
+                if (data.result === 'success') {
+                    const tbody = document.getElementById('admin-table');
+                    tbody.innerHTML = '';
+                    data.data.forEach(j => {
+                        const hasImg = j.imageUrl && j.imageUrl.length > 10;
+                        let imgBtn = '<span class="text-slate-300 text-[10px]">ไม่มีรูป</span>';
+                        
+                        if (hasImg) {
+                            imgBtn = `<button onclick="openImgModal('${j.imageUrl}')" class="bg-rose-500 text-white px-2 py-1 rounded-lg text-[10px] font-semibold hover:bg-rose-600 transition-all">🖼️ ดูรูป</button>`;
                         }
-                    }
-                    
-                    const statusBg = j.status === 'ตรวจแล้ว' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700';
-                    tbody.innerHTML += `
-                        <tr class="border-b border-rose-50 hover:bg-rose-50/30">
-                            <td class="p-2">${j.date}</td>
-                            <td class="p-2 font-medium">${j.sender} <br><span class="text-[10px] text-slate-400">(${j.classVal})</span></td>
-                            <td class="p-2 text-slate-600">${j.area}</td>
-                            <td class="p-2 text-center">${imgBtn}</td>
-                            <td class="p-2 text-center"><span class="px-2 py-0.5 rounded-full text-[10px] font-medium ${statusBg}">${j.status}</span></td>
-                            <td class="p-2 font-bold text-rose-600 text-center">${j.score}</td>
-                        </tr>
-                    `;
-                });
-            }
+                        
+                        const statusBg = j.status === 'ตรวจแล้ว' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700';
+                        tbody.innerHTML += `
+                            <tr class="border-b border-rose-50 hover:bg-rose-50/40 transition-colors">
+                                <td class="p-2">${j.date}</td>
+                                <td class="p-2 font-medium">${j.sender} <br><span class="text-[10px] text-slate-400">(${j.classVal})</span></td>
+                                <td class="p-2 text-slate-600">${j.area}</td>
+                                <td class="p-2 text-center">${imgBtn}</td>
+                                <td class="p-2 text-center"><span class="px-2 py-0.5 rounded-full text-[10px] font-semibold ${statusBg}">${j.status}</span></td>
+                                <td class="p-2 font-bold text-rose-600 text-center">${j.score}</td>
+                            </tr>
+                        `;
+                    });
+                }
+            } catch(e) {}
             loadTeachersList();
         }
 
@@ -460,9 +457,9 @@
             if (data.result === 'success' && data.data.length > 0) {
                 data.data.forEach(tc => {
                     ul.innerHTML += `
-                        <li class="flex justify-between items-center bg-white p-2 rounded-xl border border-rose-100 shadow-sm">
+                        <li class="flex justify-between items-center bg-white p-2 px-3 rounded-xl border border-rose-100 shadow-sm">
                             <span class="font-medium text-slate-700">👩‍🏫 ${tc.name}</span>
-                            <button onclick="deleteTeacher('${tc.name}')" class="text-rose-500 hover:text-rose-700 font-bold text-[10px]">ลบ</button>
+                            <button onclick="deleteTeacher('${tc.name}')" class="text-rose-500 hover:text-rose-700 font-bold text-[10px] bg-rose-50 px-2 py-1 rounded-lg">ลบออก</button>
                         </li>
                     `;
                 });
