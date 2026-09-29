@@ -3,74 +3,141 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ระบบตรวจและให้คะแนน</title>
-    <!-- เรียกใช้ Tailwind CSS เพื่อความสวยงาม -->
+    <title>ระบบบันทึกการตรวจและให้คะแนนความสะอาด</title>
+    <!-- เรียกใช้ Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- เรียกใช้ฟอนต์ Sarabun จาก Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        // กำหนดโทนสีชมพูหลัก
+                        'theme-pink': {
+                            50: '#fff1f2',
+                            100: '#ffe4e6',
+                            200: '#fecdd3',
+                            300: '#fda4af',
+                            400: '#fb7185',
+                            50: '#f43f5e', // สีชมพูเข้มสำหรับปุ่ม
+                            600: '#e11d48',
+                            700: '#be123c',
+                        },
+                    },
+                    fontFamily: {
+                        sans: ['Sarabun', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
     <style>
-        body { font-family: 'Sarabun', sans-serif; }
+        /* ตกแต่งเพิ่มเติม */
+        body {
+            background-color: #fff1f2; /* แบคกราวด์ชมพูอ่อนมาก */
+        }
+        .form-container {
+            background: rgba(255, 255, 255, 0.95);
+            border: 2px solid #fecdd3; /* ขอบชมพูอ่อน */
+        }
+        /* Style สำหรับ Input แบบ Material */
+        .input-group input, .input-group textarea, .input-group select {
+            border-color: #fda4af;
+        }
+        .input-group input:focus, .input-group textarea:focus {
+            border-color: #f43f5e;
+            box-shadow: 0 0 0 3px rgba(244, 63, 94, 0.2);
+        }
+        .input-label {
+            color: #be123c;
+        }
     </style>
 </head>
-<body class="bg-slate-100 min-h-screen p-4 md:p-8">
+<body class="min-h-screen p-4 md:p-8 flex items-center justify-center">
 
-    <div class="max-w-xl mx-auto bg-white p-6 rounded-2xl shadow-lg">
-        <h2 class="text-2xl font-bold text-center text-blue-600 mb-6">ฟอร์มบันทึกการตรวจและให้คะแนน</h2>
+    <div class="max-w-2xl w-full form-container p-8 rounded-3xl shadow-xl">
+        <!-- หัวข้อพร้อมไอคอนน่ารัก -->
+        <div class="text-center mb-8 border-b-2 border-dashed border-theme-pink-200 pb-6">
+            <span class="text-5xl mb-2 block">✨</span>
+            <h1 class="text-3xl font-bold text-theme-pink-700">ระบบบันทึกการตรวจ</h1>
+            <h2 class="text-xl font-semibold text-theme-pink-500 mt-1">และให้คะแนนความสะอาด</h2>
+        </div>
 
-        <form id="checkForm" class="space-y-4">
-            <!-- วันที่ -->
-            <div>
-                <label class="block text-gray-700 font-semibold mb-1">วันที่ตรวจ</label>
-                <input type="date" id="inspectionDate" required class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-400 outline-none">
+        <form id="checkForm" class="space-y-6">
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- วันที่ -->
+                <div class="input-group">
+                    <label class="block input-label font-semibold mb-1.5">📅 วันที่ตรวจ</label>
+                    <input type="date" id="inspectionDate" required class="w-full p-3 border-2 rounded-xl outline-none transition duration-150">
+                </div>
+
+                <!-- ชั้น / ห้อง -->
+                <div class="input-group">
+                    <label class="block input-label font-semibold mb-1.5">🏫 ชั้น / ห้อง</label>
+                    <input type="text" id="classVal" placeholder="เช่น ม.3/1" class="w-full p-3 border-2 rounded-xl outline-none transition duration-150">
+                </div>
             </div>
 
             <!-- รายชื่อผู้ส่ง / นักเรียน -->
-            <div>
-                <label class="block text-gray-700 font-semibold mb-1">ชื่อผู้ส่ง / นักเรียน</label>
-                <input type="text" id="sender" placeholder="ระบุชื่อผู้ส่ง" required class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-400 outline-none">
+            <div class="input-group">
+                <label class="block input-label font-semibold mb-1.5">👤 ชื่อผู้ส่ง / นักเรียน</label>
+                <input type="text" id="sender" placeholder="ระบุชื่อนักเรียนหรือตัวแทนกลุ่ม" required class="w-full p-3 border-2 rounded-xl outline-none transition duration-150">
             </div>
 
             <!-- พื้นที่ / จุดตรวจ -->
-            <div>
-                <label class="block text-gray-700 font-semibold mb-1">พื้นที่ / บริเวณที่ตรวจ</label>
-                <input type="text" id="area" placeholder="เช่น ห้องเรียน 101, หน้าอาคาร 1" required class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-400 outline-none">
+            <div class="input-group">
+                <label class="block input-label font-semibold mb-1.5">📍 พื้นที่ / บริเวณที่ตรวจ</label>
+                <input type="text" id="area" placeholder="เช่น ห้องเรียน, หน้าเสาธง, โรงอาหาร" required class="w-full p-3 border-2 rounded-xl outline-none transition duration-150">
             </div>
 
-            <!-- ชั้น / ห้อง -->
-            <div>
-                <label class="block text-gray-700 font-semibold mb-1">ชั้น / ห้อง</label>
-                <input type="text" id="classVal" placeholder="เช่น ม.3/1" class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-400 outline-none">
-            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+                <!-- ครูผู้ตรวจ -->
+                <div class="input-group">
+                    <label class="block input-label font-semibold mb-1.5">👩‍🏫 ครูผู้ตรวจ</label>
+                    <input type="text" id="checker" placeholder="ระบุชื่อครูผู้ตรวจ" required class="w-full p-3 border-2 rounded-xl outline-none transition duration-150">
+                </div>
 
-            <!-- ครูผู้ตรวจ -->
-            <div>
-                <label class="block text-gray-700 font-semibold mb-1">ครูผู้ตรวจ</label>
-                <input type="text" id="checker" placeholder="ระบุชื่อครูผู้ตรวจ" required class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-400 outline-none">
-            </div>
-
-            <!-- ให้คะแนน (ส่วนที่เพิ่มใหม่) -->
-            <div class="bg-blue-50 p-4 rounded-xl border border-blue-200">
-                <label class="block text-blue-900 font-bold mb-1">คะแนนที่ให้ (0 - 10 คะแนน)</label>
-                <input type="number" id="score" min="0" max="10" value="10" required class="w-full p-2 border border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-lg font-bold text-center text-blue-700">
+                <!-- ส่วนให้คะแนน (เด่นชัด) -->
+                <div class="bg-theme-pink-100 p-5 rounded-2xl border-2 border-theme-pink-300 shadow-inner">
+                    <label class="block text-theme-pink-800 font-bold mb-2 text-center text-lg">💯 คะแนนที่ให้ (0-10)</label>
+                    <input type="number" id="score" min="0" max="10" value="10" required 
+                        class="w-full p-4 border-2 border-theme-pink-400 rounded-xl focus:ring-4 focus:ring-theme-pink-300 text-3xl font-bold text-center text-theme-pink-600 outline-none bg-white">
+                </div>
             </div>
 
             <!-- หมายเหตุ / ข้อเสนอแนะ -->
-            <div>
-                <label class="block text-gray-700 font-semibold mb-1">ข้อคิดเห็น / คำแนะนำจากครู</label>
-                <textarea id="comment" rows="2" placeholder="ใส่ข้อความแนบท้ายการตรวจ (ถ้ามี)" class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-400 outline-none"></textarea>
+            <div class="input-group">
+                <label class="block input-label font-semibold mb-1.5">📝 ข้อคิดเห็น / คำแนะนำเพิ่มเติม</label>
+                <textarea id="comment" rows="3" placeholder="ใส่รายละเอียดการตรวจหรือสิ่งที่ควรปรับปรุง (ถ้ามี)" 
+                    class="w-full p-3 border-2 rounded-xl outline-none transition duration-150 resize-none"></textarea>
             </div>
 
             <!-- อัปโหลดรูปภาพ -->
-            <div>
-                <label class="block text-gray-700 font-semibold mb-1">แนบรูปภาพผลการตรวจ</label>
-                <input type="file" id="imageFile" accept="image/*" class="w-full p-1 border rounded-lg text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-blue-100 file:text-blue-700 hover:file:bg-blue-200">
+            <div class="bg-white p-4 rounded-xl border border-gray-200">
+                <label class="block input-label font-semibold mb-2">📸 แนบรูปภาพผลการตรวจ (ถ้ามี)</label>
+                <input type="file" id="imageFile" accept="image/*" 
+                    class="w-full text-sm text-gray-500 file:mr-4 file:py-2.5 file:px-5 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-theme-pink-100 file:text-theme-pink-700 hover:file:bg-theme-pink-200 file:cursor-pointer">
             </div>
 
-            <!-- ปุ่มบันทึก -->
-            <button type="submit" id="submitBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl transition duration-200 shadow-md">
-                บันทึกการตรวจและคะแนน
-            </button>
+            <!-- ปุ่มบันทึก (สีชมพูเข้ม) -->
+            <div class="pt-4">
+                <button type="submit" id="submitBtn" 
+                    class="w-full bg-theme-pink-500 hover:bg-theme-pink-600 text-white font-bold py-4 px-6 rounded-2xl transition duration-200 shadow-lg text-lg transform hover:scale-[1.02]">
+                    🌸 บันทึกการตรวจและคะแนน
+                </button>
+            </div>
         </form>
 
-        <div id="statusMessage" class="mt-4 text-center font-semibold"></div>
+        <!-- ส่วนแสดงสถานะ -->
+        <div id="statusMessage" class="mt-6 text-center font-semibold p-4 rounded-xl hidden"></div>
+        
+        <!-- Footer -->
+        <div class="text-center mt-10 text-theme-pink-400 text-xs border-t border-dashed border-theme-pink-200 pt-4">
+            Powered by Google Apps Script & GitHub Pages
+        </div>
     </div>
 
     <script>
@@ -98,15 +165,22 @@
             const btn = document.getElementById('submitBtn');
             const statusMsg = document.getElementById('statusMessage');
             
+            // เตรียมหน้าต่างแสดงสถานะ
+            statusMsg.classList.remove('hidden', 'bg-green-100', 'text-green-700', 'bg-red-100', 'text-red-700', 'bg-blue-100', 'text-blue-700');
+            statusMsg.classList.add('bg-blue-100', 'text-blue-700');
+            statusMsg.innerHTML = "⏳ กำลังบันทึกข้อมูลและอัปโหลดรูปภาพ โปรดรอสักครู่...";
+            
             btn.disabled = true;
-            btn.innerText = "กำลังบันทึกข้อมูล...";
-            statusMsg.innerText = "";
-            statusMsg.className = "mt-4 text-center font-semibold text-blue-600";
+            btn.innerHTML = "⏳ กำลังบันทึก...";
 
             try {
                 const fileInput = document.getElementById('imageFile').files[0];
                 let imageBase64 = "";
                 if (fileInput) {
+                    // ตรวจสอบขนาดไฟล์ (เช่น ไม่เกิน 5MB)
+                    if (fileInput.size > 5 * 1024 * 1024) {
+                        throw new Error("ไฟล์รูปภาพมีขนาดใหญ่เกินไป (ไม่ควรเกิน 5MB)");
+                    }
                     imageBase64 = await fileToBase64(fileInput);
                 }
 
@@ -123,7 +197,8 @@
                     image: imageBase64
                 };
 
-                // ส่งข้อมูล
+                // ส่งข้อมูล (ใช้โหมด no-cors เพื่อเลี่ยงปัญหา CORS ชั่วคราว แต่อาจไม่ได้รับ Response กลับมา)
+                // แนะนำให้ตั้งค่า CORS ใน Google Apps Script ให้ถูกต้องตามที่แนะนำในรอบก่อนหน้า
                 const response = await fetch(SCRIPT_URL, {
                     method: 'POST',
                     body: JSON.stringify(payload)
@@ -132,19 +207,37 @@
                 const result = await response.json();
 
                 if (result.result === 'success') {
-                    statusMsg.innerText = "✅ บันทึกข้อมูลและให้คะแนนเรียบร้อยแล้ว!";
-                    statusMsg.className = "mt-4 text-center font-semibold text-green-600";
-                    document.getElementById('checkForm').reset();
-                    document.getElementById('inspectionDate').valueAsDate = new Date();
+                    statusMsg.classList.remove('bg-blue-100', 'text-blue-700');
+                    statusMsg.classList.add('bg-green-100', 'text-green-700');
+                    statusMsg.innerHTML = "✅ บันทึกข้อมูลและให้คะแนนเรียบร้อยแล้ว! ขอบคุณครับ 🌸";
+                    
+                    // รีเซ็ตฟอร์ม (ยกเว้นวันที่และชื่อครู)
+                    document.getElementById('sender').value = "";
+                    document.getElementById('area').value = "";
+                    document.getElementById('classVal').value = "";
+                    document.getElementById('score').value = "10";
+                    document.getElementById('comment').value = "";
+                    document.getElementById('imageFile').value = "";
+                    
+                    // เลื่อนหน้าจอไปที่ข้อความสำเร็จ
+                    statusMsg.scrollIntoView({ behavior: 'smooth' });
+                    
+                    // ซ่อนข้อความสำเร็จหลังจาก 5 วินาที
+                    setTimeout(() => {
+                        statusMsg.classList.add('hidden');
+                    }, 5000);
+
                 } else {
                     throw new Error(result.message || "เกิดข้อผิดพลาดในการบันทึก");
                 }
             } catch (err) {
-                statusMsg.innerText = "❌ เกิดข้อผิดพลาด: " + err.message;
-                statusMsg.className = "mt-4 text-center font-semibold text-red-600";
+                console.error(err);
+                statusMsg.classList.remove('bg-blue-100', 'text-blue-700');
+                statusMsg.classList.add('bg-red-100', 'text-red-700');
+                statusMsg.innerHTML = "❌ เกิดข้อผิดพลาด: " + err.message + "<br>โปรดลองอีกครั้งหรือติดต่อผู้ดูแลระบบ";
             } finally {
                 btn.disabled = false;
-                btn.innerText = "บันทึกการตรวจและคะแนน";
+                btn.innerHTML = "🌸 บันทึกการตรวจและคะแนน";
             }
         });
     </script>
