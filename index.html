@@ -3,200 +3,332 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ระบบบันทึกการตรวจและให้คะแนน</title>
-    <!-- เรียกใช้ Tailwind CSS -->
+    <title>ระบบตรวจความสะอาดและประเมินผล</title>
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- เรียกใช้ฟอนต์ Sarabun -->
-    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700&display=swap" rel="stylesheet">
-    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Sarabun', sans-serif;
-            background-color: #fff0f3 !important; /* พื้นหลังสีชมพูพาสเทล */
+            background-color: #fff0f3 !important;
         }
         .pink-card {
             background-color: #ffffff;
             border: 2px solid #fecdd3;
             box-shadow: 0 10px 25px -5px rgba(244, 63, 94, 0.15);
         }
-        .pink-header {
-            color: #e11d48;
-        }
-        .pink-subtle {
-            color: #fb7185;
-        }
-        .pink-label {
-            color: #be123c;
-            font-weight: 600;
-        }
-        .pink-input {
-            border: 2px solid #fecdd3 !important;
-        }
+        .pink-header { color: #e11d48; }
+        .pink-subtle { color: #fb7185; }
+        .pink-label { color: #be123c; font-weight: 600; }
+        .pink-input { border: 2px solid #fecdd3 !important; }
         .pink-input:focus {
             border-color: #f43f5e !important;
             outline: none;
             box-shadow: 0 0 0 3px rgba(244, 63, 94, 0.2);
         }
-        .pink-score-box {
-            background-color: #ffe4e6 !important;
-            border: 2px solid #fda4af !important;
-        }
         .pink-btn {
             background-color: #f43f5e !important;
             color: #ffffff !important;
         }
-        .pink-btn:hover {
-            background-color: #e11d48 !important;
+        .pink-btn:hover { background-color: #e11d48 !important; }
+        .tab-btn {
+            transition: all 0.3s ease;
+        }
+        .tab-active {
+            background-color: #f43f5e !important;
+            color: white !important;
+            font-weight: bold;
+            box-shadow: 0 4px 6px -1px rgba(244, 63, 94, 0.3);
         }
     </style>
 </head>
-<body class="min-h-screen p-4 md:p-8 flex items-center justify-center">
+<body class="min-h-screen p-3 md:p-6 flex flex-col items-center">
 
-    <div class="max-w-xl w-full pink-card p-6 md:p-8 rounded-3xl">
-        
-        <!-- หัวข้อหน้าเว็บ -->
-        <div class="text-center mb-6 pb-4 border-b-2 border-dashed border-pink-200">
-            <div class="text-4xl mb-2">🌸</div>
-            <h1 class="text-2xl md:text-3xl font-bold pink-header">ระบบบันทึกการตรวจ</h1>
-            <h2 class="text-lg font-semibold pink-subtle mt-1">และให้คะแนนความสะอาด</h2>
+    <!-- ส่วนหัวระบบ -->
+    <div class="text-center my-4">
+        <h1 class="text-3xl md:text-4xl font-bold pink-header">🌸 ระบบตรวจและประเมินความสะอาด 🌸</h1>
+        <p class="pink-subtle text-sm md:text-base mt-1">โรงเรียนของเราสะอาด น่าอยู่ ด้วยมือเรา</p>
+    </div>
+
+    <!-- เมนูแท็บ 3 แท็บ -->
+    <div class="flex flex-wrap justify-center gap-2 mb-6 w-full max-w-2xl bg-pink-100 p-2 rounded-2xl border border-pink-200">
+        <button onclick="switchTab('student')" id="tab-student" class="tab-btn tab-active flex-1 min-w-[100px] py-2.5 px-4 rounded-xl text-center font-semibold text-rose-700 hover:bg-pink-200">
+            👧🏻 นักเรียน (ส่งงาน)
+        </button>
+        <button onclick="switchTab('teacher')" id="tab-teacher" class="tab-btn flex-1 min-w-[100px] py-2.5 px-4 rounded-xl text-center font-semibold text-rose-700 hover:bg-pink-200">
+            👩‍🏫 ครู (ตรวจ/ให้คะแนน)
+        </button>
+        <button onclick="switchTab('admin')" id="tab-admin" class="tab-btn flex-1 min-w-[100px] py-2.5 px-4 rounded-xl text-center font-semibold text-rose-700 hover:bg-pink-200">
+            🛠️ แอดมิน (จัดการระบบ)
+        </button>
+    </div>
+
+    <!-- Container หลัก -->
+    <div class="max-w-3xl w-full pink-card p-6 md:p-8 rounded-3xl mb-8">
+
+        <!-- ================= แท็บที่ 1: นักเรียน ================= -->
+        <div id="content-student" class="tab-content space-y-4">
+            <div class="border-b pb-3 mb-4 border-pink-200">
+                <h2 class="text-xl font-bold pink-header">ส่งผลการทำความสะอาด (รอการตรวจ)</h2>
+                <p class="text-xs text-gray-500">กรอกข้อมูลสถานที่ ถ่ายรูปส่งงาน เพื่อรอคุณครูมาตรวจให้คะแนน</p>
+            </div>
+
+            <form id="studentForm" class="space-y-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block pink-label mb-1">📅 วันที่ส่ง</label>
+                        <input type="date" id="st-date" required class="w-full p-2.5 rounded-xl pink-input">
+                    </div>
+                    <div>
+                        <label class="block pink-label mb-1">🏫 ชั้น / ห้อง</label>
+                        <input type="text" id="st-class" placeholder="เช่น ม.3/1" required class="w-full p-2.5 rounded-xl pink-input">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block pink-label mb-1">👤 ชื่อผู้ส่ง / ตัวแทนกลุ่ม</label>
+                    <input type="text" id="st-sender" placeholder="ระบุชื่อ-นามสกุล นักเรียน" required class="w-full p-2.5 rounded-xl pink-input">
+                </div>
+
+                <div>
+                    <label class="block pink-label mb-1">📍 สถานที่ / บริเวณที่รับผิดชอบ</label>
+                    <input type="text" id="st-area" placeholder="เช่น ห้องเรียน 101, หน้าเสาธง, เขตพื้นที่ 3" required class="w-full p-2.5 rounded-xl pink-input">
+                </div>
+
+                <div>
+                    <label class="block pink-label mb-1">📸 ถ่ายรูป / แนบรูปภาพผลงาน</label>
+                    <input type="file" id="st-image" accept="image/*" class="w-full p-2 bg-pink-50 rounded-xl border border-pink-200 text-sm text-gray-600 file:mr-4 file:py-1.5 file:px-4 file:rounded-lg file:border-0 file:bg-rose-500 file:text-white">
+                </div>
+
+                <button type="submit" class="w-full pink-btn font-bold py-3.5 px-4 rounded-2xl text-lg shadow-md transition duration-200">
+                    📤 ส่งข้อมูลรอการตรวจ
+                </button>
+            </form>
         </div>
 
-        <form id="checkForm" class="space-y-4">
+        <!-- ================= แท็บที่ 2: ครู ================= -->
+        <div id="content-teacher" class="tab-content hidden space-y-4">
             
-            <!-- วันที่ตรวจ -->
-            <div>
-                <label class="block pink-label mb-1">📅 วันที่ตรวจ</label>
-                <input type="date" id="inspectionDate" required class="w-full p-2.5 rounded-xl pink-input">
+            <!-- ส่วนสมัครสมาชิก / เข้าสู่ระบบครู -->
+            <div id="teacher-auth-section" class="bg-pink-50 p-4 md:p-6 rounded-2xl border border-pink-200 mb-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-lg font-bold pink-header" id="auth-title">เข้าสู่ระบบสำหรับครู</h3>
+                    <button onclick="toggleTeacherAuth()" id="toggle-auth-btn" class="text-xs text-rose-600 underline font-semibold">
+                        ยังไม่มีบัญชี? สมัครสมาชิก
+                    </button>
+                </div>
+
+                <!-- ฟอร์มเข้าสู่ระบบ -->
+                <form id="teacherLoginForm" class="space-y-3">
+                    <input type="text" id="tc-login-user" placeholder="ชื่อผู้ใช้ / อีเมล" required class="w-full p-2.5 rounded-xl pink-input">
+                    <input type="password" id="tc-login-pass" placeholder="รหัสผ่าน" required class="w-full p-2.5 rounded-xl pink-input">
+                    <button type="submit" class="w-full pink-btn font-bold py-2.5 rounded-xl">🔑 เข้าสู่ระบบ</button>
+                </form>
+
+                <!-- ฟอร์มสมัครสมาชิก (ซ่อนไว้ก่อน) -->
+                <form id="teacherRegisterForm" class="space-y-3 hidden">
+                    <input type="text" id="tc-reg-name" placeholder="ชื่อ-นามสกุล (ครู)" required class="w-full p-2.5 rounded-xl pink-input">
+                    <input type="text" id="tc-reg-user" placeholder="ตั้งชื่อผู้ใช้" required class="w-full p-2.5 rounded-xl pink-input">
+                    <input type="password" id="tc-reg-pass" placeholder="ตั้งรหัสผ่าน" required class="w-full p-2.5 rounded-xl pink-input">
+                    <button type="submit" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2.5 rounded-xl">📝 สมัครสมาชิกครู</button>
+                </form>
             </div>
 
-            <!-- ชื่อผู้ส่ง / นักเรียน -->
-            <div>
-                <label class="block pink-label mb-1">👤 ชื่อผู้ส่ง / นักเรียน</label>
-                <input type="text" id="sender" placeholder="ระบุชื่อผู้ส่ง" required class="w-full p-2.5 rounded-xl pink-input">
+            <!-- ส่วนตรวจงานเด็กนักเรียน (แสดงหลังล็อกอิน) -->
+            <div id="teacher-work-section" class="space-y-4">
+                <div class="flex justify-between items-center border-b pb-3 border-pink-200">
+                    <h2 class="text-xl font-bold pink-header">📋 รายการงานรอตรวจ</h2>
+                    <span id="teacher-welcome" class="text-xs bg-rose-100 text-rose-700 px-3 py-1 rounded-full font-semibold">สวัสดีคุณครู</span>
+                </div>
+
+                <div class="p-4 bg-amber-50 border border-amber-200 rounded-xl">
+                    <p class="text-sm text-amber-800 font-semibold mb-2">เลือกนักเรียนเพื่อตรวจงานและให้คะแนน:</p>
+                    <select id="pending-jobs" class="w-full p-2.5 rounded-xl pink-input bg-white text-sm" onchange="loadJobDetail()">
+                        <option value="">-- เลือกรายการงานที่ส่งเข้ามา --</option>
+                        <option value="1">[ม.3/1] นายสมชาย - ห้องเรียน 101 (รอตรวจ)</option>
+                    </select>
+                </div>
+
+                <!-- รายละเอียดงานที่เลือก -->
+                <form id="gradeForm" class="space-y-4 bg-pink-50/50 p-4 rounded-2xl border border-pink-100">
+                    <div class="grid grid-cols-2 gap-2 text-xs md:text-sm bg-white p-3 rounded-xl border">
+                        <div><b>ผู้ส่ง:</b> <span id="view-sender">-</span></div>
+                        <div><b>ชั้น/ห้อง:</b> <span id="view-class">-</span></div>
+                        <div><b>สถานที่:</b> <span id="view-area">-</span></div>
+                        <div><b>วันที่ส่ง:</b> <span id="view-date">-</span></div>
+                    </div>
+
+                    <!-- ให้คะแนน -->
+                    <div class="bg-pink-100 p-4 rounded-2xl text-center">
+                        <label class="block pink-header font-bold mb-1 text-base">💯 ให้คะแนน (0 - 10 คะแนน)</label>
+                        <input type="number" id="tc-score" min="0" max="10" value="10" required 
+                            class="w-full p-3 rounded-xl border-2 border-pink-300 text-3xl font-bold text-center text-rose-600 bg-white">
+                    </div>
+
+                    <!-- ข้อคิดเห็น -->
+                    <div>
+                        <label class="block pink-label mb-1">💬 คำแนะนำเพิ่มเติมจากครู</label>
+                        <textarea id="tc-comment" rows="2" placeholder="ใส่ข้อคิดเห็น หรือสิ่งที่อยากให้ปรับปรุง..." class="w-full p-2.5 rounded-xl pink-input"></textarea>
+                    </div>
+
+                    <button type="submit" class="w-full pink-btn font-bold py-3 rounded-2xl text-lg shadow-md">
+                        ✅ บันทึกการตรวจและคะแนน
+                    </button>
+                </form>
             </div>
 
-            <!-- พื้นที่ / จุดตรวจ -->
-            <div>
-                <label class="block pink-label mb-1">📍 พื้นที่ / บริเวณที่ตรวจ</label>
-                <input type="text" id="area" placeholder="เช่น ห้องเรียน 101, หน้าอาคาร 1" required class="w-full p-2.5 rounded-xl pink-input">
+        </div>
+
+        <!-- ================= แท็บที่ 3: แอดมิน ================= -->
+        <div id="content-admin" class="tab-content hidden space-y-6">
+            <div class="border-b pb-3 border-pink-200">
+                <h2 class="text-xl font-bold pink-header">🛠️ แผงควบคุมผู้ดูแลระบบ (Admin)</h2>
+                <p class="text-xs text-gray-500">จัดการข้อมูลผู้ใช้งาน ระบบครู และสถิติภาพรวม</p>
             </div>
 
-            <!-- ชั้น / ห้อง -->
-            <div>
-                <label class="block pink-label mb-1">🏫 ชั้น / ห้อง</label>
-                <input type="text" id="classVal" placeholder="เช่น ม.3/1" class="w-full p-2.5 rounded-xl pink-input">
+            <!-- ส่วนที่ 1: ตารางสถิติและงานทั้งหมด -->
+            <div class="space-y-2">
+                <h3 class="font-bold pink-label">📊 รายการการส่งงานทั้งหมดของนักเรียน</h3>
+                <div class="overflow-x-auto bg-white rounded-xl border border-pink-200">
+                    <table class="w-full text-xs text-left">
+                        <thead class="bg-pink-100 pink-label">
+                            <tr>
+                                <th class="p-2">วันที่</th>
+                                <th class="p-2">ชื่อนักเรียน</th>
+                                <th class="p-2">ห้อง</th>
+                                <th class="p-2">สถานที่</th>
+                                <th class="p-2">คะแนน</th>
+                                <th class="p-2">สถานะ</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-job-table">
+                            <tr class="border-b">
+                                <td class="p-2">29/09/2026</td>
+                                <td class="p-2">นายสมชาย</td>
+                                <td class="p-2">ม.3/1</td>
+                                <td class="p-2">ห้อง 101</td>
+                                <td class="p-2 text-rose-600 font-bold">10/10</td>
+                                <td class="p-2"><span class="bg-green-100 text-green-700 px-2 py-0.5 rounded-full text-[10px]">ตรวจแล้ว</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
-            <!-- ครูผู้ตรวจ -->
-            <div>
-                <label class="block pink-label mb-1">👩‍🏫 ครูผู้ตรวจ</label>
-                <input type="text" id="checker" placeholder="ระบุชื่อครูผู้ตรวจ" required class="w-full p-2.5 rounded-xl pink-input">
+            <!-- ส่วนที่ 2: จัดการบัญชีครู (เพิ่ม/ลบ) -->
+            <div class="bg-pink-50 p-4 rounded-2xl border border-pink-200 space-y-3">
+                <h3 class="font-bold pink-header">👩‍🏫 จัดการรายชื่อครูผู้ตรวจ</h3>
+                
+                <!-- ฟอร์มเพิ่มครู -->
+                <form id="adminAddTeacherForm" class="flex gap-2">
+                    <input type="text" id="admin-tc-name" placeholder="ชื่อ-นามสกุล ครูท่านใหม่" required class="flex-1 p-2 rounded-xl pink-input text-xs">
+                    <button type="submit" class="bg-rose-500 hover:bg-rose-600 text-white font-bold px-4 py-2 rounded-xl text-xs">
+                        + เพิ่มครู
+                    </button>
+                </form>
+
+                <!-- รายชื่อครูปัจจุบัน -->
+                <div class="space-y-2 pt-2">
+                    <p class="text-xs text-gray-600 font-semibold">รายชื่อครูในระบบปัจจุบัน:</p>
+                    <ul id="teacher-list" class="space-y-1 text-xs">
+                        <li class="flex justify-between items-center bg-white p-2 rounded-lg border">
+                            <span>👩‍🏫 คุณครูสมศรี ใจดี</span>
+                            <button onclick="deleteTeacher(this)" class="text-red-500 hover:underline font-semibold">ลบ</button>
+                        </li>
+                    </ul>
+                </div>
             </div>
 
-            <!-- กล่องให้คะแนน (สีชมพูเด่น) -->
-            <div class="pink-score-box p-4 rounded-2xl text-center my-2">
-                <label class="block pink-header font-bold mb-1 text-lg">💯 คะแนนที่ให้ (0 - 10 คะแนน)</label>
-                <input type="number" id="score" min="0" max="10" value="10" required 
-                    class="w-full p-3 rounded-xl border-2 border-pink-300 text-3xl font-bold text-center text-rose-600 bg-white focus:outline-none">
+            <!-- ส่วนที่ 3: เครื่องมือแอดมินเพิ่มเติม -->
+            <div class="p-4 bg-rose-50 rounded-2xl border border-rose-200 text-xs space-y-2">
+                <h3 class="font-bold text-rose-800">⚡ เครื่องมือการจัดการอื่นๆ</h3>
+                <div class="flex flex-wrap gap-2">
+                    <button onclick="alert('ดาวน์โหลดรายงาน Excel เรียบร้อย')" class="bg-white border border-rose-300 text-rose-700 px-3 py-1.5 rounded-lg hover:bg-rose-100">
+                        📥 ส่งออกข้อมูลเป็น Excel
+                    </button>
+                    <button onclick="if(confirm('ต้องการล้างข้อมูลทั้งหมดใช่หรือไม่?')) alert('ล้างข้อมูลเรียบร้อย')" class="bg-white border border-red-300 text-red-600 px-3 py-1.5 rounded-lg hover:bg-red-50">
+                        🧹 ล้างข้อมูลการตรวจเก่า
+                    </button>
+                </div>
             </div>
 
-            <!-- ข้อคิดเห็น -->
-            <div>
-                <label class="block pink-label mb-1">📝 ข้อคิดเห็น / คำแนะนำจากครู</label>
-                <textarea id="comment" rows="2" placeholder="ใส่ข้อความแนบท้ายการตรวจ (ถ้ามี)" class="w-full p-2.5 rounded-xl pink-input"></textarea>
-            </div>
+        </div>
 
-            <!-- แนบรูปภาพ -->
-            <div>
-                <label class="block pink-label mb-1">📸 แนบรูปภาพผลการตรวจ</label>
-                <input type="file" id="imageFile" accept="image/*" class="w-full p-2 bg-pink-50 rounded-xl border border-pink-200 text-sm text-gray-600 file:mr-4 file:py-1.5 file:px-4 file:rounded-lg file:border-0 file:bg-rose-500 file:text-white hover:file:bg-rose-600">
-            </div>
+        <!-- แสดงข้อความสถานะการทำงาน -->
+        <div id="statusMessage" class="mt-4 text-center font-semibold hidden p-3 rounded-xl text-xs md:text-sm"></div>
 
-            <!-- ปุ่มบันทึกข้อมูล -->
-            <div class="pt-2">
-                <button type="submit" id="submitBtn" class="w-full pink-btn font-bold py-3.5 px-4 rounded-2xl text-lg shadow-md transition duration-200">
-                    💖 บันทึกการตรวจและคะแนน
-                </button>
-            </div>
-
-        </form>
-
-        <div id="statusMessage" class="mt-4 text-center font-semibold hidden p-3 rounded-xl"></div>
     </div>
 
     <script>
-        // ⚠️ อย่าลืมใส่ Web App URL ของ Google Apps Script ตรงนี้ครับ ⚠️
+        // URL ของ Google Apps Script
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxY4vdnTjB9hHFvrc28Rry6NfvLBJex22pR-Ir7psRSZFHhT-22PuSkMMH4YHQVf_4F/exec";
 
-        document.getElementById('inspectionDate').valueAsDate = new Date();
+        // ตั้งค่าวันที่เริ่มต้น
+        document.getElementById('st-date').valueAsDate = new Date();
 
-        function fileToBase64(file) {
-            return new Promise((resolve, reject) => {
-                if (!file) resolve("");
-                const reader = new FileReader();
-                reader.readAsDataURL(file);
-                reader.onload = () => resolve(reader.result);
-                reader.onerror = error => reject(error);
-            });
+        // ฟังก์ชันสลับแท็บ 3 แท็บ
+        function switchTab(tabName) {
+            // ซ่อนเนื้อหาทั้งหมด
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            // เอา Class Active ออกจากทุกปุ่มแท็บ
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('tab-active'));
+
+            // แสดงเนื้อหาตามแท็บที่เลือก
+            document.getElementById('content-' + tabName).classList.remove('hidden');
+            document.getElementById('tab-' + tabName).classList.add('tab-active');
         }
 
-        document.getElementById('checkForm').addEventListener('submit', async function(e) {
+        // ฟังก์ชันสลับหน้าสมัคร/ล็อกอินครู
+        function toggleTeacherAuth() {
+            const loginForm = document.getElementById('teacherLoginForm');
+            const regForm = document.getElementById('teacherRegisterForm');
+            const title = document.getElementById('auth-title');
+            const btn = document.getElementById('toggle-auth-btn');
+
+            if (loginForm.classList.contains('hidden')) {
+                loginForm.classList.remove('hidden');
+                regForm.classList.add('hidden');
+                title.innerText = "เข้าสู่ระบบสำหรับครู";
+                btn.innerText = "ยังไม่มีบัญชี? สมัครสมาชิก";
+            } else {
+                loginForm.classList.add('hidden');
+                regForm.classList.remove('hidden');
+                title.innerText = "สมัครสมาชิกครูใหม่";
+                btn.innerText = "มีบัญชีอยู่แล้ว? เข้าสู่ระบบ";
+            }
+        }
+
+        // ตัวอย่างการจำลองโหลดรายละเอียดงานฝั่งครู
+        function loadJobDetail() {
+            document.getElementById('view-sender').innerText = "นายสมชาย ใจดี";
+            document.getElementById('view-class').innerText = "ม.3/1";
+            document.getElementById('view-area').innerText = "ห้องเรียน 101";
+            document.getElementById('view-date').innerText = "29/09/2026";
+        }
+
+        // ฟังก์ชันจำลองแอดมินลบครู
+        function deleteTeacher(btn) {
+            if (confirm("คุณต้องการลบรายชื่อครูท่านนี้ใช่หรือไม่?")) {
+                btn.closest('li').remove();
+            }
+        }
+
+        // ฟังก์ชันจำลองแอดมินเพิ่มครู
+        document.getElementById('adminAddTeacherForm').addEventListener('submit', function(e) {
             e.preventDefault();
-            
-            const btn = document.getElementById('submitBtn');
-            const statusMsg = document.getElementById('statusMessage');
-            
-            statusMsg.classList.remove('hidden', 'bg-red-100', 'text-red-600', 'bg-green-100', 'text-green-600');
-            statusMsg.classList.add('bg-rose-100', 'text-rose-700');
-            statusMsg.innerText = "⏳ กำลังบันทึกข้อมูล...";
-            
-            btn.disabled = true;
-            btn.innerText = "กำลังบันทึก...";
-
-            try {
-                const fileInput = document.getElementById('imageFile').files[0];
-                let imageBase64 = "";
-                if (fileInput) {
-                    imageBase64 = await fileToBase64(fileInput);
-                }
-
-                const payload = {
-                    date: document.getElementById('inspectionDate').value,
-                    sender: document.getElementById('sender').value,
-                    area: document.getElementById('area').value,
-                    class: document.getElementById('classVal').value,
-                    checker: document.getElementById('checker').value,
-                    score: document.getElementById('score').value,
-                    comment: document.getElementById('comment').value,
-                    status: "ตรวจแล้ว",
-                    image: imageBase64
-                };
-
-                const response = await fetch(SCRIPT_URL, {
-                    method: 'POST',
-                    body: JSON.stringify(payload)
-                });
-
-                const result = await response.json();
-
-                if (result.result === 'success') {
-                    statusMsg.classList.remove('bg-rose-100', 'text-rose-700');
-                    statusMsg.classList.add('bg-green-100', 'text-green-700');
-                    statusMsg.innerText = "🌸 บันทึกข้อมูลและให้คะแนนเรียบร้อยแล้ว!";
-                    document.getElementById('checkForm').reset();
-                    document.getElementById('inspectionDate').valueAsDate = new Date();
-                } else {
-                    throw new Error(result.message || "เกิดข้อผิดพลาด");
-                }
-            } catch (err) {
-                statusMsg.classList.remove('bg-rose-100', 'text-rose-700');
-                statusMsg.classList.add('bg-red-100', 'text-red-600');
-                statusMsg.innerText = "❌ เกิดข้อผิดพลาด: " + err.message;
-            } finally {
-                btn.disabled = false;
-                btn.innerText = "💖 บันทึกการตรวจและคะแนน";
+            const nameInput = document.getElementById('admin-tc-name');
+            if (nameInput.value) {
+                const ul = document.getElementById('teacher-list');
+                const li = document.createElement('li');
+                li.className = "flex justify-between items-center bg-white p-2 rounded-lg border";
+                li.innerHTML = `<span>👩‍🏫 ${nameInput.value}</span><button onclick="deleteTeacher(this)" class="text-red-500 hover:underline font-semibold">ลบ</button>`;
+                ul.appendChild(li);
+                nameInput.value = "";
+                alert('เพิ่มรายชื่อครูเรียบร้อยแล้ว');
             }
         });
     </script>
+
 </body>
 </html>
