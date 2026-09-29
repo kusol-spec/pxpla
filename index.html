@@ -3,270 +3,239 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ระบบตรวจความสะอาดเรียลไทม์</title>
+    <title>ระบบตรวจความสะอาด</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Sarabun', sans-serif; background-color: #fff0f3 !important; }
-        .pink-card { background-color: #ffffff; border: 2px solid #fecdd3; box-shadow: 0 10px 25px -5px rgba(244, 63, 94, 0.15); }
+        body { font-family: 'Sarabun', sans-serif; background-color: #fff0f3; }
+        .pink-card { background: #fff; border: 2px solid #fecdd3; }
         .pink-header { color: #e11d48; }
-        .pink-label { color: #be123c; font-weight: 600; }
-        .pink-input { border: 2px solid #fecdd3 !important; }
-        .pink-input:focus { border-color: #f43f5e !important; outline: none; box-shadow: 0 0 0 3px rgba(244, 63, 94, 0.2); }
-        .pink-btn { background-color: #f43f5e !important; color: #ffffff !important; }
-        .pink-btn:hover { background-color: #e11d48 !important; }
-        .tab-btn { transition: all 0.3s ease; }
-        .tab-active { background-color: #f43f5e !important; color: white !important; font-weight: bold; }
+        .pink-btn { background: #f43f5e; color: #fff; }
+        .pink-btn:hover { background: #e11d48; }
+        .tab-active { background: #f43f5e !important; color: #fff !important; font-weight: bold; }
     </style>
 </head>
-<body class="min-h-screen p-3 md:p-6 flex flex-col items-center">
+<body class="p-3 md:p-6 flex flex-col items-center min-h-screen">
 
-    <div class="text-center my-4">
-        <h1 class="text-3xl font-bold pink-header">🌸 ระบบตรวจความสะอาด (Real-time) 🌸</h1>
-    </div>
+    <h1 class="text-2xl md:text-3xl font-bold pink-header my-3">🌸 ระบบตรวจความสะอาด 🌸</h1>
 
     <!-- เมนู 3 แท็บ -->
-    <div class="flex flex-wrap justify-center gap-2 mb-6 w-full max-w-2xl bg-pink-100 p-2 rounded-2xl border border-pink-200">
-        <button onclick="switchTab('student')" id="tab-student" class="tab-btn tab-active flex-1 min-w-[100px] py-2.5 px-4 rounded-xl text-center font-semibold text-rose-700">👧🏻 นักเรียน (ส่งงาน)</button>
-        <button onclick="switchTab('teacher')" id="tab-teacher" class="tab-btn flex-1 min-w-[100px] py-2.5 px-4 rounded-xl text-center font-semibold text-rose-700">👩‍🏫 ครู (ตรวจงาน)</button>
-        <button onclick="switchTab('admin')" id="tab-admin" class="tab-btn flex-1 min-w-[100px] py-2.5 px-4 rounded-xl text-center font-semibold text-rose-700">🛠️ แอดมิน (8888)</button>
+    <div class="flex gap-1 mb-4 w-full max-w-lg bg-pink-100 p-1.5 rounded-xl text-sm">
+        <button onclick="switchTab('student')" id="tab-student" class="tab-btn tab-active flex-1 py-2 rounded-lg font-semibold text-rose-700">นักเรียน</button>
+        <button onclick="switchTab('teacher')" id="tab-teacher" class="tab-btn flex-1 py-2 rounded-lg font-semibold text-rose-700">ครูตรวจงาน</button>
+        <button onclick="switchTab('admin')" id="tab-admin" class="tab-btn flex-1 py-2 rounded-lg font-semibold text-rose-700">แอดมิน (8888)</button>
     </div>
 
-    <div class="max-w-3xl w-full pink-card p-6 md:p-8 rounded-3xl mb-8">
+    <div class="max-w-lg w-full pink-card p-5 rounded-2xl shadow-sm">
 
         <!-- แท็บ 1: นักเรียน -->
-        <div id="content-student" class="tab-content space-y-4">
-            <h2 class="text-xl font-bold pink-header border-b pb-2">ส่งผลการทำความสะอาด</h2>
-            <form id="studentForm" onsubmit="submitStudentWork(event)" class="space-y-4">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block pink-label mb-1">📅 วันที่ส่ง</label>
-                        <input type="date" id="st-date" required class="w-full p-2.5 rounded-xl pink-input">
-                    </div>
-                    <div>
-                        <label class="block pink-label mb-1">🏫 ชั้น / ห้อง</label>
-                        <input type="text" id="st-class" placeholder="เช่น ม.3/1" required class="w-full p-2.5 rounded-xl pink-input">
-                    </div>
+        <div id="content-student" class="tab-content space-y-3">
+            <h2 class="font-bold pink-header border-b pb-2">📤 ส่งงานทำความสะอาด</h2>
+            <form onsubmit="submitStudentWork(event)" class="space-y-3 text-sm">
+                <div class="grid grid-cols-2 gap-2">
+                    <input type="date" id="st-date" required class="p-2 border border-pink-200 rounded-lg w-full">
+                    <input type="text" id="st-class" placeholder="ชั้น/ห้อง (ม.3/1)" required class="p-2 border border-pink-200 rounded-lg w-full">
                 </div>
-                <div>
-                    <label class="block pink-label mb-1">👤 ชื่อผู้ส่ง</label>
-                    <input type="text" id="st-sender" placeholder="ระบุชื่อนักเรียน" required class="w-full p-2.5 rounded-xl pink-input">
-                </div>
-                <div>
-                    <label class="block pink-label mb-1">📍 สถานที่ / จุดรับผิดชอบ</label>
-                    <input type="text" id="st-area" placeholder="เช่น ห้องเรียน 101" required class="w-full p-2.5 rounded-xl pink-input">
-                </div>
-                <div>
-                    <label class="block pink-label mb-1">📸 แนบรูปภาพ</label>
-                    <input type="file" id="st-image" accept="image/*" class="w-full p-2 bg-pink-50 rounded-xl border border-pink-200 text-sm">
-                </div>
-                <button type="submit" id="btn-submit-st" class="w-full pink-btn font-bold py-3.5 rounded-2xl text-lg shadow-md">📤 ส่งงานเรียลไทม์</button>
+                <input type="text" id="st-sender" placeholder="ชื่อผู้ส่ง" required class="p-2 border border-pink-200 rounded-lg w-full">
+                <input type="text" id="st-area" placeholder="สถานที่ (เช่น ห้อง 101)" required class="p-2 border border-pink-200 rounded-lg w-full">
+                <input type="file" id="st-image" accept="image/*" class="p-1 border border-pink-200 rounded-lg w-full text-xs">
+                <button type="submit" id="btn-st" class="w-full pink-btn py-2.5 rounded-xl font-bold">ส่งข้อมูล</button>
             </form>
         </div>
 
         <!-- แท็บ 2: ครู -->
-        <div id="content-teacher" class="tab-content hidden space-y-4">
-            <!-- ล็อกอิน/สมัครสมาชิกครู -->
-            <div id="teacher-auth-section" class="bg-pink-50 p-6 rounded-2xl border border-pink-200 max-w-md mx-auto">
-                <h3 id="auth-title" class="text-lg font-bold pink-header mb-4">🔐 เข้าสู่ระบบสำหรับครู</h3>
-                <form id="teacherLoginForm" onsubmit="loginTeacher(event)" class="space-y-3">
-                    <input type="text" id="tc-user" placeholder="Username" required class="w-full p-2.5 rounded-xl pink-input bg-white">
-                    <input type="password" id="tc-pass" placeholder="Password" required class="w-full p-2.5 rounded-xl pink-input bg-white">
-                    <button type="submit" class="w-full pink-btn font-bold py-2.5 rounded-xl">🔑 เข้าสู่ระบบ</button>
-                </form>
+        <div id="content-teacher" class="tab-content hidden space-y-3">
+            <div id="tc-auth" class="space-y-2">
+                <h2 class="font-bold pink-header">🔐 เข้าสู่ระบบครู</h2>
+                <input type="text" id="tc-user" placeholder="Username" class="p-2 border border-pink-200 rounded-lg w-full text-sm">
+                <button onclick="loginTeacher()" class="w-full pink-btn py-2 rounded-lg font-bold text-sm">เข้าสู่ระบบ</button>
             </div>
 
-            <!-- ส่วนตรวจงานเรียลไทม์ -->
-            <div id="teacher-work-section" class="space-y-4 hidden">
-                <div class="flex justify-between items-center border-b pb-2">
-                    <h2 class="text-xl font-bold pink-header">📋 รายการงานรอตรวจ (เรียลไทม์)</h2>
-                    <button onclick="fetchRealtimeJobs()" class="text-xs bg-rose-100 text-rose-700 px-3 py-1.5 rounded-lg font-semibold">🔄 อัปเดตข้อมูล</button>
+            <div id="tc-main" class="hidden space-y-3">
+                <div class="flex justify-between items-center text-sm border-b pb-2">
+                    <span class="font-bold pink-header">📋 รายการรอตรวจ</span>
+                    <button onclick="loadJobs()" class="text-xs bg-rose-100 text-rose-700 px-2 py-1 rounded">🔄 รีเฟรช</button>
                 </div>
-                
-                <select id="pending-jobs" class="w-full p-2.5 rounded-xl pink-input bg-white" onchange="selectJobToGrade()">
-                    <option value="">-- โหลดข้อมูลงาน... --</option>
+                <select id="job-select" onchange="showSelectedJob()" class="p-2 border border-pink-200 rounded-lg w-full text-sm">
+                    <option value="">-- โหลดงาน... --</option>
                 </select>
-
-                <form id="gradeForm" onsubmit="submitGrade(event)" class="space-y-4 bg-pink-50 p-4 rounded-2xl border border-pink-200">
-                    <div class="bg-white p-3 rounded-xl border text-center">
-                        <p class="pink-label text-xs mb-2">📸 รูปภาพงานที่นักเรียนส่ง:</p>
-                        <img id="view-image" src="https://via.placeholder.com/400x200?text=เลือกงานด้านบนเพื่อดูรูป" class="max-h-64 mx-auto rounded-lg object-contain">
-                    </div>
-                    <div class="bg-pink-100 p-4 rounded-2xl text-center">
-                        <label class="block pink-header font-bold mb-1">💯 คะแนน (0-10)</label>
-                        <input type="number" id="tc-score" min="0" max="10" value="10" required class="w-full p-3 rounded-xl text-2xl font-bold text-center text-rose-600 bg-white">
-                    </div>
-                    <textarea id="tc-comment" placeholder="คำแนะนำเพิ่มเติม..." class="w-full p-2.5 rounded-xl pink-input bg-white"></textarea>
-                    <button type="submit" class="w-full pink-btn font-bold py-3 rounded-2xl">✅ บันทึกคะแนนเรียลไทม์</button>
+                <div class="bg-gray-50 p-2 rounded-lg border text-center">
+                    <img id="tc-img" src="https://via.placeholder.com/300x150?text=เลือกงานเพื่อดูรูป" class="max-h-48 mx-auto object-contain rounded">
+                </div>
+                <form onsubmit="submitGrade(event)" class="space-y-2 text-sm">
+                    <input type="number" id="tc-score" min="0" max="10" placeholder="คะแนน (0-10)" required class="p-2 border border-pink-200 rounded-lg w-full text-center font-bold">
+                    <textarea id="tc-comment" placeholder="คำแนะนำ..." class="p-2 border border-pink-200 rounded-lg w-full text-xs"></textarea>
+                    <button type="submit" class="w-full pink-btn py-2 rounded-lg font-bold">บันทึกคะแนน</button>
                 </form>
             </div>
         </div>
 
-        <!-- แท็บ 3: แอดมิน (8888) -->
-        <div id="content-admin" class="tab-content hidden space-y-4">
-            <div id="admin-lock" class="bg-pink-50 p-6 rounded-2xl border border-pink-200 max-w-sm mx-auto text-center space-y-3">
-                <h3 class="text-lg font-bold pink-header">🔒 รหัสผ่านแอดมิน</h3>
-                <input type="password" id="admin-pass" placeholder="8888" maxlength="4" class="w-full p-3 rounded-xl pink-input text-center text-2xl font-bold bg-white">
-                <button onclick="loginAdmin()" class="w-full pink-btn font-bold py-2.5 rounded-xl">🔓 เข้าสู่ระบบแอดมิน</button>
+        <!-- แท็บ 3: แอดมิน -->
+        <div id="content-admin" class="tab-content hidden space-y-3">
+            <div id="admin-auth" class="space-y-2 text-center">
+                <h2 class="font-bold pink-header">🔒 รหัสผ่านแอดมิน</h2>
+                <input type="password" id="admin-pass" placeholder="8888" maxlength="4" class="p-2 border border-pink-200 rounded-lg text-center font-bold w-full">
+                <button onclick="loginAdmin()" class="w-full pink-btn py-2 rounded-lg font-bold text-sm">เข้าสู่ระบบ</button>
             </div>
 
-            <div id="admin-panel" class="space-y-4 hidden">
-                <h2 class="text-xl font-bold pink-header border-b pb-2">📊 ตารางสรุปผลงานเรียลไทม์</h2>
-                <div class="overflow-x-auto bg-white rounded-xl border">
-                    <table class="w-full text-xs text-left">
-                        <thead class="bg-pink-100 pink-label">
-                            <tr>
-                                <th class="p-2">วันที่</th>
-                                <th class="p-2">ชื่อนักเรียน</th>
-                                <th class="p-2">ห้อง</th>
-                                <th class="p-2">สถานที่</th>
-                                <th class="p-2">คะแนน</th>
-                                <th class="p-2">สถานะ</th>
+            <div id="admin-main" class="hidden space-y-2">
+                <h2 class="font-bold pink-header text-sm">📊 รายการทั้งหมด (ล่าสุด 50 รายการ)</h2>
+                <div class="overflow-x-auto text-xs">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-pink-100 text-rose-800">
+                                <th class="p-1.5 border">วันที่</th>
+                                <th class="p-1.5 border">ชื่อ</th>
+                                <th class="p-1.5 border">ห้อง</th>
+                                <th class="p-1.5 border">คะแนน</th>
                             </tr>
                         </thead>
-                        <tbody id="admin-table-body">
-                            <!-- ดึงข้อมูลเรียลไทม์มาใส่ตรงนี้ -->
-                        </tbody>
+                        <tbody id="admin-table"></tbody>
                     </table>
                 </div>
             </div>
         </div>
 
-        <div id="statusMsg" class="mt-4 text-center font-semibold text-sm p-3 rounded-xl hidden"></div>
+        <div id="status" class="mt-3 text-center text-xs font-semibold p-2 rounded hidden"></div>
     </div>
 
     <script>
-        // ⚠️ วาง Web App URL ที่ได้จาก Google Apps Script ที่นี่ ⚠️
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxY4vdnTjB9hHFvrc28Rry6NfvLBJex22pR-Ir7psRSZFHhT-22PuSkMMH4YHQVf_4F/exec";
+        let jobs = [];
 
-        let allJobsData = [];
         document.getElementById('st-date').valueAsDate = new Date();
 
-        function switchTab(tab) {
-            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
-            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('tab-active'));
-            document.getElementById('content-' + tab).classList.remove('hidden');
-            document.getElementById('tab-' + tab).classList.add('tab-active');
-
-            if (tab === 'teacher') fetchRealtimeJobs();
-            if (tab === 'admin' && !document.getElementById('admin-panel').classList.contains('hidden')) fetchAdminRealtime();
+        function switchTab(t) {
+            document.querySelectorAll('.tab-content').forEach(e => e.classList.add('hidden'));
+            document.querySelectorAll('.tab-btn').forEach(e => e.classList.remove('tab-active'));
+            document.getElementById('content-' + t).classList.remove('hidden');
+            document.getElementById('tab-' + t).classList.add('tab-active');
+            if (t === 'teacher' && !document.getElementById('tc-main').classList.contains('hidden')) loadJobs();
+            if (t === 'admin' && !document.getElementById('admin-main').classList.contains('hidden')) loadAdmin();
         }
 
-        // 1. นักเรียนส่งงานเข้าฐานข้อมูลเรียลไทม์
+        // ย่อขนาดรูปภาพก่อนส่งเข้าเซิร์ฟเวอร์
+        function compressImage(file) {
+            return new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = (e) => {
+                    const img = new Image();
+                    img.src = e.target.result;
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        const ctx = canvas.getContext('2d');
+                        const maxW = 600;
+                        const scale = maxW / img.width;
+                        canvas.width = maxW;
+                        canvas.height = img.height * scale;
+                        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                        resolve(canvas.toDataURL('image/jpeg', 0.6));
+                    };
+                };
+            });
+        }
+
         async function submitStudentWork(e) {
             e.preventDefault();
-            showStatus("⏳ กำลังบันทึกข้อมูลเรียลไทม์...", "blue");
+            showMsg("⏳ กำลังส่งข้อมูล...", "blue");
+            const file = document.getElementById('st-image').files[0];
+            let imgBase64 = file ? await compressImage(file) : "";
 
-            const fileInput = document.getElementById('st-image').files[0];
-            let base64 = "";
-            if (fileInput) {
-                base64 = await new Promise((resolve) => {
-                    const r = new FileReader();
-                    r.onload = () => resolve(r.result);
-                    r.readAsDataURL(fileInput);
-                });
-            }
-
-            const payload = {
+            const data = {
                 action: "submitJob",
                 date: document.getElementById('st-date').value,
                 classVal: document.getElementById('st-class').value,
                 sender: document.getElementById('st-sender').value,
                 area: document.getElementById('st-area').value,
-                image: base64
+                image: imgBase64
             };
 
-            await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(payload) });
-            showStatus("✅ บันทึกข้อมูลเข้าฐานข้อมูลเรียลไทม์สำเร็จ!", "green");
-            document.getElementById('studentForm').reset();
+            await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(data) });
+            showMsg("✅ ส่งข้อมูลสำเร็จ!", "green");
+            e.target.reset();
         }
 
-        // 2. ดึงข้อมูลงานมาให้ครูตรวจแบบเรียลไทม์
-        async function fetchRealtimeJobs() {
-            const res = await fetch(SCRIPT_URL + "?action=getJobs");
+        function loginTeacher() {
+            if (document.getElementById('tc-user').value) {
+                document.getElementById('tc-auth').classList.add('hidden');
+                document.getElementById('tc-main').classList.remove('hidden');
+                loadJobs();
+            }
+        }
+
+        async function loadJobs() {
+            const res = await fetch(SCRIPT_URL);
             const data = await res.json();
             if (data.result === 'success') {
-                allJobsData = data.data;
-                const select = document.getElementById('pending-jobs');
-                select.innerHTML = '<option value="">-- เลือกลิสต์นักเรียนที่ส่งงาน --</option>';
-                
-                allJobsData.filter(j => j.status === 'รอตรวจ').forEach(job => {
-                    select.innerHTML += `<option value="${job.id}">[${job.classVal}] ${job.sender} - ${job.area}</option>`;
+                jobs = data.data;
+                const select = document.getElementById('job-select');
+                select.innerHTML = '<option value="">-- เลือกรอนักเรียน --</option>';
+                jobs.filter(j => j.status === 'รอตรวจ').forEach(j => {
+                    select.innerHTML += `<option value="${j.id}">[${j.classVal}] ${j.sender} (${j.area})</option>`;
                 });
             }
         }
 
-        function selectJobToGrade() {
-            const id = document.getElementById('pending-jobs').value;
-            const job = allJobsData.find(j => j.id === id);
-            if (job) {
-                document.getElementById('view-image').src = job.imageUrl || "https://via.placeholder.com/400x200?text=ไม่มีรูปภาพ";
-            }
+        function showSelectedJob() {
+            const id = document.getElementById('job-select').value;
+            const job = jobs.find(j => j.id === id);
+            document.getElementById('tc-img').src = job && job.imageUrl ? job.imageUrl : "https://via.placeholder.com/300x150?text=ไม่มีรูปภาพ";
         }
 
-        // บันทึกคะแนนครู
         async function submitGrade(e) {
             e.preventDefault();
-            const jobId = document.getElementById('pending-jobs').value;
-            if (!jobId) return alert("กรุณาเลือกรายการงานก่อน");
-
-            showStatus("⏳ กำลังบันทึกคะแนน...", "blue");
-            const payload = {
-                action: "gradeJob",
-                jobId: jobId,
-                score: document.getElementById('tc-score').value,
-                comment: document.getElementById('tc-comment').value
-            };
-
-            await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(payload) });
-            showStatus("✅ บันทึกคะแนนสำเร็จ!", "green");
-            fetchRealtimeJobs();
+            const id = document.getElementById('job-select').value;
+            if (!id) return alert("เลือกงานก่อนครับ");
+            
+            showMsg("⏳ กำลังบันทึกคะแนน...", "blue");
+            await fetch(SCRIPT_URL, {
+                method: 'POST',
+                body: JSON.stringify({
+                    action: "gradeJob",
+                    jobId: id,
+                    score: document.getElementById('tc-score').value,
+                    comment: document.getElementById('tc-comment').value
+                })
+            });
+            showMsg("✅ บันทึกคะแนนสำเร็จ!", "green");
+            loadJobs();
         }
 
-        // 3. แอดมิน (รหัส 8888)
         function loginAdmin() {
             if (document.getElementById('admin-pass').value === '8888') {
-                document.getElementById('admin-lock').classList.add('hidden');
-                document.getElementById('admin-panel').classList.remove('hidden');
-                fetchAdminRealtime();
+                document.getElementById('admin-auth').classList.add('hidden');
+                document.getElementById('admin-main').classList.remove('hidden');
+                loadAdmin();
             } else {
                 alert('รหัสผ่านไม่ถูกต้อง');
             }
         }
 
-        async function fetchAdminRealtime() {
-            const res = await fetch(SCRIPT_URL + "?action=getJobs");
+        async function loadAdmin() {
+            const res = await fetch(SCRIPT_URL);
             const data = await res.json();
             if (data.result === 'success') {
-                const tbody = document.getElementById('admin-table-body');
+                const tbody = document.getElementById('admin-table');
                 tbody.innerHTML = '';
                 data.data.forEach(j => {
                     tbody.innerHTML += `
                         <tr class="border-b">
-                            <td class="p-2">${j.date}</td>
-                            <td class="p-2">${j.sender}</td>
-                            <td class="p-2">${j.classVal}</td>
-                            <td class="p-2">${j.area}</td>
-                            <td class="p-2 text-rose-600 font-bold">${j.score || '-'}</td>
-                            <td class="p-2"><span class="px-2 py-0.5 rounded-full text-[10px] ${j.status === 'ตรวจแล้ว' ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'}">${j.status}</span></td>
+                            <td class="p-1 border">${j.date}</td>
+                            <td class="p-1 border">${j.sender}</td>
+                            <td class="p-1 border">${j.classVal}</td>
+                            <td class="p-1 border font-bold text-rose-600">${j.score || '-'}</td>
                         </tr>
                     `;
                 });
             }
         }
 
-        function loginTeacher(e) {
-            e.preventDefault();
-            document.getElementById('teacher-auth-section').classList.add('hidden');
-            document.getElementById('teacher-work-section').classList.remove('hidden');
-            fetchRealtimeJobs();
-        }
-
-        function showStatus(msg, color) {
-            const el = document.getElementById('statusMsg');
-            el.classList.remove('hidden', 'bg-blue-100', 'text-blue-700', 'bg-green-100', 'text-green-700');
-            el.classList.add(`bg-${color}-100`, `text-${color}-700`);
-            el.innerText = msg;
+        function showMsg(m, c) {
+            const el = document.getElementById('status');
+            el.className = `mt-3 text-center text-xs font-semibold p-2 rounded bg-${c}-100 text-${c}-700`;
+            el.innerText = m;
+            el.classList.remove('hidden');
         }
     </script>
 </body>
