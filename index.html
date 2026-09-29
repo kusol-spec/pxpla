@@ -30,7 +30,7 @@
 
         <!-- แท็บ 1: นักเรียน -->
         <div id="content-student" class="tab-content space-y-3">
-            <h2 class="font-bold pink-header border-b pb-2">📤 ส่งงานทำความสะอาด</h2>
+            <h2 class="font-bold pink-header border-b pb-2">📤 ส่งงานทำความสะอาด (รอการตรวจ)</h2>
             <form onsubmit="submitStudentWork(event)" class="space-y-3 text-sm">
                 <div class="grid grid-cols-2 gap-2">
                     <input type="date" id="st-date" required class="p-2 border border-pink-200 rounded-lg w-full">
@@ -39,7 +39,7 @@
                 <input type="text" id="st-sender" placeholder="ชื่อผู้ส่ง" required class="p-2 border border-pink-200 rounded-lg w-full">
                 <input type="text" id="st-area" placeholder="สถานที่ (เช่น ห้อง 101)" required class="p-2 border border-pink-200 rounded-lg w-full">
                 <input type="file" id="st-image" accept="image/*" class="p-1 border border-pink-200 rounded-lg w-full text-xs">
-                <button type="submit" id="btn-st" class="w-full pink-btn py-2.5 rounded-xl font-bold">ส่งข้อมูล</button>
+                <button type="submit" id="btn-st" class="w-full pink-btn py-2.5 rounded-xl font-bold">ส่งงานเข้าระบบ</button>
             </form>
         </div>
 
@@ -47,52 +47,82 @@
         <div id="content-teacher" class="tab-content hidden space-y-3">
             <div id="tc-auth" class="space-y-2">
                 <h2 class="font-bold pink-header">🔐 เข้าสู่ระบบครู</h2>
-                <input type="text" id="tc-user" placeholder="Username" class="p-2 border border-pink-200 rounded-lg w-full text-sm">
+                <input type="text" id="tc-user" placeholder="ชื่อผู้ใช้/ชื่อคุณครู" class="p-2 border border-pink-200 rounded-lg w-full text-sm">
                 <button onclick="loginTeacher()" class="w-full pink-btn py-2 rounded-lg font-bold text-sm">เข้าสู่ระบบ</button>
             </div>
 
             <div id="tc-main" class="hidden space-y-3">
                 <div class="flex justify-between items-center text-sm border-b pb-2">
-                    <span class="font-bold pink-header">📋 รายการรอตรวจ</span>
+                    <span class="font-bold pink-header">📋 รายการงานที่รอตรวจ</span>
                     <button onclick="loadJobs()" class="text-xs bg-rose-100 text-rose-700 px-2 py-1 rounded">🔄 รีเฟรช</button>
                 </div>
                 <select id="job-select" onchange="showSelectedJob()" class="p-2 border border-pink-200 rounded-lg w-full text-sm">
-                    <option value="">-- โหลดงาน... --</option>
+                    <option value="">-- เลือกลิสต์นักเรียนที่รอตรวจ --</option>
                 </select>
+
+                <!-- แสดงรูปภาพที่เด็กส่งมา -->
                 <div class="bg-gray-50 p-2 rounded-lg border text-center">
-                    <img id="tc-img" src="https://via.placeholder.com/300x150?text=เลือกงานเพื่อดูรูป" class="max-h-48 mx-auto object-contain rounded">
+                    <p class="text-xs text-gray-500 mb-1">📸 รูปภาพผลงานนักเรียน:</p>
+                    <img id="tc-img" src="https://via.placeholder.com/300x150?text=เลือกงานด้านบนเพื่อดูรูปภาพ" class="max-h-48 mx-auto object-contain rounded border">
                 </div>
+
                 <form onsubmit="submitGrade(event)" class="space-y-2 text-sm">
-                    <input type="number" id="tc-score" min="0" max="10" placeholder="คะแนน (0-10)" required class="p-2 border border-pink-200 rounded-lg w-full text-center font-bold">
-                    <textarea id="tc-comment" placeholder="คำแนะนำ..." class="p-2 border border-pink-200 rounded-lg w-full text-xs"></textarea>
-                    <button type="submit" class="w-full pink-btn py-2 rounded-lg font-bold">บันทึกคะแนน</button>
+                    <label class="block text-xs font-bold text-rose-700">💯 ใส่คะแนนและให้คำแนะนำ:</label>
+                    <input type="number" id="tc-score" min="0" max="10" placeholder="ระบุคะแนน (0-10)" required class="p-2 border border-pink-200 rounded-lg w-full text-center font-bold text-lg">
+                    <textarea id="tc-comment" placeholder="คำแนะนำเพิ่มเติมสำหรับนักเรียน..." class="p-2 border border-pink-200 rounded-lg w-full text-xs"></textarea>
+                    <button type="submit" class="w-full pink-btn py-2.5 rounded-lg font-bold">✅ บันทึกคะแนนและเปลี่ยนสถานะเป็นตรวจแล้ว</button>
                 </form>
             </div>
         </div>
 
         <!-- แท็บ 3: แอดมิน -->
-        <div id="content-admin" class="tab-content hidden space-y-3">
+        <div id="content-admin" class="tab-content hidden space-y-4">
             <div id="admin-auth" class="space-y-2 text-center">
-                <h2 class="font-bold pink-header">🔒 รหัสผ่านแอดมิน</h2>
+                <h2 class="font-bold pink-header">🔒 ยืนยันรหัสผ่านแอดมิน</h2>
                 <input type="password" id="admin-pass" placeholder="8888" maxlength="4" class="p-2 border border-pink-200 rounded-lg text-center font-bold w-full">
-                <button onclick="loginAdmin()" class="w-full pink-btn py-2 rounded-lg font-bold text-sm">เข้าสู่ระบบ</button>
+                <button onclick="loginAdmin()" class="w-full pink-btn py-2 rounded-lg font-bold text-sm">เข้าสู่ระบบแอดมิน</button>
             </div>
 
-            <div id="admin-main" class="hidden space-y-2">
-                <h2 class="font-bold pink-header text-sm">📊 รายการทั้งหมด (ล่าสุด 50 รายการ)</h2>
-                <div class="overflow-x-auto text-xs">
-                    <table class="w-full text-left border-collapse">
-                        <thead>
-                            <tr class="bg-pink-100 text-rose-800">
-                                <th class="p-1.5 border">วันที่</th>
-                                <th class="p-1.5 border">ชื่อ</th>
-                                <th class="p-1.5 border">ห้อง</th>
-                                <th class="p-1.5 border">คะแนน</th>
-                            </tr>
-                        </thead>
-                        <tbody id="admin-table"></tbody>
-                    </table>
+            <div id="admin-main" class="hidden space-y-4">
+                
+                <!-- ส่วนที่ 1: ตารางติดตามการส่งงาน + ดูรูปที่เด็กส่งมา -->
+                <div class="space-y-2">
+                    <h2 class="font-bold pink-header text-sm">📊 รายการส่งงานของนักเรียนทั้งหมด</h2>
+                    <div class="overflow-x-auto text-xs">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-pink-100 text-rose-800">
+                                    <th class="p-1.5 border">วันที่</th>
+                                    <th class="p-1.5 border">ชื่อนักเรียน</th>
+                                    <th class="p-1.5 border">ห้อง</th>
+                                    <th class="p-1.5 border">รูปภาพ</th>
+                                    <th class="p-1.5 border">สถานะ</th>
+                                    <th class="p-1.5 border">คะแนน</th>
+                                </tr>
+                            </thead>
+                            <tbody id="admin-table"></tbody>
+                        </table>
+                    </div>
                 </div>
+
+                <hr class="border-pink-200">
+
+                <!-- ส่วนที่ 2: ระบบเพิ่ม / ลบ ครู -->
+                <div class="bg-pink-50 p-3 rounded-xl border border-pink-200 space-y-2">
+                    <h3 class="font-bold pink-header text-xs">👩‍🏫 ระบบจัดการรายชื่อครู</h3>
+                    <div class="flex gap-2">
+                        <input type="text" id="add-tc-name" placeholder="ชื่อ-นามสกุล คุณครูท่านใหม่" class="p-2 border border-pink-200 rounded-lg text-xs flex-1">
+                        <button onclick="addTeacher()" class="bg-emerald-500 hover:bg-emerald-600 text-white font-bold px-3 py-1.5 rounded-lg text-xs">เพิ่มครู</button>
+                    </div>
+                    
+                    <div class="pt-2">
+                        <p class="text-[11px] text-gray-600 font-semibold mb-1">รายชื่อครูในระบบปัจจุบัน:</p>
+                        <ul id="admin-tc-list" class="space-y-1 text-xs">
+                            <li class="text-gray-400">กำลังโหลดรายชื่อครู...</li>
+                        </ul>
+                    </div>
+                </div>
+
             </div>
         </div>
 
@@ -100,6 +130,7 @@
     </div>
 
     <script>
+        // ⚠️ นำ Web App URL จาก Google Apps Script มาวางที่นี่ ⚠️
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxY4vdnTjB9hHFvrc28Rry6NfvLBJex22pR-Ir7psRSZFHhT-22PuSkMMH4YHQVf_4F/exec";
         let jobs = [];
 
@@ -110,11 +141,12 @@
             document.querySelectorAll('.tab-btn').forEach(e => e.classList.remove('tab-active'));
             document.getElementById('content-' + t).classList.remove('hidden');
             document.getElementById('tab-' + t).classList.add('tab-active');
+
             if (t === 'teacher' && !document.getElementById('tc-main').classList.contains('hidden')) loadJobs();
             if (t === 'admin' && !document.getElementById('admin-main').classList.contains('hidden')) loadAdmin();
         }
 
-        // ย่อขนาดรูปภาพก่อนส่งเข้าเซิร์ฟเวอร์
+        // ย่อขนาดรูปภาพก่อนส่งเพื่อความเร็ว
         function compressImage(file) {
             return new Promise((resolve) => {
                 const reader = new FileReader();
@@ -136,6 +168,7 @@
             });
         }
 
+        // 1. นักเรียนส่งงาน (สถานะเริ่มต้นจะเป็น "รอตรวจ")
         async function submitStudentWork(e) {
             e.preventDefault();
             showMsg("⏳ กำลังส่งข้อมูล...", "blue");
@@ -152,10 +185,11 @@
             };
 
             await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(data) });
-            showMsg("✅ ส่งข้อมูลสำเร็จ!", "green");
+            showMsg("✅ ส่งงานเรียบร้อยแล้ว (สถานะ: รอการตรวจจากครู)", "green");
             e.target.reset();
         }
 
+        // 2. ครูเข้าสู่ระบบและตรวจงาน
         function loginTeacher() {
             if (document.getElementById('tc-user').value) {
                 document.getElementById('tc-auth').classList.add('hidden');
@@ -165,12 +199,12 @@
         }
 
         async function loadJobs() {
-            const res = await fetch(SCRIPT_URL);
+            const res = await fetch(SCRIPT_URL + "?action=getJobs");
             const data = await res.json();
             if (data.result === 'success') {
                 jobs = data.data;
                 const select = document.getElementById('job-select');
-                select.innerHTML = '<option value="">-- เลือกรอนักเรียน --</option>';
+                select.innerHTML = '<option value="">-- เลือกลิสต์งานนักเรียนที่รอตรวจ --</option>';
                 jobs.filter(j => j.status === 'รอตรวจ').forEach(j => {
                     select.innerHTML += `<option value="${j.id}">[${j.classVal}] ${j.sender} (${j.area})</option>`;
                 });
@@ -186,7 +220,7 @@
         async function submitGrade(e) {
             e.preventDefault();
             const id = document.getElementById('job-select').value;
-            if (!id) return alert("เลือกงานก่อนครับ");
+            if (!id) return alert("กรุณาเลือกรายการนักเรียนก่อน");
             
             showMsg("⏳ กำลังบันทึกคะแนน...", "blue");
             await fetch(SCRIPT_URL, {
@@ -198,10 +232,13 @@
                     comment: document.getElementById('tc-comment').value
                 })
             });
-            showMsg("✅ บันทึกคะแนนสำเร็จ!", "green");
+            showMsg("✅ ให้คะแนนสำเร็จ! งานเปลี่ยนเป็นตรวจแล้ว", "green");
+            document.getElementById('tc-score').value = '';
+            document.getElementById('tc-comment').value = '';
             loadJobs();
         }
 
+        // 3. แอดมิน (ล็อกอินรหัส 8888 + เพิ่ม/ลบครู + ดูรูปนักเรียน)
         function loginAdmin() {
             if (document.getElementById('admin-pass').value === '8888') {
                 document.getElementById('admin-auth').classList.add('hidden');
@@ -213,21 +250,74 @@
         }
 
         async function loadAdmin() {
-            const res = await fetch(SCRIPT_URL);
+            // โหลดตารางส่งงาน
+            const res = await fetch(SCRIPT_URL + "?action=getJobs");
             const data = await res.json();
             if (data.result === 'success') {
                 const tbody = document.getElementById('admin-table');
                 tbody.innerHTML = '';
                 data.data.forEach(j => {
+                    const imgLink = j.imageUrl ? `<a href="${j.imageUrl}" target="_blank" class="text-rose-600 underline">ดูรูป</a>` : '-';
+                    const statusBg = j.status === 'ตรวจแล้ว' ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700';
                     tbody.innerHTML += `
                         <tr class="border-b">
-                            <td class="p-1 border">${j.date}</td>
-                            <td class="p-1 border">${j.sender}</td>
-                            <td class="p-1 border">${j.classVal}</td>
-                            <td class="p-1 border font-bold text-rose-600">${j.score || '-'}</td>
+                            <td class="p-1.5 border">${j.date}</td>
+                            <td class="p-1.5 border">${j.sender}</td>
+                            <td class="p-1.5 border">${j.classVal}</td>
+                            <td class="p-1.5 border text-center">${imgLink}</td>
+                            <td class="p-1.5 border"><span class="px-1.5 py-0.5 rounded ${statusBg}">${j.status}</span></td>
+                            <td class="p-1.5 border font-bold text-rose-600 text-center">${j.score}</td>
                         </tr>
                     `;
                 });
+            }
+            loadTeachersList();
+        }
+
+        // ดึงรายชื่อครู
+        async function loadTeachersList() {
+            const res = await fetch(SCRIPT_URL + "?action=getTeachers");
+            const data = await res.json();
+            const ul = document.getElementById('admin-tc-list');
+            ul.innerHTML = '';
+            if (data.result === 'success' && data.data.length > 0) {
+                data.data.forEach(tc => {
+                    ul.innerHTML += `
+                        <li class="flex justify-between items-center bg-white p-1.5 rounded border">
+                            <span>👩‍🏫 ${tc.name}</span>
+                            <button onclick="deleteTeacher('${tc.name}')" class="text-red-500 hover:underline font-bold text-[10px]">ลบ</button>
+                        </li>
+                    `;
+                });
+            } else {
+                ul.innerHTML = '<li class="text-gray-400">ยังไม่มีรายชื่อครูในระบบ</li>';
+            }
+        }
+
+        // เพิ่มครู
+        async function addTeacher() {
+            const name = document.getElementById('add-tc-name').value;
+            if (!name) return alert("กรุณากรอกชื่อครู");
+            showMsg("⏳ กำลังเพิ่มรายชื่อครู...", "blue");
+            await fetch(SCRIPT_URL, {
+                method: 'POST',
+                body: JSON.stringify({ action: "addTeacher", name: name })
+            });
+            document.getElementById('add-tc-name').value = '';
+            showMsg("✅ เพิ่มรายชื่อครูเรียบร้อย", "green");
+            loadTeachersList();
+        }
+
+        // ลบครู
+        async function deleteTeacher(name) {
+            if (confirm(`คุณต้องการลบรายชื่อ "${name}" ใช่หรือไม่?`)) {
+                showMsg("⏳ กำลังลบรายชื่อครู...", "blue");
+                await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({ action: "deleteTeacher", name: name })
+                });
+                showMsg("✅ ลบรายชื่อครูเรียบร้อยแล้ว", "green");
+                loadTeachersList();
             }
         }
 
