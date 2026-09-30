@@ -93,10 +93,10 @@
         <!-- API URL Config Bar -->
         <div class="mt-4 pt-3 border-t border-gray-100 flex flex-col sm:flex-row items-center justify-center gap-2 text-xs text-gray-600">
           <span class="font-medium flex items-center gap-1">
-            <i class="fa-solid fa-link text-pastel-purpleDark"></i> API URL (Google Web App):
+            <i class="fa-solid fa-link text-pastel-purpleDark"></i> API URL:
           </span>
           <div class="flex items-center gap-1 w-full sm:w-auto">
-            <input type="text" id="scriptUrlInput" placeholder="วาง Web App URL ของ Google Apps Script ที่นี่..." class="bg-white/80 border border-gray-200 rounded-lg px-3 py-1 text-xs w-full sm:w-80 focus:outline-none focus:ring-2 focus:ring-pastel-purple">
+            <input type="text" id="scriptUrlInput" placeholder="วาง Web App URL ที่นี่..." class="bg-white/80 border border-gray-200 rounded-lg px-3 py-1 text-xs w-full sm:w-80 focus:outline-none focus:ring-2 focus:ring-pastel-purple">
             <button onclick="saveScriptUrl()" class="bg-pastel-purpleDark text-white px-3 py-1 rounded-lg hover:bg-opacity-90 transition font-medium">บันทึก</button>
           </div>
         </div>
@@ -152,7 +152,7 @@
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-1">จุดประจำเวร <span class="text-red-400">*</span></label>
             <select id="dutyLocation" required class="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-pastel-purple">
-              <option value="">-- เลือกจุดทำเวร --</option>
+              <option value="">-- กำลังโหลดจุดทำเวร... --</option>
             </select>
           </div>
 
@@ -425,17 +425,17 @@
 
   <!-- JavaScript Application State & Logic -->
   <script>
-    // System Configurations
-    let SCRIPT_URL = localStorage.getItem('SCHOOL_DUTY_SCRIPT_URL') || '';
+    // System Configurations - ใส่ URL ตรงนี้แล้ว
+    const DEFAULT_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxCUjNAh2A8qZ4dJSICmy0DDM8RaXJ2tOkUSXNCfTzSO0I1McT_3kjh2wQP7OM-z63u/exec';
+    let SCRIPT_URL = localStorage.getItem('SCHOOL_DUTY_SCRIPT_URL') || DEFAULT_SCRIPT_URL;
+    
     let selectedScore = 5;
     let currentActiveReportId = null;
     let base64PhotoData = '';
 
     // Initial Load
     document.addEventListener('DOMContentLoaded', () => {
-      if (SCRIPT_URL) {
-        document.getElementById('scriptUrlInput').value = SCRIPT_URL;
-      }
+      document.getElementById('scriptUrlInput').value = SCRIPT_URL;
       loadInitialData();
     });
 
@@ -454,7 +454,7 @@
     // Helper Call to Web App API
     async function apiCall(action, payload = {}) {
       if (!SCRIPT_URL) {
-        Swal.fire('แจ้งเตือน', 'กรุณากรอกและบันทึก Google Web App URL ที่แถบด้านบนก่อนใช้งาน', 'warning');
+        Swal.fire('แจ้งเตือน', 'ไม่พบ Google Web App URL', 'warning');
         return null;
       }
       try {
