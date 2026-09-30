@@ -3,506 +3,1657 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ระบบตรวจความสะอาดประจำวัน</title>
+    <title>ระบบตรวจเวรประจำจุดนักเรียน (School Duty Inspection System)</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        body { font-family: 'Prompt', sans-serif; background-color: #fff5f7; }
-        .glass-card { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); border: 1px solid #fecdd3; }
-        .tab-active { background: #f43f5e !important; color: #ffffff !important; font-weight: 600; }
-    </style>
-</head>
-<body class="p-3 md:p-6 flex flex-col items-center min-h-screen text-slate-700">
-
-    <div class="text-center my-4 space-y-1">
-        <h1 class="text-2xl md:text-3xl font-bold text-rose-600 flex items-center justify-center gap-2">
-            <span>✨</span> ระบบตรวจความสะอาด <span>✨</span>
-        </h1>
-        <p class="text-xs text-rose-400 font-medium">บันทึกและติดตามผลการตรวจความสะอาด</p>
-    </div>
-
-    <!-- เมนู 3 แท็บ -->
-    <div class="flex gap-1.5 mb-5 w-full max-w-lg bg-pink-100/70 p-1.5 rounded-2xl text-xs md:text-sm shadow-inner">
-        <button onclick="switchTab('student')" id="tab-student" class="tab-btn tab-active flex-1 py-2.5 rounded-xl transition-all text-rose-700 font-medium">📤 ส่งงาน (นักเรียน)</button>
-        <button onclick="switchTab('teacher')" id="tab-teacher" class="tab-btn flex-1 py-2.5 rounded-xl transition-all text-rose-700 font-medium">👩‍🏫 ตรวจงาน (ครู)</button>
-        <button onclick="switchTab('admin')" id="tab-admin" class="tab-btn flex-1 py-2.5 rounded-xl transition-all text-rose-700 font-medium">⚙️ แอดมิน (8888)</button>
-    </div>
-
-    <div class="max-w-xl w-full glass-card p-5 md:p-7 rounded-3xl shadow-xl shadow-rose-100">
-
-        <!-- แท็บ 1: นักเรียน -->
-        <div id="content-student" class="tab-content space-y-4">
-            <div class="border-b border-rose-100 pb-3">
-                <h2 class="font-bold text-rose-600 text-base">📤 ส่งงานทำความสะอาด</h2>
-                <p class="text-xs text-slate-400">กรอกข้อมูลสถานที่และแนบรูปภาพผลงาน</p>
-            </div>
-
-            <form onsubmit="submitStudentWork(event)" class="space-y-3 text-xs md:text-sm">
-                <div class="grid grid-cols-2 gap-2.5">
-                    <div>
-                        <label class="block text-slate-600 font-medium mb-1">วันที่ส่ง</label>
-                        <input type="date" id="st-date" required class="p-2.5 border border-rose-200 rounded-xl w-full">
-                    </div>
-                    <div>
-                        <label class="block text-slate-600 font-medium mb-1">ชั้น/ห้อง</label>
-                        <input type="text" id="st-class" placeholder="เช่น ม.3/1" required class="p-2.5 border border-rose-200 rounded-xl w-full">
-                    </div>
-                </div>
-
-                <div>
-                    <label class="block text-slate-600 font-medium mb-1">ชื่อผู้ส่ง</label>
-                    <input type="text" id="st-sender" placeholder="ระบุชื่อ-นามสกุล" required class="p-2.5 border border-rose-200 rounded-xl w-full">
-                </div>
-
-                <div>
-                    <label class="block text-slate-600 font-medium mb-1">สถานที่ / บริเวณที่รับผิดชอบ</label>
-                    <input type="text" id="st-area" placeholder="เช่น ห้อง 101" required class="p-2.5 border border-rose-200 rounded-xl w-full">
-                </div>
-
-                <div>
-                    <label class="block text-slate-600 font-medium mb-1">📸 ถ่ายภาพ / แนบรูปภาพ</label>
-                    <input type="file" id="st-image" accept="image/*" required onchange="previewUploadImage(event)" class="p-1.5 border border-rose-200 rounded-xl w-full text-xs text-slate-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:bg-rose-100 file:text-rose-700">
-                    <div id="upload-preview-box" class="mt-2 hidden text-center bg-rose-50/50 p-2 rounded-xl border border-dashed border-rose-200">
-                        <img id="upload-preview-img" src="" class="max-h-40 mx-auto rounded-lg object-contain shadow-sm">
-                    </div>
-                </div>
-
-                <button type="submit" id="btn-st" class="w-full bg-rose-500 hover:bg-rose-600 text-white py-3 rounded-xl font-bold transition-all shadow-md shadow-rose-200 mt-2">
-                    🚀 ส่งงานเข้าระบบ
-                </button>
-            </form>
-        </div>
-
-        <!-- แท็บ 2: ครูตรวจงาน -->
-        <div id="content-teacher" class="tab-content hidden space-y-4">
-            <div id="tc-auth" class="space-y-4">
-                <div class="flex justify-between items-center border-b border-rose-100 pb-3">
-                    <h2 id="tc-auth-title" class="font-bold text-rose-600 text-base">🔐 เข้าสู่ระบบคุณครู</h2>
-                    <button onclick="toggleTcAuth()" id="tc-toggle-btn" class="text-xs text-rose-500 hover:underline font-medium">ยังไม่มีบัญชี? สมัครใหม่</button>
-                </div>
-
-                <form id="tc-login-form" onsubmit="loginTeacher(event)" class="space-y-3">
-                    <input type="text" id="tc-user" placeholder="ระบุชื่อคุณครูที่ลงทะเบียนไว้" required class="p-2.5 border border-rose-200 rounded-xl w-full text-xs md:text-sm">
-                    <button type="submit" class="w-full bg-rose-500 hover:bg-rose-600 text-white py-2.5 rounded-xl font-bold text-xs md:text-sm">เข้าสู่ระบบ</button>
-                </form>
-
-                <form id="tc-reg-form" onsubmit="registerTeacher(event)" class="space-y-3 hidden">
-                    <input type="text" id="tc-reg-name" placeholder="ชื่อ-นามสกุล คุณครูท่านใหม่" required class="p-2.5 border border-rose-200 rounded-xl w-full text-xs md:text-sm">
-                    <button type="submit" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2.5 rounded-xl text-xs md:text-sm">📝 ยืนยันการลงทะเบียน</button>
-                </form>
-            </div>
-
-            <div id="tc-main" class="hidden space-y-4">
-                <div class="flex justify-between items-center border-b border-rose-100 pb-2">
-                    <span id="tc-welcome" class="font-bold text-rose-600 text-sm">📋 รายการรอตรวจ</span>
-                    <button onclick="loadJobs()" class="text-xs bg-rose-100 text-rose-700 px-2.5 py-1 rounded-lg font-medium">🔄 รีเฟรชข้อมูล</button>
-                </div>
-
-                <div>
-                    <label class="block text-xs font-semibold text-slate-600 mb-1">เลือกลิสต์นักเรียนที่ต้องการตรวจ:</label>
-                    <select id="job-select" onchange="showSelectedJob()" class="p-2.5 border border-rose-200 rounded-xl w-full text-xs md:text-sm">
-                        <option value="">-- กรุณาเลือกงานที่รอตรวจ --</option>
-                    </select>
-                </div>
-
-                <div class="bg-slate-50 p-3 rounded-2xl border border-slate-200 text-center">
-                    <p class="text-xs text-slate-400 mb-2 font-medium">📸 ภาพถ่ายผลงานจากนักเรียน</p>
-                    <div id="tc-img-container" class="min-h-[160px] flex items-center justify-center">
-                        <img id="tc-img" src="" class="max-h-52 mx-auto object-contain rounded-xl shadow-sm border border-slate-200 cursor-pointer hidden" onclick="openImgModal(this.src)" title="คลิกเพื่อขยายรูป">
-                        <a id="tc-link" href="#" target="_blank" class="hidden text-xs text-rose-600 underline font-semibold mt-1">🔗 เปิดดูรูปภาพต้นฉบับใน Tap ใหม่</a>
-                        <span id="tc-no-img" class="text-xs text-slate-400">โปรดเลือกงานด้านบนเพื่อแสดงรูปภาพ</span>
-                    </div>
-                </div>
-
-                <form onsubmit="submitGrade(event)" class="space-y-3 text-xs md:text-sm">
-                    <div>
-                        <label class="block text-xs font-bold text-rose-700 mb-1">💯 ให้คะแนน (0-10):</label>
-                        <input type="number" id="tc-score" min="0" max="10" placeholder="10" required class="p-2 border border-rose-200 rounded-xl w-full text-center font-bold text-xl text-rose-600">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-medium text-slate-600 mb-1">💬 คำแนะนำเพิ่มเติม (ถ้ามี):</label>
-                        <textarea id="tc-comment" rows="2" placeholder="เช่น ทำความสะอาดเรียบร้อยดีมาก..." class="p-2.5 border border-rose-200 rounded-xl w-full text-xs"></textarea>
-                    </div>
-                    <button type="submit" class="w-full bg-rose-500 hover:bg-rose-600 text-white py-2.5 rounded-xl font-bold shadow-md shadow-rose-200">✅ บันทึกคะแนน</button>
-                </form>
-            </div>
-        </div>
-
-        <!-- แท็บ 3: แอดมิน -->
-        <div id="content-admin" class="tab-content hidden space-y-4">
-            <div id="admin-auth" class="space-y-3 text-center">
-                <h2 class="font-bold text-rose-600 text-sm">🔒 ยืนยันสิทธิ์แอดมิน</h2>
-                <input type="password" id="admin-pass" placeholder="ใส่รหัสผ่าน 8888" maxlength="4" class="p-2.5 border border-rose-200 rounded-xl text-center font-bold text-base w-full">
-                <button onclick="loginAdmin()" class="w-full bg-rose-500 hover:bg-rose-600 text-white py-2.5 rounded-xl font-bold text-xs md:text-sm">เข้าสู่ระบบแอดมิน</button>
-            </div>
-
-            <div id="admin-main" class="hidden space-y-5">
-                <div class="space-y-2">
-                    <div class="flex justify-between items-center">
-                        <h2 class="font-bold text-rose-600 text-xs md:text-sm">📊 รายการส่งงานของนักเรียนทั้งหมด</h2>
-                        <button onclick="loadAdmin()" class="text-xs bg-rose-100 text-rose-700 px-2.5 py-1 rounded-lg font-medium">🔄 รีเฟรช</button>
-                    </div>
-                    
-                    <div class="overflow-x-auto rounded-xl border border-rose-100 shadow-sm text-xs">
-                        <table class="w-full text-left border-collapse bg-white">
-                            <thead>
-                                <tr class="bg-rose-100/70 text-rose-800">
-                                    <th class="p-2 border-b border-rose-100">วันที่</th>
-                                    <th class="p-2 border-b border-rose-100">นักเรียน/ชั้น</th>
-                                    <th class="p-2 border-b border-rose-100">สถานที่</th>
-                                    <th class="p-2 border-b border-rose-100 text-center">รูปภาพ</th>
-                                    <th class="p-2 border-b border-rose-100 text-center">สถานะ</th>
-                                    <th class="p-2 border-b border-rose-100 text-center">คะแนน</th>
-                                </tr>
-                            </thead>
-                            <tbody id="admin-table"></tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <hr class="border-rose-100">
-
-                <div class="bg-rose-50/50 p-4 rounded-2xl border border-rose-200 space-y-3">
-                    <h3 class="font-bold text-rose-700 text-xs md:text-sm">👩‍🏫 จัดการรายชื่อคุณครู</h3>
-                    <div class="flex gap-2">
-                        <input type="text" id="add-tc-name" placeholder="เพิ่มชื่อคุณครูท่านใหม่" class="p-2 border border-rose-200 rounded-xl text-xs flex-1">
-                        <button onclick="addTeacher()" class="bg-emerald-500 hover:bg-emerald-600 text-white font-bold px-4 py-2 rounded-xl text-xs">เพิ่มครู</button>
-                    </div>
-                    <div class="pt-1">
-                        <ul id="admin-tc-list" class="space-y-1.5 text-xs">
-                            <li class="text-slate-400">กำลังโหลด...</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div id="status" class="mt-3 text-center text-xs font-semibold p-2.5 rounded-xl hidden"></div>
-    </div>
-
-    <!-- Modal ดูรูปใหญ่ -->
-    <div id="img-modal" class="fixed inset-0 bg-black/80 hidden items-center justify-center p-4 z-50 backdrop-blur-sm" onclick="closeImgModal()">
-        <div class="bg-white p-3 rounded-2xl max-w-lg w-full text-center space-y-3 relative shadow-2xl" onclick="event.stopPropagation()">
-            <div class="flex justify-between items-center border-b pb-2">
-                <span class="font-bold text-xs text-rose-600">🖼️ รูปภาพผลงาน</span>
-                <button onclick="closeImgModal()" class="text-slate-400 hover:text-slate-600 font-bold px-2 text-xl">&times;</button>
-            </div>
-            <img id="modal-preview" src="" class="max-h-[75vh] mx-auto rounded-xl object-contain">
-        </div>
-    </div>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- React & Babel CDNs -->
+    <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <!-- Canvas Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
     <script>
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxY4vdnTjB9hHFvrc28Rry6NfvLBJex22pR-Ir7psRSZFHhT-22PuSkMMH4YHQVf_4F/exec";
-        let jobs = [];
-
-        document.getElementById('st-date').valueAsDate = new Date();
-
-        function switchTab(t) {
-            document.querySelectorAll('.tab-content').forEach(e => e.classList.add('hidden'));
-            document.querySelectorAll('.tab-btn').forEach(e => e.classList.remove('tab-active'));
-            document.getElementById('content-' + t).classList.remove('hidden');
-            document.getElementById('tab-' + t).classList.add('tab-active');
-
-            if (t === 'teacher' && !document.getElementById('tc-main').classList.contains('hidden')) loadJobs();
-            if (t === 'admin' && !document.getElementById('admin-main').classList.contains('hidden')) loadAdmin();
-        }
-
-        // ย่อขนาดรูปภาพก่อนส่งเพื่อป้องกันเน็ตค้าง
-        function compressAndResizeImage(file) {
-            return new Promise((resolve) => {
-                const reader = new FileReader();
-                reader.readAsDataURL(file);
-                reader.onload = (e) => {
-                    const img = new Image();
-                    img.src = e.target.result;
-                    img.onload = () => {
-                        const canvas = document.createElement('canvas');
-                        const ctx = canvas.getContext('2d');
-                        const maxSide = 800;
-                        let width = img.width;
-                        let height = img.height;
-
-                        if (width > height) {
-                            if (width > maxSide) {
-                                height = Math.round((height *= maxSide / width));
-                                width = maxSide;
-                            }
-                        } else {
-                            if (height > maxSide) {
-                                width = Math.round((width *= maxSide / height));
-                                height = maxSide;
-                            }
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        prompt: ['Prompt', 'sans-serif'],
+                        kanit: ['Kanit', 'sans-serif'],
+                    },
+                    colors: {
+                        pastel: {
+                            cream: '#FDFBF7',
+                            lavender: '#E8E0FF',
+                            blossom: '#FFD6E8',
+                            mint: '#D8F3DC',
+                            aqua: '#D0F4DE',
+                            amber: '#FFECB3',
+                            coral: '#FFD7C2',
+                            pinkCream: '#FFE5E5',
+                            purpleDark: '#6C5CE7',
+                            mintDark: '#2ED573',
+                            coralDark: '#FF7675',
+                            amberDark: '#FFA502'
                         }
+                    },
+                    boxShadow: {
+                        'soft': '0 10px 30px -5px rgba(180, 160, 220, 0.15)',
+                        'card': '0 8px 20px rgba(0, 0, 0, 0.04)',
+                        'floating': '0 20px 40px -10px rgba(108, 92, 231, 0.2)'
+                    }
+                }
+            }
+        }
+    </script>
 
-                        canvas.width = width;
-                        canvas.height = height;
-                        ctx.drawImage(img, 0, 0, width, height);
-                        resolve(canvas.toDataURL('image/jpeg', 0.7));
-                    };
-                };
+    <style>
+        body {
+            font-family: 'Prompt', 'Kanit', sans-serif;
+            background: linear-gradient(135deg, #FFFDF9 0%, #F5F0FF 50%, #EBF4FF 100%);
+            min-height: 100vh;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.7);
+        }
+        .glass-input {
+            background: rgba(255, 255, 255, 0.9);
+            border: 1.5px solid #E2E8F0;
+            transition: all 0.25s ease;
+        }
+        .glass-input:focus {
+            border-color: #9333EA;
+            box-shadow: 0 0 0 4px rgba(147, 51, 234, 0.12);
+            outline: none;
+        }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #F1F5F9;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #CBD5E1;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94A3B8;
+        }
+    </style>
+</head>
+<body class="text-slate-700 antialiased selection:bg-purple-200 selection:text-purple-900">
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useMemo } = React;
+
+        // Default Initial Data
+        const INITIAL_LOCATIONS = [
+            'โรงอาหาร',
+            'ถนนหน้าโรงเรียน',
+            'ถนนลานจอดรถ',
+            'โดม',
+            'ศาลาหลวงปู่',
+            'สนามฟุตซอล',
+            'ใต้ตึก',
+            'สนามวอลเล่ย์',
+            'ตึกกล่องนม'
+        ];
+
+        const INITIAL_TEACHERS = [
+            { id: 't1', name: 'ครูสมชาย ใจดี', subject: 'สังคมศึกษา', username: 'somchai', password: '123' },
+            { id: 't2', name: 'ครูวิภา รักเรียน', subject: 'วิทยาศาสตร์', username: 'wipa', password: '123' },
+            { id: 't3', name: 'ครูณัฐพล ศรีสุข', subject: 'สุขศึกษาและพลศึกษา', username: 'nattapol', password: '123' }
+        ];
+
+        const DEFAULT_IMAGE_PLACEHOLDER = 'https://placehold.co/800x600/f1f5f9/94a3b8?text=%E0%B8%81%E0%B8%A3%E0%B8%B8%E0%B8%93%E0%B8%B2%E0%B8%AD%E0%B8%B1%E0%B8%9B%E0%B9%82%E0%B8%AB%E0%B8%A5%E0%B8%94%E0%B8%A3%E0%B8%B9%E0%B8%9B%E0%B8%96%E0%B9%88%E0%B8%B2%E0%B8%A2%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%9 me';
+
+        const INITIAL_REPORTS = [
+            {
+                id: 'rep-101',
+                studentName: 'นายกิตติศักดิ์ พัฒนา',
+                classGrade: 'ม.5/1',
+                studentNo: '12',
+                location: 'โรงอาหาร',
+                status: 'มาทำครบ',
+                absentMembersReason: '',
+                photoUrl: 'https://images.unsplash.com/photo-1577896851231-70ef18881754?auto=format&fit=crop&w=800&q=80',
+                timestamp: '2026-09-30 07:30',
+                inspectionStatus: 'ตรวจแล้ว',
+                score: 10,
+                teacherComment: 'กวาดพื้นและเช็ดโต๊ะสะอาดเรียบร้อยมาก ขอชมเชยกลุ่มนี้ครับ!',
+                inspectedBy: 'ครูสมชาย ใจดี',
+                inspectedAt: '2026-09-30 07:45'
+            },
+            {
+                id: 'rep-102',
+                studentName: 'นางสาวปรียาพร สุขเกษม',
+                classGrade: 'ม.3/2',
+                studentNo: '24',
+                location: 'ถนนหน้าโรงเรียน',
+                status: 'มาทำไม่ครบ',
+                absentMembersReason: 'ด.ช.อนันต์ ป่วยลาป่วยกะทันหัน / ด.ญ.สุดา ติดภารกิจซ้อมรำโรงเรียน',
+                photoUrl: 'https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&w=800&q=80',
+                timestamp: '2026-09-30 07:35',
+                inspectionStatus: 'ตรวจแล้ว',
+                score: 8,
+                teacherComment: 'รับทราบสาเหตุเพื่อนที่ไม่มาครับ เก็บใบไม้แห้งริมถนนได้ดี แต่อยากให้จัดระเบียบถังขยะเพิ่มอีกนิดครับ',
+                inspectedBy: 'ครูวิภา รักเรียน',
+                inspectedAt: '2026-09-30 08:00'
+            }
+        ];
+
+        function App() {
+            const [activeTab, setActiveTab] = useState('student'); // 'student', 'teacher', 'admin'
+            
+            // Persistent Data States
+            const [locations, setLocations] = useState(() => {
+                const saved = localStorage.getItem('duty_locations');
+                return saved ? JSON.parse(saved) : INITIAL_LOCATIONS;
             });
-        }
+            
+            const [teachers, setTeachers] = useState(() => {
+                const saved = localStorage.getItem('duty_teachers');
+                return saved ? JSON.parse(saved) : INITIAL_TEACHERS;
+            });
 
-        async function previewUploadImage(e) {
-            const file = e.target.files[0];
-            if (file) {
-                const base64 = await compressAndResizeImage(file);
-                document.getElementById('upload-preview-img').src = base64;
-                document.getElementById('upload-preview-box').classList.remove('hidden');
-            }
-        }
+            const [reports, setReports] = useState(() => {
+                const saved = localStorage.getItem('duty_reports');
+                return saved ? JSON.parse(saved) : INITIAL_REPORTS;
+            });
 
-        async function submitStudentWork(e) {
-            e.preventDefault();
-            showMsg("⏳ กำลังอัปโหลดรูปภาพและส่งข้อมูล...", "blue");
-            const file = document.getElementById('st-image').files[0];
-            let imgBase64 = "";
+            // Auth States
+            const [currentTeacher, setCurrentTeacher] = useState(() => {
+                const saved = localStorage.getItem('duty_current_teacher');
+                return saved ? JSON.parse(saved) : null;
+            });
+            const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(false);
 
-            if (file) {
-                imgBase64 = await compressAndResizeImage(file);
-            }
+            // Global Notification Toast
+            const [toast, setToast] = useState(null);
 
-            const data = {
-                action: "submitJob",
-                date: document.getElementById('st-date').value,
-                classVal: document.getElementById('st-class').value,
-                sender: document.getElementById('st-sender').value,
-                area: document.getElementById('st-area').value,
-                image: imgBase64
+            // Lightbox Modal Image View
+            const [activeImageModal, setActiveImageModal] = useState(null);
+
+            // Sync to LocalStorage
+            useEffect(() => {
+                localStorage.setItem('duty_locations', JSON.stringify(locations));
+            }, [locations]);
+
+            useEffect(() => {
+                localStorage.setItem('duty_teachers', JSON.stringify(teachers));
+            }, [teachers]);
+
+            useEffect(() => {
+                localStorage.setItem('duty_reports', JSON.stringify(reports));
+            }, [reports]);
+
+            useEffect(() => {
+                if (currentTeacher) {
+                    localStorage.setItem('duty_current_teacher', JSON.stringify(currentTeacher));
+                } else {
+                    localStorage.removeItem('duty_current_teacher');
+                }
+            }, [currentTeacher]);
+
+            const showToast = (message, type = 'success') => {
+                setToast({ message, type });
+                setTimeout(() => setToast(null), 3500);
             };
 
-            try {
-                await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(data) });
-                showMsg("✅ ส่งงานสำเร็จแล้ว! (รอครูตรวจ)", "green");
-                e.target.reset();
-                document.getElementById('upload-preview-box').classList.add('hidden');
-            } catch (err) {
-                showMsg("❌ เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง", "red");
-            }
-        }
-
-        function toggleTcAuth() {
-            const loginForm = document.getElementById('tc-login-form');
-            const regForm = document.getElementById('tc-reg-form');
-            const title = document.getElementById('tc-auth-title');
-            const btn = document.getElementById('tc-toggle-btn');
-
-            if (loginForm.classList.contains('hidden')) {
-                loginForm.classList.remove('hidden');
-                regForm.classList.add('hidden');
-                title.innerText = "🔐 เข้าสู่ระบบคุณครู";
-                btn.innerText = "ยังไม่มีบัญชี? สมัครใหม่";
-            } else {
-                loginForm.classList.add('hidden');
-                regForm.classList.remove('hidden');
-                title.innerText = "📝 ลงทะเบียนคุณครูใหม่";
-                btn.innerText = "มีบัญชีอยู่แล้ว? เข้าสู่ระบบ";
-            }
-        }
-
-        async function registerTeacher(e) {
-            e.preventDefault();
-            const name = document.getElementById('tc-reg-name').value;
-            showMsg("⏳ กำลังลงทะเบียน...", "blue");
-            await fetch(SCRIPT_URL, {
-                method: 'POST',
-                body: JSON.stringify({ action: "addTeacher", name: name })
-            });
-            showMsg("✅ สมัครสมาชิกเรียบร้อยแล้ว!", "green");
-            document.getElementById('tc-reg-name').value = '';
-            toggleTcAuth();
-        }
-
-        function loginTeacher(e) {
-            e.preventDefault();
-            const tcName = document.getElementById('tc-user').value;
-            if (tcName) {
-                document.getElementById('tc-auth').classList.add('hidden');
-                document.getElementById('tc-main').classList.remove('hidden');
-                document.getElementById('tc-welcome').innerText = `📋 รายการรอตรวจ (ครู: ${tcName})`;
-                loadJobs();
-            }
-        }
-
-        async function loadJobs() {
-            showMsg("⏳ กำลังดึงรายการรอตรวจ...", "blue");
-            const res = await fetch(SCRIPT_URL + "?action=getJobs");
-            const data = await res.json();
-            if (data.result === 'success') {
-                jobs = data.data;
-                const select = document.getElementById('job-select');
-                select.innerHTML = '<option value="">-- กรุณาเลือกงานที่รอตรวจ --</option>';
-                
-                const pendingJobs = jobs.filter(j => j.status === 'รอตรวจ');
-                if(pendingJobs.length === 0) {
-                    showMsg("🎉 ไม่มีงานค้างตรวจในขณะนี้", "green");
-                } else {
-                    document.getElementById('status').classList.add('hidden');
+            const triggerConfetti = () => {
+                if (window.confetti) {
+                    window.confetti({
+                        particleCount: 70,
+                        spread: 60,
+                        origin: { y: 0.7 }
+                    });
                 }
+            };
 
-                pendingJobs.forEach(j => {
-                    select.innerHTML += `<option value="${j.id}">[${j.classVal}] ${j.sender} - ${j.area}</option>`;
-                });
-            }
+            return (
+                <div className="min-h-screen flex flex-col pb-12">
+                    {/* Header Banner */}
+                    <header className="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-purple-100 shadow-sm">
+                        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+                            <div className="flex items-center justify-between h-20">
+                                {/* Logo & Title */}
+                                <div className="flex items-center space-x-3 cursor-pointer" onClick={() => setActiveTab('student')}>
+                                    <div className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-purple-500 via-pink-400 to-amber-300 flex items-center justify-center text-white shadow-md shadow-purple-200 transform hover:rotate-6 transition-transform">
+                                        <i className="fa-solid fa-broom text-xl"></i>
+                                    </div>
+                                    <div>
+                                        <h1 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-purple-700 via-pink-600 to-amber-600 bg-clip-text text-transparent font-kanit">
+                                            ตรวจเวรประจำจุด
+                                        </h1>
+                                        <p className="text-xs text-slate-400 font-medium tracking-wide hidden sm:block">
+                                            School Duty Inspection System
+                                        </p>
+                                    </div>
+                                </div>
+
+                                {/* Tab Navigation Buttons */}
+                                <nav className="flex space-x-1 sm:space-x-2 bg-slate-100/80 p-1.5 rounded-2xl border border-slate-200/60">
+                                    <button
+                                        onClick={() => setActiveTab('student')}
+                                        className={`flex items-center space-x-2 px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all ${
+                                            activeTab === 'student'
+                                                ? 'bg-white text-purple-700 shadow-sm font-semibold'
+                                                : 'text-slate-600 hover:text-purple-600 hover:bg-white/50'
+                                        }`}
+                                    >
+                                        <i className="fa-solid fa-graduation-cap text-purple-500"></i>
+                                        <span>นักเรียน</span>
+                                    </button>
+
+                                    <button
+                                        onClick={() => setActiveTab('teacher')}
+                                        className={`flex items-center space-x-2 px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all ${
+                                            activeTab === 'teacher'
+                                                ? 'bg-white text-purple-700 shadow-sm font-semibold'
+                                                : 'text-slate-600 hover:text-purple-600 hover:bg-white/50'
+                                        }`}
+                                    >
+                                        <i className="fa-solid fa-chalkboard-user text-pink-500"></i>
+                                        <span>ครูประจำการ</span>
+                                        {currentTeacher && (
+                                            <span className="w-2 h-2 rounded-full bg-emerald-500 inline-block animate-pulse"></span>
+                                        )}
+                                    </button>
+
+                                    <button
+                                        onClick={() => setActiveTab('admin')}
+                                        className={`flex items-center space-x-2 px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all ${
+                                            activeTab === 'admin'
+                                                ? 'bg-white text-purple-700 shadow-sm font-semibold'
+                                                : 'text-slate-600 hover:text-purple-600 hover:bg-white/50'
+                                        }`}
+                                    >
+                                        <i className="fa-solid fa-user-gear text-amber-500"></i>
+                                        <span>แอดมิน</span>
+                                        {!isAdminLoggedIn && (
+                                            <i className="fa-solid fa-lock text-[10px] text-slate-400"></i>
+                                        )}
+                                    </button>
+                                </nav>
+                            </div>
+                        </div>
+                    </header>
+
+                    {/* Toast Notification */}
+                    {toast && (
+                        <div className="fixed bottom-6 right-6 z-50 animate-bounce">
+                            <div className={`flex items-center space-x-3 px-5 py-3.5 rounded-2xl shadow-floating text-sm font-medium text-white ${
+                                toast.type === 'error' ? 'bg-rose-500' : 'bg-emerald-600'
+                            }`}>
+                                <i className={`fa-solid ${toast.type === 'error' ? 'fa-circle-exclamation' : 'fa-circle-check'} text-lg`}></i>
+                                <span>{toast.message}</span>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Image Lightbox Modal */}
+                    {activeImageModal && (
+                        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/70 backdrop-blur-sm animate-fade-in" onClick={() => setActiveImageModal(null)}>
+                            <div className="relative max-w-3xl w-full bg-white rounded-3xl p-3 shadow-2xl overflow-hidden" onClick={e => e.stopPropagation()}>
+                                <button 
+                                    onClick={() => setActiveImageModal(null)}
+                                    className="absolute top-4 right-4 z-10 w-10 h-10 bg-black/60 hover:bg-black text-white rounded-full flex items-center justify-center transition-colors"
+                                >
+                                    <i className="fa-solid fa-xmark text-lg"></i>
+                                </button>
+                                <img 
+                                    src={activeImageModal} 
+                                    alt="Duty Inspection View" 
+                                    className="w-full h-[70vh] object-contain rounded-2xl bg-slate-900" 
+                                />
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Main Content Area */}
+                    <main className="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 lg:px-8 pt-8">
+                        {activeTab === 'student' && (
+                            <StudentView 
+                                locations={locations} 
+                                reports={reports} 
+                                setReports={setReports} 
+                                showToast={showToast}
+                                triggerConfetti={triggerConfetti}
+                                setActiveImageModal={setActiveImageModal}
+                            />
+                        )}
+
+                        {activeTab === 'teacher' && (
+                            <TeacherView 
+                                currentTeacher={currentTeacher} 
+                                setCurrentTeacher={setCurrentTeacher}
+                                teachers={teachers}
+                                setTeachers={setTeachers}
+                                reports={reports}
+                                setReports={setReports}
+                                showToast={showToast}
+                                triggerConfetti={triggerConfetti}
+                                setActiveImageModal={setActiveImageModal}
+                            />
+                        )}
+
+                        {activeTab === 'admin' && (
+                            <AdminView 
+                                isAdminLoggedIn={isAdminLoggedIn} 
+                                setIsAdminLoggedIn={setIsAdminLoggedIn}
+                                locations={locations}
+                                setLocations={setLocations}
+                                teachers={teachers}
+                                setTeachers={setTeachers}
+                                reports={reports}
+                                setReports={setReports}
+                                showToast={showToast}
+                            />
+                        )}
+                    </main>
+
+                    {/* Footer */}
+                    <footer className="mt-12 text-center text-xs text-slate-400 py-6 border-t border-slate-200/60">
+                        <p>© 2026 ระบบตรวจเวรประจำจุดนักเรียน (School Duty Inspection System)</p>
+                        <p className="mt-1 text-purple-400">ออกแบบและพัฒนารายงานการปฏิบัติงานเพื่อสถานศึกษา</p>
+                    </footer>
+                </div>
+            );
         }
 
-        function showSelectedJob() {
-            const id = document.getElementById('job-select').value;
-            const job = jobs.find(j => j.id == id);
-            const imgEl = document.getElementById('tc-img');
-            const linkEl = document.getElementById('tc-link');
-            const noImgEl = document.getElementById('tc-no-img');
-
-            if (job && job.imageUrl && job.imageUrl.length > 10) {
-                if (job.imageUrl.startsWith("http")) {
-                    imgEl.classList.add('hidden');
-                    linkEl.href = job.imageUrl;
-                    linkEl.classList.remove('hidden');
-                    noImgEl.classList.add('hidden');
-                } else {
-                    imgEl.src = job.imageUrl;
-                    imgEl.classList.remove('hidden');
-                    linkEl.classList.add('hidden');
-                    noImgEl.classList.add('hidden');
-                }
-            } else {
-                imgEl.classList.add('hidden');
-                linkEl.classList.add('hidden');
-                noImgEl.classList.remove('hidden');
-                noImgEl.innerText = job ? "นักเรียนไม่ได้แนบรูปภาพ" : "โปรดเลือกงานด้านบนเพื่อแสดงรูปภาพ";
-            }
-        }
-
-        async function submitGrade(e) {
-            e.preventDefault();
-            const id = document.getElementById('job-select').value;
-            if (!id) return alert("กรุณาเลือกรายการงานก่อนครับ");
+        function StudentView({ locations, reports, setReports, showToast, triggerConfetti, setActiveImageModal }) {
+            const [studentTab, setStudentTab] = useState('form'); // 'form' or 'history'
             
-            showMsg("⏳ กำลังบันทึกคะแนน...", "blue");
-            await fetch(SCRIPT_URL, {
-                method: 'POST',
-                body: JSON.stringify({
-                    action: "gradeJob",
-                    jobId: id,
-                    score: document.getElementById('tc-score').value,
-                    comment: document.getElementById('tc-comment').value
-                })
+            // Form State
+            const [formData, setFormData] = useState({
+                studentName: '',
+                location: locations[0] || '',
+                status: 'มาทำครบ', // 'มาทำครบ' or 'มาทำไม่ครบ'
+                absentMembersReason: '',
+                photoUrl: ''
             });
-            showMsg("✅ บันทึกคะแนนสำเร็จ!", "green");
-            document.getElementById('tc-score').value = '';
-            document.getElementById('tc-comment').value = '';
-            document.getElementById('tc-img').classList.add('hidden');
-            document.getElementById('tc-link').classList.add('hidden');
-            document.getElementById('tc-no-img').classList.remove('hidden');
-            loadJobs();
+
+            const [uploading, setUploading] = useState(false);
+
+            // Handle Custom Image Upload (Base64 file)
+            const handleImageChange = (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    setUploading(true);
+                    const reader = new FileReader();
+                    reader.onloadend = () => {
+                        setFormData(prev => ({ ...prev, photoUrl: reader.result }));
+                        setUploading(false);
+                        showToast('อัปโหลดรูปภาพสำเร็จแล้ว!');
+                    };
+                    reader.readAsDataURL(file);
+                }
+            };
+
+            const handleSubmit = (e) => {
+                e.preventDefault();
+
+                if (!formData.studentName.trim()) {
+                    showToast('กรุณากรอกชื่อ-นามสกุลให้ครบถ้วน', 'error');
+                    return;
+                }
+
+                if (!formData.photoUrl) {
+                    showToast('กรุณาอัปโหลดรูปถ่ายการทำเวร', 'error');
+                    return;
+                }
+
+                if (formData.status === 'มาทำไม่ครบ' && !formData.absentMembersReason.trim()) {
+                    showToast('กรุณากรอกรายชื่อเพื่อนที่ไม่มาทำเวรและสาเหตุ', 'error');
+                    return;
+                }
+
+                const now = new Date();
+                const formattedTime = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+
+                const newReport = {
+                    id: 'rep-' + Date.now(),
+                    ...formData,
+                    timestamp: formattedTime,
+                    inspectionStatus: 'รอการตรวจ',
+                    score: null,
+                    teacherComment: '',
+                    inspectedBy: '',
+                    inspectedAt: ''
+                };
+
+                setReports([newReport, ...reports]);
+                triggerConfetti();
+                showToast('ส่งรายงานการทำเวรเรียบร้อยแล้ว!');
+
+                // Reset Form
+                setFormData({
+                    studentName: '',
+                    location: locations[0] || '',
+                    status: 'มาทำครบ',
+                    absentMembersReason: '',
+                    photoUrl: ''
+                });
+
+                // Switch to History view automatically
+                setStudentTab('history');
+            };
+
+            return (
+                <div className="space-y-6 animate-fade-in">
+                    {/* Welcome Hero Card */}
+                    <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-purple-600 via-pink-500 to-rose-400 p-6 sm:p-8 text-white shadow-floating">
+                        <div className="absolute top-0 right-0 -mt-10 -mr-10 w-48 h-48 bg-white/10 rounded-full blur-2xl"></div>
+                        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                            <div>
+                                <span className="inline-block px-3 py-1 rounded-full bg-white/20 backdrop-blur-md text-xs font-semibold tracking-wide uppercase mb-2">
+                                    ✨ ประจำวัน
+                                </span>
+                                <h2 className="text-2xl sm:text-3xl font-bold font-kanit">
+                                    รายงานการทำเวรประจำจุด
+                                </h2>
+                                <p className="text-purple-100 text-sm mt-1 max-w-xl">
+                                    ส่งภาพถ่ายการทำเวรเพื่อเช็กชื่อและประเมินความสะอาด ร่วมสร้างโรงเรียนที่สะอาดเรียบร้อยน่าอยู่!
+                                </p>
+                            </div>
+                            {/* Toggle Sub-tabs */}
+                            <div className="flex bg-black/20 p-1.5 rounded-2xl backdrop-blur-md self-start md:self-auto">
+                                <button
+                                    onClick={() => setStudentTab('form')}
+                                    className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all ${
+                                        studentTab === 'form' ? 'bg-white text-purple-700 shadow-md' : 'text-white/80 hover:text-white'
+                                    }`}
+                                >
+                                    <i className="fa-solid fa-paper-plane mr-1.5"></i>
+                                    ส่งรายงานเวร
+                                </button>
+                                <button
+                                    onClick={() => setStudentTab('history')}
+                                    className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all ${
+                                        studentTab === 'history' ? 'bg-white text-purple-700 shadow-md' : 'text-white/80 hover:text-white'
+                                    }`}
+                                >
+                                    <i className="fa-solid fa-clock-rotate-left mr-1.5"></i>
+                                    ประวัติการส่ง ({reports.length})
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Sub Tab 1: Submit Form */}
+                    {studentTab === 'form' && (
+                        <div className="glass-card rounded-3xl p-6 sm:p-8 shadow-card border border-white">
+                            <form onSubmit={handleSubmit} className="space-y-6">
+                                <div className="border-b border-purple-100 pb-4">
+                                    <h3 className="text-lg font-bold text-slate-800 flex items-center gap-2 font-kanit">
+                                        <span className="w-8 h-8 rounded-xl bg-purple-100 text-purple-600 flex items-center justify-center text-sm">
+                                            1
+                                        </span>
+                                        ข้อมูลผู้รายงาน
+                                    </h3>
+                                </div>
+
+                                <div className="grid grid-cols-1 gap-4">
+                                    <div>
+                                        <label className="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-2">
+                                            ชื่อ - นามสกุล *
+                                        </label>
+                                        <input
+                                            type="text"
+                                            required
+                                            placeholder="เช่น ด.ช.รักดี เรียนเก่ง"
+                                            value={formData.studentName}
+                                            onChange={e => setFormData({ ...formData, studentName: e.target.value })}
+                                            className="w-full px-4 py-3 rounded-2xl glass-input text-sm"
+                                        />
+                                    </div>
+                                </div>
+
+                                {/* Section 2: Duty Location & Status */}
+                                <div className="border-b border-purple-100 pb-4 pt-4">
+                                    <h3 className="text-lg font-bold text-slate-800 flex items-center gap-2 font-kanit">
+                                        <span className="w-8 h-8 rounded-xl bg-pink-100 text-pink-600 flex items-center justify-center text-sm">
+                                            2
+                                        </span>
+                                        รายละเอียดการทำเวร
+                                    </h3>
+                                </div>
+
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    {/* Location Select Dropdown */}
+                                    <div>
+                                        <label className="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-2">
+                                            จุดประจำเวรที่รับผิดชอบ *
+                                        </label>
+                                        <div className="relative">
+                                            <select
+                                                value={formData.location}
+                                                onChange={e => setFormData({ ...formData, location: e.target.value })}
+                                                className="w-full px-4 py-3.5 rounded-2xl glass-input text-sm bg-white font-medium text-purple-900 appearance-none pr-10"
+                                            >
+                                                {locations.map(loc => (
+                                                    <option key={loc} value={loc}>📍 {loc}</option>
+                                                ))}
+                                            </select>
+                                            <i className="fa-solid fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"></i>
+                                        </div>
+                                    </div>
+
+                                    {/* Radio Group Status */}
+                                    <div>
+                                        <label className="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-2">
+                                            สถานะการมาทำเวรของสมาชิก *
+                                        </label>
+                                        <div className="grid grid-cols-2 gap-3">
+                                            <button
+                                                type="button"
+                                                onClick={() => setFormData({ ...formData, status: 'มาทำครบ' })}
+                                                className={`p-3.5 rounded-2xl border-2 flex items-center justify-center space-x-2 transition-all ${
+                                                    formData.status === 'มาทำครบ'
+                                                        ? 'border-emerald-400 bg-emerald-50/80 text-emerald-800 font-bold shadow-sm'
+                                                        : 'border-slate-200 bg-white text-slate-500 hover:border-emerald-200'
+                                                }`}
+                                            >
+                                                <i className="fa-solid fa-circle-check text-emerald-500 text-base"></i>
+                                                <span className="text-xs sm:text-sm">มาทำครบ</span>
+                                            </button>
+
+                                            <button
+                                                type="button"
+                                                onClick={() => setFormData({ ...formData, status: 'มาทำไม่ครบ' })}
+                                                className={`p-3.5 rounded-2xl border-2 flex items-center justify-center space-x-2 transition-all ${
+                                                    formData.status === 'มาทำไม่ครบ'
+                                                        ? 'border-rose-400 bg-rose-50/80 text-rose-800 font-bold shadow-sm'
+                                                        : 'border-slate-200 bg-white text-slate-500 hover:border-rose-200'
+                                                }`}
+                                            >
+                                                <i className="fa-solid fa-triangle-exclamation text-rose-500 text-base"></i>
+                                                <span className="text-xs sm:text-sm">มาทำไม่ครบ</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Dynamic Field for Absent Members */}
+                                {formData.status === 'มาทำไม่ครบ' && (
+                                    <div className="p-4 rounded-2xl bg-rose-50/70 border border-rose-200 space-y-2 animate-fade-in">
+                                        <label className="block text-xs font-bold text-rose-800 flex items-center gap-2">
+                                            <i className="fa-solid fa-user-minus text-rose-500"></i>
+                                            รายชื่อเพื่อนที่ไม่มาทำเวรและสาเหตุ *
+                                        </label>
+                                        <textarea
+                                            rows="3"
+                                            required
+                                            placeholder="ระบุชื่อเพื่อนที่ไม่มาทำเวร และเหตุผล เช่น ด.ช.กิตติ (ลาป่วย), ด.ญ.สุดา (ติดภารกิจซ้อมรำ)"
+                                            value={formData.absentMembersReason}
+                                            onChange={e => setFormData({ ...formData, absentMembersReason: e.target.value })}
+                                            className="w-full p-3 rounded-xl border border-rose-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-rose-400"
+                                        ></textarea>
+                                    </div>
+                                )}
+
+                                {/* Photo Upload Section */}
+                                <div className="border-b border-purple-100 pb-4 pt-4">
+                                    <h3 className="text-lg font-bold text-slate-800 flex items-center gap-2 font-kanit">
+                                        <span className="w-8 h-8 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center text-sm">
+                                            3
+                                        </span>
+                                        แนบรูปถ่ายการทำเวร
+                                    </h3>
+                                </div>
+
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+                                    <div className="space-y-3">
+                                        <label className="block text-xs font-semibold text-slate-600 uppercase tracking-wider">
+                                            เลือกไฟล์รูปภาพจากอุปกรณ์ *
+                                        </label>
+                                        <div className="relative">
+                                            <input
+                                                type="file"
+                                                accept="image/*"
+                                                onChange={handleImageChange}
+                                                className="hidden"
+                                                id="duty-photo-upload"
+                                            />
+                                            <label
+                                                htmlFor="duty-photo-upload"
+                                                className="flex flex-col items-center justify-center p-8 border-2 border-dashed border-purple-200 hover:border-purple-400 rounded-2xl bg-purple-50/40 hover:bg-purple-50 cursor-pointer transition-colors"
+                                            >
+                                                <i className="fa-solid fa-cloud-arrow-up text-4xl text-purple-500 mb-2"></i>
+                                                <span className="text-sm font-bold text-purple-800">คลิกเพื่ออัปโหลดรูปถ่าย</span>
+                                                <span className="text-xs text-slate-400 mt-1">รองรับไฟล์ JPG, PNG หรือกล้องถ่ายรูป</span>
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                    {/* Image Preview Box */}
+                                    <div className="flex flex-col items-center justify-center bg-slate-50 p-3 rounded-2xl border border-slate-200">
+                                        <p className="text-xs font-medium text-slate-500 mb-2">ตัวอย่างรูปถ่ายที่เลือก</p>
+                                        <div className="relative w-full h-48 rounded-xl overflow-hidden group border border-slate-200 bg-slate-200 flex items-center justify-center">
+                                            {formData.photoUrl ? (
+                                                <>
+                                                    <img
+                                                        src={formData.photoUrl}
+                                                        alt="Duty Preview"
+                                                        className="w-full h-full object-cover"
+                                                    />
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => setActiveImageModal(formData.photoUrl)}
+                                                        className="absolute inset-0 bg-black/40 text-white opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity text-xs font-medium"
+                                                    >
+                                                        <i className="fa-solid fa-magnifying-glass-plus mr-1.5"></i>
+                                                        ขยายรูป
+                                                    </button>
+                                                </>
+                                            ) : (
+                                                <div className="text-center text-slate-400 px-4">
+                                                    <i className="fa-solid fa-image text-3xl mb-1 text-slate-300"></i>
+                                                    <p className="text-xs">ยังไม่ได้อัปโหลดรูปภาพ</p>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Submit Button */}
+                                <div className="pt-4">
+                                    <button
+                                        type="submit"
+                                        disabled={uploading}
+                                        className="w-full py-4 rounded-2xl bg-gradient-to-r from-purple-600 via-pink-500 to-amber-500 text-white font-bold text-base shadow-floating hover:opacity-95 transform active:scale-[0.99] transition-all flex items-center justify-center space-x-2 font-kanit"
+                                    >
+                                        <i className="fa-solid fa-paper-plane text-lg"></i>
+                                        <span>ส่งรายงานการทำเวรประจำวัน</span>
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    )}
+
+                    {/* Sub Tab 2: History */}
+                    {studentTab === 'history' && (
+                        <div className="space-y-4">
+                            <div className="flex items-center justify-between px-2">
+                                <h3 className="text-lg font-bold text-slate-800 font-kanit">
+                                    ประวัติการส่งรายงานเวรย้อนหลัง
+                                </h3>
+                                <span className="text-xs text-slate-500 bg-slate-100 px-3 py-1 rounded-full">
+                                    ทั้งหมด {reports.length} รายการ
+                                </span>
+                            </div>
+
+                            {reports.length === 0 ? (
+                                <div className="glass-card rounded-3xl p-12 text-center text-slate-400">
+                                    <i className="fa-solid fa-folder-open text-4xl mb-3 text-purple-200"></i>
+                                    <p className="text-sm">ยังไม่มีประวัติการส่งรายงาน</p>
+                                </div>
+                            ) : (
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    {reports.map((item) => (
+                                        <div key={item.id} className="glass-card rounded-3xl p-5 shadow-card border border-white hover:shadow-md transition-shadow flex flex-col justify-between">
+                                            <div>
+                                                {/* Card Header Info */}
+                                                <div className="flex items-start justify-between gap-2 mb-3">
+                                                    <div>
+                                                        <span className="inline-block px-2.5 py-1 rounded-lg text-xs font-semibold bg-purple-100 text-purple-800 mb-1">
+                                                            📍 {item.location}
+                                                        </span>
+                                                        <h4 className="font-bold text-slate-800 text-sm">{item.studentName}</h4>
+                                                        <p className="text-xs text-slate-400">
+                                                            {item.classGrade && item.studentNo ? `ชั้น ${item.classGrade} เลขที่ ${item.studentNo} • ` : ''}{item.timestamp}
+                                                        </p>
+                                                    </div>
+
+                                                    {/* Inspection Status Badge */}
+                                                    <div>
+                                                        {item.inspectionStatus === 'ตรวจแล้ว' ? (
+                                                            <span className="inline-flex items-center space-x-1 px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 text-xs font-bold">
+                                                                <i className="fa-solid fa-circle-check text-emerald-600"></i>
+                                                                <span>ตรวจแล้ว</span>
+                                                            </span>
+                                                        ) : (
+                                                            <span className="inline-flex items-center space-x-1 px-3 py-1 rounded-full bg-amber-100 text-amber-800 text-xs font-bold animate-pulse">
+                                                                <i className="fa-solid fa-hourglass-half text-amber-600"></i>
+                                                                <span>รอการตรวจ</span>
+                                                            </span>
+                                                        )}
+                                                    </div>
+                                                </div>
+
+                                                {/* Attendance Status */}
+                                                <div className="mb-3">
+                                                    {item.status === 'มาทำครบ' ? (
+                                                        <span className="text-xs text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-md font-medium border border-emerald-200">
+                                                            ✅ มาทำครบทุกคน
+                                                        </span>
+                                                    ) : (
+                                                        <div className="text-xs text-rose-800 bg-rose-50 p-2.5 rounded-xl border border-rose-200 space-y-1">
+                                                            <p className="font-bold flex items-center gap-1">
+                                                                <i className="fa-solid fa-circle-exclamation text-rose-500"></i>
+                                                                มาทำไม่ครบ
+                                                            </p>
+                                                            <p className="text-[11px] text-rose-700 leading-relaxed">{item.absentMembersReason}</p>
+                                                        </div>
+                                                    )}
+                                                </div>
+
+                                                {/* Duty Photo Thumbnail */}
+                                                <div className="relative rounded-2xl overflow-hidden h-40 mb-3 bg-slate-100 border border-slate-200 group">
+                                                    <img src={item.photoUrl || DEFAULT_IMAGE_PLACEHOLDER} alt="Duty" className="w-full h-full object-cover" />
+                                                    {item.photoUrl && (
+                                                        <button
+                                                            onClick={() => setActiveImageModal(item.photoUrl)}
+                                                            className="absolute inset-0 bg-black/40 text-white opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity text-xs font-medium"
+                                                        >
+                                                            <i className="fa-solid fa-expand mr-1.5"></i>
+                                                            ขยายรูปภาพ
+                                                        </button>
+                                                    )}
+                                                </div>
+                                            </div>
+
+                                            {/* Reviewed Results Section */}
+                                            {item.inspectionStatus === 'ตรวจแล้ว' ? (
+                                                <div className="mt-2 pt-3 border-t border-purple-100 bg-purple-50/60 p-3.5 rounded-2xl space-y-2">
+                                                    <div className="flex items-center justify-between">
+                                                        <span className="text-xs font-bold text-purple-900 flex items-center gap-1">
+                                                            <i className="fa-solid fa-user-check text-purple-600"></i>
+                                                            {item.inspectedBy}
+                                                        </span>
+                                                        <div className="flex items-center space-x-1 bg-amber-400 text-slate-900 px-2.5 py-0.5 rounded-full text-xs font-extrabold shadow-sm">
+                                                            <i className="fa-solid fa-star text-xs"></i>
+                                                            <span>{item.score} / 10 คะแนน</span>
+                                                        </div>
+                                                    </div>
+                                                    {item.teacherComment && (
+                                                        <p className="text-xs text-slate-700 bg-white p-2.5 rounded-xl border border-purple-100 italic leading-relaxed">
+                                                            "{item.teacherComment}"
+                                                        </p>
+                                                    )}
+                                                </div>
+                                            ) : (
+                                                <div className="mt-2 text-center py-2 bg-slate-50 rounded-xl text-xs text-slate-400 italic">
+                                                    กำลังรอครูประจำการเข้าตรวจสอบความสะอาด...
+                                                </div>
+                                            )}
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+                    )}
+                </div>
+            );
         }
 
-        function loginAdmin() {
-            if (document.getElementById('admin-pass').value === '8888') {
-                document.getElementById('admin-auth').classList.add('hidden');
-                document.getElementById('admin-main').classList.remove('hidden');
-                loadAdmin();
-            } else {
-                alert('รหัสผ่านไม่ถูกต้อง');
-            }
-        }
+        function TeacherView({ currentTeacher, setCurrentTeacher, teachers, setTeachers, reports, setReports, showToast, triggerConfetti, setActiveImageModal }) {
+            // Teacher Login State
+            const [loginUser, setLoginUser] = useState('');
+            const [loginPass, setLoginPass] = useState('');
 
-        async function loadAdmin() {
-            const res = await fetch(SCRIPT_URL + "?action=getJobs");
-            const data = await res.json();
-            if (data.result === 'success') {
-                const tbody = document.getElementById('admin-table');
-                tbody.innerHTML = '';
-                data.data.forEach(j => {
-                    const hasImg = j.imageUrl && j.imageUrl.length > 10;
-                    let imgBtn = '<span class="text-slate-300 text-[10px]">ไม่มีรูป</span>';
-                    
-                    if (hasImg) {
-                        if (j.imageUrl.startsWith("http")) {
-                            imgBtn = `<a href="${j.imageUrl}" target="_blank" class="bg-rose-500 text-white px-2 py-1 rounded-lg text-[10px] font-semibold hover:bg-rose-600">🔗 ดูรูปภาพ</a>`;
-                        } else {
-                            imgBtn = `<button onclick="openImgModal('${j.imageUrl}')" class="bg-rose-500 text-white px-2 py-1 rounded-lg text-[10px] font-semibold hover:bg-rose-600">🖼️ ดูรูปภาพ</button>`;
-                        }
+            // Grading Modal / Active Report State
+            const [inspectingReport, setInspectingReport] = useState(null);
+            const [scoreInput, setScoreInput] = useState(10);
+            const [commentInput, setCommentInput] = useState('');
+
+            // Search & Filter
+            const [filterStatus, setFilterStatus] = useState('all'); // 'all', 'pending', 'reviewed'
+            const [searchQuery, setSearchQuery] = useState('');
+
+            const handleLogin = (e) => {
+                e.preventDefault();
+                const found = teachers.find(t => t.username === loginUser && t.password === loginPass);
+                if (found) {
+                    setCurrentTeacher(found);
+                    showToast(`ยินดีต้อนรับ ${found.name}`);
+                } else {
+                    showToast('ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง', 'error');
+                }
+            };
+
+            const openGradeModal = (report) => {
+                setInspectingReport(report);
+                setScoreInput(report.score || 10);
+                setCommentInput(report.teacherComment || 'ทำความสะอาดเรียบร้อยดีมากครับ');
+            };
+
+            const handleSaveGrade = (e) => {
+                e.preventDefault();
+                if (!inspectingReport) return;
+
+                const now = new Date();
+                const formattedTime = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+
+                const updatedReports = reports.map(r => {
+                    if (r.id === inspectingReport.id) {
+                        return {
+                            ...r,
+                            inspectionStatus: 'ตรวจแล้ว',
+                            score: Number(scoreInput),
+                            teacherComment: commentInput,
+                            inspectedBy: currentTeacher.name,
+                            inspectedAt: formattedTime
+                        };
                     }
-                    
-                    const statusBg = j.status === 'ตรวจแล้ว' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700';
-                    tbody.innerHTML += `
-                        <tr class="border-b border-rose-50 hover:bg-rose-50/30">
-                            <td class="p-2">${j.date}</td>
-                            <td class="p-2 font-medium">${j.sender} <br><span class="text-[10px] text-slate-400">(${j.classVal})</span></td>
-                            <td class="p-2 text-slate-600">${j.area}</td>
-                            <td class="p-2 text-center">${imgBtn}</td>
-                            <td class="p-2 text-center"><span class="px-2 py-0.5 rounded-full text-[10px] font-medium ${statusBg}">${j.status}</span></td>
-                            <td class="p-2 font-bold text-rose-600 text-center">${j.score}</td>
-                        </tr>
-                    `;
+                    return r;
                 });
-            }
-            loadTeachersList();
-        }
 
-        function openImgModal(url) {
-            document.getElementById('modal-preview').src = url;
-            document.getElementById('img-modal').classList.remove('hidden');
-            document.getElementById('img-modal').classList.add('flex');
-        }
+                setReports(updatedReports);
+                setInspectingReport(null);
+                triggerConfetti();
+                showToast('บันทึกผลการตรวจเวรสำเร็จ!');
+            };
 
-        function closeImgModal() {
-            document.getElementById('img-modal').classList.add('hidden');
-            document.getElementById('img-modal').classList.remove('flex');
-        }
+            // Filtered Reports
+            const filteredReports = useMemo(() => {
+                return reports.filter(r => {
+                    const matchesStatus = 
+                        filterStatus === 'all' ? true :
+                        filterStatus === 'pending' ? r.inspectionStatus === 'รอการตรวจ' :
+                        r.inspectionStatus === 'ตรวจแล้ว';
 
-        async function loadTeachersList() {
-            const res = await fetch(SCRIPT_URL + "?action=getTeachers");
-            const data = await res.json();
-            const ul = document.getElementById('admin-tc-list');
-            ul.innerHTML = '';
-            if (data.result === 'success' && data.data.length > 0) {
-                data.data.forEach(tc => {
-                    ul.innerHTML += `
-                        <li class="flex justify-between items-center bg-white p-2 rounded-xl border border-rose-100 shadow-sm">
-                            <span class="font-medium text-slate-700">👩‍🏫 ${tc.name}</span>
-                            <button onclick="deleteTeacher('${tc.name}')" class="text-rose-500 hover:text-rose-700 font-bold text-[10px]">ลบ</button>
-                        </li>
-                    `;
+                    const matchesSearch = 
+                        r.studentName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                        r.location.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                        r.classGrade.toLowerCase().includes(searchQuery.toLowerCase());
+
+                    return matchesStatus && matchesSearch;
                 });
-            } else {
-                ul.innerHTML = '<li class="text-slate-400">ยังไม่มีรายชื่อคุณครูในระบบ</li>';
+            }, [reports, filterStatus, searchQuery]);
+
+            // Quick Stats
+            const pendingCount = reports.filter(r => r.inspectionStatus === 'รอการตรวจ').length;
+            const reviewedCount = reports.filter(r => r.inspectionStatus === 'ตรวจแล้ว').length;
+
+            // If teacher is NOT logged in
+            if (!currentTeacher) {
+                return (
+                    <div className="max-w-md mx-auto my-8 animate-fade-in">
+                        <div className="glass-card rounded-3xl p-8 shadow-floating border border-white space-y-6">
+                            <div className="text-center space-y-2">
+                                <div className="w-16 h-16 bg-pink-100 text-pink-600 rounded-3xl mx-auto flex items-center justify-center text-2xl shadow-inner">
+                                    <i className="fa-solid fa-chalkboard-user"></i>
+                                </div>
+                                <h2 className="text-2xl font-bold font-kanit text-slate-800">เข้าสู่ระบบสำหรับครู</h2>
+                                <p className="text-xs text-slate-500">กรุณาเข้าสู่ระบบเพื่อตรวจและประเมินเวรประจำจุด</p>
+                            </div>
+
+                            <form onSubmit={handleLogin} className="space-y-4">
+                                <div>
+                                    <label className="block text-xs font-semibold text-slate-600 mb-1">ชื่อผู้ใช้งาน (Username)</label>
+                                    <input
+                                        type="text"
+                                        required
+                                        placeholder="เช่น somchai"
+                                        value={loginUser}
+                                        onChange={e => setLoginUser(e.target.value)}
+                                        className="w-full px-4 py-3 rounded-2xl glass-input text-sm"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-xs font-semibold text-slate-600 mb-1">รหัสผ่าน (Password)</label>
+                                    <input
+                                        type="password"
+                                        required
+                                        placeholder="••••••••"
+                                        value={loginPass}
+                                        onChange={e => setLoginPass(e.target.value)}
+                                        className="w-full px-4 py-3 rounded-2xl glass-input text-sm"
+                                    />
+                                </div>
+
+                                <button
+                                    type="submit"
+                                    className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-purple-600 to-pink-500 text-white font-bold text-sm shadow-md hover:opacity-95 transition-all font-kanit"
+                                >
+                                    เข้าสู่ระบบ
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                );
             }
+
+            // Teacher Dashboard when logged in
+            return (
+                <div className="space-y-6 animate-fade-in">
+                    {/* Teacher Top Bar Header */}
+                    <div className="glass-card rounded-3xl p-6 shadow-card border border-white flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                        <div className="flex items-center space-x-4">
+                            <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-pink-400 to-purple-500 text-white flex items-center justify-center text-2xl font-bold shadow-md">
+                                <i className="fa-solid fa-user-tie"></i>
+                            </div>
+                            <div>
+                                <h2 className="text-xl font-bold text-slate-800 font-kanit">{currentTeacher.name}</h2>
+                                <p className="text-xs text-purple-600 font-medium">กลุ่มสาระการเรียนรู้{currentTeacher.subject}</p>
+                            </div>
+                        </div>
+
+                        <button
+                            onClick={() => { setCurrentTeacher(null); showToast('ออกจากระบบเรียบร้อย'); }}
+                            className="px-4 py-2 rounded-2xl bg-rose-50 hover:bg-rose-100 text-rose-600 text-xs font-bold transition-colors flex items-center gap-1.5"
+                        >
+                            <i className="fa-solid fa-right-from-bracket"></i>
+                            ออกจากระบบ
+                        </button>
+                    </div>
+
+                    {/* KPI Stat Cards */}
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                        <div className="glass-card p-5 rounded-3xl border border-white flex items-center justify-between">
+                            <div>
+                                <p className="text-xs font-semibold text-slate-400">รายงานทั้งหมด</p>
+                                <p className="text-2xl font-bold text-slate-800 font-kanit">{reports.length}</p>
+                            </div>
+                            <div className="w-10 h-10 rounded-2xl bg-purple-100 text-purple-600 flex items-center justify-center text-lg">
+                                <i className="fa-solid fa-inbox"></i>
+                            </div>
+                        </div>
+
+                        <div className="glass-card p-5 rounded-3xl border border-white flex items-center justify-between">
+                            <div>
+                                <p className="text-xs font-semibold text-slate-400">รอการตรวจ</p>
+                                <p className="text-2xl font-bold text-amber-600 font-kanit">{pendingCount}</p>
+                            </div>
+                            <div className="w-10 h-10 rounded-2xl bg-amber-100 text-amber-600 flex items-center justify-center text-lg">
+                                <i className="fa-solid fa-hourglass-half"></i>
+                            </div>
+                        </div>
+
+                        <div className="glass-card p-5 rounded-3xl border border-white flex items-center justify-between col-span-2 md:col-span-1">
+                            <div>
+                                <p className="text-xs font-semibold text-slate-400">ตรวจแล้ว</p>
+                                <p className="text-2xl font-bold text-emerald-600 font-kanit">{reviewedCount}</p>
+                            </div>
+                            <div className="w-10 h-10 rounded-2xl bg-emerald-100 text-emerald-600 flex items-center justify-center text-lg">
+                                <i className="fa-solid fa-circle-check"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Search & Filter Controls */}
+                    <div className="glass-card rounded-2xl p-4 border border-white flex flex-col md:flex-row gap-3 items-center justify-between">
+                        <div className="relative w-full md:w-72">
+                            <i className="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                            <input
+                                type="text"
+                                placeholder="ค้นหาชื่อนักเรียน / จุดเวร..."
+                                value={searchQuery}
+                                onChange={e => setSearchQuery(e.target.value)}
+                                className="w-full pl-9 pr-4 py-2.5 rounded-xl glass-input text-xs"
+                            />
+                        </div>
+
+                        <div className="flex space-x-2 w-full md:w-auto">
+                            {[
+                                { id: 'all', label: 'ทั้งหมด' },
+                                { id: 'pending', label: '⏳ รอตรวจ' },
+                                { id: 'reviewed', label: '✅ ตรวจแล้ว' }
+                            ].map(tab => (
+                                <button
+                                    key={tab.id}
+                                    onClick={() => setFilterStatus(tab.id)}
+                                    className={`flex-1 md:flex-none px-4 py-2 rounded-xl text-xs font-semibold transition-all ${
+                                        filterStatus === tab.id
+                                            ? 'bg-purple-600 text-white shadow-sm'
+                                            : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                                    }`}
+                                >
+                                    {tab.label}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+
+                    {filteredReports.length === 0 ? (
+                        <div className="glass-card rounded-3xl p-12 text-center text-slate-400">
+                            <i className="fa-solid fa-clipboard-check text-4xl mb-3 text-purple-200"></i>
+                            <p className="text-sm">ไม่พบรายการส่งเวรในหมวดหมู่นี้</p>
+                        </div>
+                    ) : (
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                            {filteredReports.map(item => (
+                                <div key={item.id} className="glass-card rounded-3xl p-5 shadow-card border border-white flex flex-col justify-between hover:shadow-md transition-shadow">
+                                    <div>
+                                        {/* Status Header */}
+                                        <div className="flex items-center justify-between mb-3">
+                                            <span className="text-xs font-bold px-3 py-1 rounded-full bg-purple-100 text-purple-800">
+                                                📍 {item.location}
+                                            </span>
+                                            {item.inspectionStatus === 'ตรวจแล้ว' ? (
+                                                <span className="text-[11px] font-bold text-emerald-700 bg-emerald-100 px-2.5 py-0.5 rounded-full">
+                                                    ตรวจแล้ว
+                                                </span>
+                                            ) : (
+                                                <span className="text-[11px] font-bold text-amber-800 bg-amber-100 px-2.5 py-0.5 rounded-full animate-pulse">
+                                                    รอตรวจ
+                                                </span>
+                                            )}
+                                        </div>
+
+                                        {/* Student Info */}
+                                        <h4 className="font-bold text-slate-800 text-sm font-kanit">{item.studentName}</h4>
+                                        <p className="text-xs text-slate-400 mb-2">
+                                            {item.classGrade && item.studentNo ? `ชั้น ${item.classGrade} เลขที่ ${item.studentNo} • ` : ''}{item.timestamp}
+                                        </p>
+
+                                        {/* Attendance detail */}
+                                        <div className="mb-3">
+                                            {item.status === 'มาทำครบ' ? (
+                                                <span className="text-[11px] text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded font-medium">
+                                                    ✅ สมาชิกมาทำครบ
+                                                </span>
+                                            ) : (
+                                                <div className="text-[11px] text-rose-800 bg-rose-50 p-2 rounded-xl border border-rose-200">
+                                                    <p className="font-bold">⚠️ มาทำไม่ครบ:</p>
+                                                    <p className="text-rose-700 mt-0.5">{item.absentMembersReason}</p>
+                                                </div>
+                                            )}
+                                        </div>
+
+                                        {/* Photo Thumbnail */}
+                                        <div className="relative rounded-2xl overflow-hidden h-36 mb-4 bg-slate-100 border border-slate-200 group">
+                                            <img src={item.photoUrl || DEFAULT_IMAGE_PLACEHOLDER} alt="Duty" className="w-full h-full object-cover" />
+                                            {item.photoUrl && (
+                                                <button
+                                                    onClick={() => setActiveImageModal(item.photoUrl)}
+                                                    className="absolute inset-0 bg-black/40 text-white opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity text-xs font-medium"
+                                                >
+                                                    <i className="fa-solid fa-expand mr-1.5"></i>
+                                                    ขยายรูปภาพ
+                                                </button>
+                                            )}
+                                        </div>
+                                    </div>
+
+                                    {/* Action / Inspection Info */}
+                                    <div className="pt-3 border-t border-slate-100">
+                                        {item.inspectionStatus === 'ตรวจแล้ว' ? (
+                                            <div className="space-y-2">
+                                                <div className="flex items-center justify-between text-xs">
+                                                    <span className="font-semibold text-purple-900">คะแนนที่ได้:</span>
+                                                    <span className="font-extrabold text-amber-600 bg-amber-50 px-2.5 py-0.5 rounded-full border border-amber-200">
+                                                        ⭐ {item.score} / 10
+                                                    </span>
+                                                </div>
+                                                {item.teacherComment && (
+                                                    <p className="text-[11px] text-slate-600 italic bg-slate-50 p-2 rounded-xl">
+                                                        "{item.teacherComment}"
+                                                    </p>
+                                                )}
+                                                <button
+                                                    onClick={() => openGradeModal(item)}
+                                                    className="w-full py-2 mt-1 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition-colors"
+                                                >
+                                                    แก้ไขผลการตรวจ
+                                                </button>
+                                            </div>
+                                        ) : (
+                                            <button
+                                                onClick={() => openGradeModal(item)}
+                                                className="w-full py-2.5 rounded-xl bg-gradient-to-r from-purple-600 to-pink-500 text-white font-bold text-xs shadow-md hover:opacity-95 transition-all font-kanit flex items-center justify-center gap-1.5"
+                                            >
+                                                <i className="fa-solid fa-pen-to-square"></i>
+                                                ตรวจเวร & ให้คะแนน
+                                            </button>
+                                        )}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+
+                    {/* Grading Modal */}
+                    {inspectingReport && (
+                        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-fade-in">
+                            <div className="bg-white rounded-3xl max-w-lg w-full p-6 shadow-floating space-y-5 border border-white max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
+                                <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+                                    <h3 className="text-lg font-bold font-kanit text-slate-800">
+                                        ตรวจเวร: {inspectingReport.location}
+                                    </h3>
+                                    <button 
+                                        onClick={() => setInspectingReport(null)}
+                                        className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 flex items-center justify-center"
+                                    >
+                                        <i className="fa-solid fa-xmark"></i>
+                                    </button>
+                                </div>
+
+                                <div className="space-y-3">
+                                    <div className="flex items-center space-x-3 bg-purple-50 p-3 rounded-2xl">
+                                        <img src={inspectingReport.photoUrl || DEFAULT_IMAGE_PLACEHOLDER} alt="Duty" className="w-16 h-16 rounded-xl object-cover" />
+                                        <div className="text-xs">
+                                            <p className="font-bold text-slate-800 text-sm">{inspectingReport.studentName}</p>
+                                            {inspectingReport.classGrade && inspectingReport.studentNo && (
+                                                <p className="text-slate-500">ชั้น {inspectingReport.classGrade} เลขที่ {inspectingReport.studentNo}</p>
+                                            )}
+                                            <p className="text-purple-700 font-medium">ส่งเมื่อ: {inspectingReport.timestamp}</p>
+                                        </div>
+                                    </div>
+
+                                    {/* Score Input Slider */}
+                                    <div>
+                                        <label className="block text-xs font-bold text-slate-700 mb-2">
+                                            ให้คะแนนความสะอาด (1 - 10 คะแนน) *
+                                        </label>
+                                        <div className="flex items-center space-x-4">
+                                            <input
+                                                type="range"
+                                                min="1"
+                                                max="10"
+                                                value={scoreInput}
+                                                onChange={e => setScoreInput(e.target.value)}
+                                                className="w-full accent-purple-600 cursor-pointer"
+                                            />
+                                            <span className="w-12 h-10 rounded-xl bg-amber-400 text-slate-900 font-black text-lg flex items-center justify-center shadow-sm">
+                                                {scoreInput}
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    {/* Quick Feedback Presets */}
+                                    <div>
+                                        <label className="block text-xs font-semibold text-slate-500 mb-1">เลือกข้อความชมเชย/แนะนำด่วน:</label>
+                                        <div className="flex flex-wrap gap-1.5">
+                                            {[
+                                                'ทำความสะอาดเรียบร้อยดีมากครับ!',
+                                                'กวาดขยะและจัดสถานที่ได้เป็นระเบียบ',
+                                                'ควรเก็บเศษขยะซอกมุมเพิ่มเติมอีกนิดครับ',
+                                                'ขอบคุณที่ตั้งใจปฏิบัติหน้าที่อย่างแข็งขัน'
+                                            ].map((preset, idx) => (
+                                                <button
+                                                    key={idx}
+                                                    type="button"
+                                                    onClick={() => setCommentInput(preset)}
+                                                    className="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-purple-100 text-slate-700 text-[11px] font-medium transition-colors"
+                                                >
+                                                    + {preset}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
+
+                                    {/* Feedback Comment */}
+                                    <div>
+                                        <label className="block text-xs font-bold text-slate-700 mb-1">
+                                            ข้อคิดเห็น / คำแนะนำถึงนักเรียน
+                                        </label>
+                                        <textarea
+                                            rows="3"
+                                            placeholder="กรอกคำแนะนำหรือข้อคิดเห็น..."
+                                            value={commentInput}
+                                            onChange={e => setCommentInput(e.target.value)}
+                                            className="w-full p-3 rounded-2xl glass-input text-sm"
+                                        ></textarea>
+                                    </div>
+
+                                    <button
+                                        type="button"
+                                        onClick={handleSaveGrade}
+                                        className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-bold text-sm shadow-md hover:opacity-95 transition-all font-kanit"
+                                    >
+                                        บันทึกการตรวจเวร
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            );
         }
 
-        async function addTeacher() {
-            const name = document.getElementById('add-tc-name').value;
-            if (!name) return alert("กรุณากรอกชื่อครู");
-            showMsg("⏳ กำลังบันทึก...", "blue");
-            await fetch(SCRIPT_URL, {
-                method: 'POST',
-                body: JSON.stringify({ action: "addTeacher", name: name })
-            });
-            document.getElementById('add-tc-name').value = '';
-            showMsg("✅ เพิ่มรายชื่อสำเร็จ", "green");
-            loadTeachersList();
-        }
+        function AdminView({ isAdminLoggedIn, setIsAdminLoggedIn, locations, setLocations, teachers, setTeachers, reports, setReports, showToast }) {
+            const [adminPassInput, setAdminPassInput] = useState('');
+            const [adminSubTab, setAdminSubTab] = useState('analytics'); // 'analytics', 'locations', 'teachers', 'all_reports'
 
-        async function deleteTeacher(name) {
-            if (confirm(`คุณต้องการลบรายชื่อ "${name}" ใช่หรือไม่?`)) {
-                showMsg("⏳ กำลังลบรายชื่อ...", "blue");
-                await fetch(SCRIPT_URL, {
-                    method: 'POST',
-                    body: JSON.stringify({ action: "deleteTeacher", name: name })
-                });
-                showMsg("✅ ลบรายชื่อเรียบร้อยแล้ว", "green");
-                loadTeachersList();
+            // Form inputs
+            const [newLocName, setNewLocName] = useState('');
+            const [editingLocIndex, setEditingLocIndex] = useState(null);
+            const [editLocName, setEditLocName] = useState('');
+
+            // Teacher form inputs
+            const [newTeacherName, setNewTeacherName] = useState('');
+            const [newTeacherSub, setNewTeacherSub] = useState('');
+            const [newTeacherUser, setNewTeacherUser] = useState('');
+            const [newTeacherPass, setNewTeacherPass] = useState('');
+
+            const handleAdminLogin = (e) => {
+                e.preventDefault();
+                if (adminPassInput === '9321') {
+                    setIsAdminLoggedIn(true);
+                    showToast('เข้าสู่ระบบผู้ดูแลระบบสำเร็จ!');
+                } else {
+                    showToast('รหัสผ่านผู้ดูแลระบบไม่ถูกต้อง', 'error');
+                }
+            };
+
+            // Add Location
+            const handleAddLocation = (e) => {
+                e.preventDefault();
+                if (!newLocName.trim()) return;
+                if (locations.includes(newLocName.trim())) {
+                    showToast('จุดเวรนี้มีอยู่ในระบบแล้ว', 'error');
+                    return;
+                }
+                setLocations([...locations, newLocName.trim()]);
+                setNewLocName('');
+                showToast('เพิ่มจุดทำเวรใหม่เรียบร้อย!');
+            };
+
+            // Edit Location
+            const handleSaveEditLocation = (index) => {
+                if (!editLocName.trim()) return;
+                const updated = [...locations];
+                updated[index] = editLocName.trim();
+                setLocations(updated);
+                setEditingLocIndex(null);
+                showToast('แก้ไขชื่อจุดทำเวรสำเร็จ!');
+            };
+
+            // Delete Location
+            const handleDeleteLocation = (locName) => {
+                setLocations(locations.filter(l => l !== locName));
+                showToast(`ลบจุดทำเวร ${locName} แล้ว`);
+            };
+
+            // Add Teacher
+            const handleAddTeacher = (e) => {
+                e.preventDefault();
+                if (!newTeacherName.trim() || !newTeacherUser.trim() || !newTeacherPass.trim()) {
+                    showToast('กรุณากรอกข้อมูลครูให้ครบถ้วน', 'error');
+                    return;
+                }
+                const newT = {
+                    id: 't-' + Date.now(),
+                    name: newTeacherName.trim(),
+                    subject: newTeacherSub.trim() || 'ทั่วไป',
+                    username: newTeacherUser.trim(),
+                    password: newTeacherPass.trim()
+                };
+                setTeachers([...teachers, newT]);
+                setNewTeacherName('');
+                setNewTeacherSub('');
+                setNewTeacherUser('');
+                setNewTeacherPass('');
+                showToast('เพิ่มข้อมูลครูผู้ตรวจเวรสำเร็จ!');
+            };
+
+            // Delete Teacher
+            const handleDeleteTeacher = (id) => {
+                setTeachers(teachers.filter(t => t.id !== id));
+                showToast('ลบข้อมูลครูเรียบร้อยแล้ว');
+            };
+
+            // Delete Report
+            const handleDeleteReport = (id) => {
+                setReports(reports.filter(r => r.id !== id));
+                showToast('ลบรายงานออกจากระบบแล้ว');
+            };
+
+            // Admin Login Form
+            if (!isAdminLoggedIn) {
+                return (
+                    <div className="max-w-md mx-auto my-8 animate-fade-in">
+                        <div className="glass-card rounded-3xl p-8 shadow-floating border border-white space-y-6">
+                            <div className="text-center space-y-2">
+                                <div className="w-16 h-16 bg-amber-100 text-amber-600 rounded-3xl mx-auto flex items-center justify-center text-2xl shadow-inner">
+                                    <i className="fa-solid fa-user-shield text-amber-600"></i>
+                                </div>
+                                <h2 className="text-2xl font-bold font-kanit text-slate-800">ผู้ดูแลระบบ (Admin)</h2>
+                                <p className="text-xs text-slate-500">กรุณาใส่รหัสผ่านเพื่อเข้าสู่ระบบจัดการระบบ</p>
+                            </div>
+
+                            <form onSubmit={handleAdminLogin} className="space-y-4">
+                                <div>
+                                    <label className="block text-xs font-semibold text-slate-600 mb-1">รหัสผ่านแอดมิน (Admin Password)</label>
+                                    <input
+                                        type="password"
+                                        required
+                                        placeholder="••••"
+                                        value={adminPassInput}
+                                        onChange={e => setAdminPassInput(e.target.value)}
+                                        className="w-full px-4 py-3 rounded-2xl glass-input text-sm text-center font-bold tracking-widest text-lg"
+                                    />
+                                </div>
+
+                                <button
+                                    type="submit"
+                                    className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-amber-500 to-orange-500 text-white font-bold text-sm shadow-md hover:opacity-95 transition-all font-kanit"
+                                >
+                                    เข้าสู่ระบบแอดมิน
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                );
             }
+
+            // Analytics Stats Calculation
+            const totalSubmissions = reports.length;
+            const completedDutyCount = reports.filter(r => r.status === 'มาทำครบ').length;
+            const incompleteDutyCount = reports.filter(r => r.status === 'มาทำไม่ครบ').length;
+            const reviewedCount = reports.filter(r => r.inspectionStatus === 'ตรวจแล้ว').length;
+
+            // Location breakdown calculation
+            const locationStats = locations.map(loc => {
+                const locReports = reports.filter(r => r.location === loc);
+                return {
+                    name: loc,
+                    count: locReports.length
+                };
+            }).sort((a,b) => b.count - a.count);
+
+            return (
+                <div className="space-y-6 animate-fade-in">
+                    {/* Admin Header */}
+                    <div className="glass-card rounded-3xl p-6 shadow-card border border-white flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                        <div className="flex items-center space-x-4">
+                            <div className="w-14 h-14 rounded-2xl bg-amber-400 text-slate-900 flex items-center justify-center text-2xl font-bold shadow-md">
+                                <i className="fa-solid fa-user-gear"></i>
+                            </div>
+                            <div>
+                                <h2 className="text-xl font-bold text-slate-800 font-kanit">แผงควบคุมผู้ดูแลระบบ</h2>
+                                <p className="text-xs text-amber-700 font-medium">จัดการสถานที่, ครูผู้ตรวจ และภาพรวมสถิติโรงเรียน</p>
+                            </div>
+                        </div>
+
+                        <button
+                            onClick={() => { setIsAdminLoggedIn(false); showToast('ออกจากระบบแอดมิน'); }}
+                            className="px-4 py-2 rounded-2xl bg-rose-50 hover:bg-rose-100 text-rose-600 text-xs font-bold transition-colors flex items-center gap-1.5"
+                        >
+                            <i className="fa-solid fa-right-from-bracket"></i>
+                            ออกจากระบบแอดมิน
+                        </button>
+                    </div>
+
+                    {/* Admin Sub Navigation */}
+                    <div className="flex flex-wrap gap-2 bg-slate-100/80 p-1.5 rounded-2xl border border-slate-200">
+                        {[
+                            { id: 'analytics', label: '📊 ภาพรวมสถิติ' },
+                            { id: 'locations', label: '📍 จัดการจุดทำเวร' },
+                            { id: 'teachers', label: '👨‍🏫 จัดการข้อมูลครู' },
+                            { id: 'all_reports', label: '📂 รายงานทั้งหมด' }
+                        ].map(sub => (
+                            <button
+                                key={sub.id}
+                                onClick={() => setAdminSubTab(sub.id)}
+                                className={`px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all flex items-center gap-2 ${
+                                    adminSubTab === sub.id
+                                        ? 'bg-white text-purple-700 shadow-sm'
+                                        : 'text-slate-600 hover:text-purple-600 hover:bg-white/50'
+                                }`}
+                            >
+                                <span>{sub.label}</span>
+                            </button>
+                        ))}
+                    </div>
+
+                    {/* SUB TAB 1: Analytics */}
+                    {adminSubTab === 'analytics' && (
+                        <div className="space-y-6">
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                <div className="glass-card p-5 rounded-3xl border border-white">
+                                    <p className="text-xs text-slate-400 font-semibold">รายการรายงานรวม</p>
+                                    <p className="text-2xl font-bold text-purple-700 font-kanit mt-1">{totalSubmissions}</p>
+                                </div>
+                                <div className="glass-card p-5 rounded-3xl border border-white">
+                                    <p className="text-xs text-slate-400 font-semibold">มาทำเวรครบ</p>
+                                    <p className="text-2xl font-bold text-emerald-600 font-kanit mt-1">{completedDutyCount}</p>
+                                </div>
+                                <div className="glass-card p-5 rounded-3xl border border-white">
+                                    <p className="text-xs text-slate-400 font-semibold">มาทำไม่ครบ</p>
+                                    <p className="text-2xl font-bold text-rose-500 font-kanit mt-1">{incompleteDutyCount}</p>
+                                </div>
+                                <div className="glass-card p-5 rounded-3xl border border-white">
+                                    <p className="text-xs text-slate-400 font-semibold">ได้รับการตรวจแล้ว</p>
+                                    <p className="text-2xl font-bold text-amber-600 font-kanit mt-1">{reviewedCount}</p>
+                                </div>
+                            </div>
+
+                            {/* Location Duty Popularity Bar Chart */}
+                            <div className="glass-card p-6 rounded-3xl border border-white space-y-4">
+                                <h3 className="text-base font-bold text-slate-800 font-kanit">
+                                    สรุปการส่งรายงานเวรแยกตามจุดประจำ
+                                </h3>
+                                <div className="space-y-3">
+                                    {locationStats.map((item) => {
+                                        const maxCount = locationStats[0]?.count || 1;
+                                        const percent = Math.round((item.count / (maxCount || 1)) * 100);
+
+                                        return (
+                                            <div key={item.name} className="space-y-1">
+                                                <div className="flex justify-between text-xs font-semibold">
+                                                    <span className="text-slate-700">📍 {item.name}</span>
+                                                    <span className="text-purple-700">{item.count} รายงาน</span>
+                                                </div>
+                                                <div className="w-full bg-slate-100 rounded-full h-3 overflow-hidden">
+                                                    <div
+                                                        className="bg-gradient-to-r from-purple-500 to-pink-400 h-full rounded-full transition-all duration-500"
+                                                        style={{ width: `${percent}%` }}
+                                                    ></div>
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* SUB TAB 2: Location Management */}
+                    {adminSubTab === 'locations' && (
+                        <div className="glass-card p-6 rounded-3xl border border-white space-y-6">
+                            <h3 className="text-base font-bold text-slate-800 font-kanit">จัดการสถานที่ / จุดประจำเวร</h3>
+
+                            {/* Add Location Form */}
+                            <form onSubmit={handleAddLocation} className="flex gap-2">
+                                <input
+                                    type="text"
+                                    required
+                                    placeholder="เพิ่มจุดเวรใหม่ เช่น อาคารเอนกประสงค์..."
+                                    value={newLocName}
+                                    onChange={e => setNewLocName(e.target.value)}
+                                    className="flex-1 px-4 py-2.5 rounded-2xl glass-input text-sm"
+                                />
+                                <button
+                                    type="submit"
+                                    className="px-5 py-2.5 rounded-2xl bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs shadow-sm transition-colors font-kanit"
+                                >
+                                    + เพิ่มจุดเวร
+                                </button>
+                            </form>
+
+                            {/* Location List Table */}
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                {locations.map((loc, idx) => (
+                                    <div key={idx} className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80 flex items-center justify-between">
+                                        {editingLocIndex === idx ? (
+                                            <div className="flex items-center gap-2 w-full">
+                                                <input
+                                                    type="text"
+                                                    value={editLocName}
+                                                    onChange={e => setEditLocName(e.target.value)}
+                                                    className="flex-1 px-3 py-1 rounded-xl text-xs glass-input"
+                                                />
+                                                <button
+                                                    onClick={() => handleSaveEditLocation(idx)}
+                                                    className="px-3 py-1 rounded-xl bg-emerald-500 text-white text-xs font-bold"
+                                                >
+                                                    บันทึก
+                                                </button>
+                                                <button
+                                                    onClick={() => setEditingLocIndex(null)}
+                                                    className="px-2 py-1 rounded-xl bg-slate-200 text-slate-600 text-xs"
+                                                >
+                                                    ยกเลิก
+                                                </button>
+                                            </div>
+                                        ) : (
+                                            <>
+                                                <span className="text-xs font-bold text-slate-700">📍 {loc}</span>
+                                                <div className="flex items-center space-x-1">
+                                                    <button
+                                                        onClick={() => { setEditingLocIndex(idx); setEditLocName(loc); }}
+                                                        className="w-8 h-8 rounded-xl bg-amber-100 text-amber-700 hover:bg-amber-200 flex items-center justify-center text-xs"
+                                                    >
+                                                        <i className="fa-solid fa-pen"></i>
+                                                    </button>
+                                                    <button
+                                                        onClick={() => handleDeleteLocation(loc)}
+                                                        className="w-8 h-8 rounded-xl bg-rose-100 text-rose-700 hover:bg-rose-200 flex items-center justify-center text-xs"
+                                                    >
+                                                        <i className="fa-solid fa-trash"></i>
+                                                    </button>
+                                                </div>
+                                            </>
+                                        )}
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+
+                    {/* SUB TAB 3: Teacher Management */}
+                    {adminSubTab === 'teachers' && (
+                        <div className="glass-card p-6 rounded-3xl border border-white space-y-6">
+                            <h3 className="text-base font-bold text-slate-800 font-kanit">จัดการข้อมูลครูประจำการ</h3>
+
+                            {/* Add Teacher Form */}
+                            <form onSubmit={handleAddTeacher} className="p-4 rounded-2xl bg-purple-50/60 border border-purple-100 space-y-3">
+                                <h4 className="text-xs font-bold text-purple-900 uppercase tracking-wider">เพิ่มครูประจำการใหม่</h4>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                    <input
+                                        type="text"
+                                        placeholder="ชื่อ-นามสกุล (เช่น ครูรัตนา มีสุข)"
+                                        value={newTeacherName}
+                                        onChange={e => setNewTeacherName(e.target.value)}
+                                        className="px-4 py-2.5 rounded-xl glass-input text-xs"
+                                    />
+                                    <input
+                                        type="text"
+                                        placeholder="กลุ่มสาระ/วิชาที่สอน (เช่น คณิตศาสตร์)"
+                                        value={newTeacherSub}
+                                        onChange={e => setNewTeacherSub(e.target.value)}
+                                        className="px-4 py-2.5 rounded-xl glass-input text-xs"
+                                    />
+                                    <input
+                                        type="text"
+                                        placeholder="Username"
+                                        value={newTeacherUser}
+                                        onChange={e => setNewTeacherUser(e.target.value)}
+                                        className="px-4 py-2.5 rounded-xl glass-input text-xs"
+                                    />
+                                    <input
+                                        type="text"
+                                        placeholder="Password"
+                                        value={newTeacherPass}
+                                        onChange={e => setNewTeacherPass(e.target.value)}
+                                        className="px-4 py-2.5 rounded-xl glass-input text-xs"
+                                    />
+                                </div>
+                                <button
+                                    type="submit"
+                                    className="px-5 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs transition-colors font-kanit"
+                                >
+                                    + บันทึกเพิ่มครูใหม่
+                                </button>
+                            </form>
+
+                            {/* Teacher Cards */}
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                                {teachers.map(t => (
+                                    <div key={t.id} className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 flex items-center justify-between">
+                                        <div>
+                                            <p className="font-bold text-xs text-slate-800">{t.name}</p>
+                                            <p className="text-[11px] text-purple-600">วิชา {t.subject}</p>
+                                            <p className="text-[10px] text-slate-400 font-mono mt-0.5">user: {t.username}</p>
+                                        </div>
+                                        <button
+                                            onClick={() => handleDeleteTeacher(t.id)}
+                                            className="w-8 h-8 rounded-xl bg-rose-100 text-rose-600 hover:bg-rose-200 flex items-center justify-center text-xs"
+                                        >
+                                            <i className="fa-solid fa-trash"></i>
+                                        </button>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+
+                    {/* SUB TAB 4: All Submissions Management */}
+                    {adminSubTab === 'all_reports' && (
+                        <div className="glass-card p-6 rounded-3xl border border-white space-y-4">
+                            <h3 className="text-base font-bold text-slate-800 font-kanit">จัดการรายการรายงานเวรทั้งหมด</h3>
+
+                            <div className="overflow-x-auto">
+                                <table className="w-full text-left text-xs text-slate-600">
+                                    <thead className="bg-purple-50 text-purple-900 font-bold uppercase tracking-wider rounded-xl">
+                                        <tr>
+                                            <th className="p-3 rounded-l-xl">ผู้รายงาน</th>
+                                            <th className="p-3">จุดทำเวร</th>
+                                            <th className="p-3">เวลาส่ง</th>
+                                            <th className="p-3">สถานะเวร</th>
+                                            <th className="p-3">ผลการตรวจ</th>
+                                            <th className="p-3 text-right rounded-r-xl">จัดการ</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody className="divide-y divide-slate-100">
+                                        {reports.map(r => (
+                                            <tr key={r.id} className="hover:bg-slate-50/80 transition-colors">
+                                                <td className="p-3 font-medium text-slate-800">
+                                                    {r.studentName} {r.classGrade ? <span className="text-[10px] text-slate-400">({r.classGrade})</span> : null}
+                                                </td>
+                                                <td className="p-3 font-semibold text-purple-800">{r.location}</td>
+                                                <td className="p-3 text-slate-400">{r.timestamp}</td>
+                                                <td className="p-3">
+                                                    {r.status === 'มาทำครบ' ? (
+                                                        <span className="text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded font-bold">มาทำครบ</span>
+                                                    ) : (
+                                                        <span className="text-rose-700 bg-rose-50 px-2 py-0.5 rounded font-bold">มาทำไม่ครบ</span>
+                                                    )}
+                                                </td>
+                                                <td className="p-3">
+                                                    {r.inspectionStatus === 'ตรวจแล้ว' ? (
+                                                        <span className="text-emerald-600 font-bold">⭐ {r.score}/10</span>
+                                                    ) : (
+                                                        <span className="text-amber-600 font-bold">รอตรวจ</span>
+                                                    )}
+                                                </td>
+                                                <td className="p-3 text-right">
+                                                    <button
+                                                        onClick={() => handleDeleteReport(r.id)}
+                                                        className="px-2.5 py-1 rounded-lg bg-rose-100 hover:bg-rose-200 text-rose-700 font-bold text-[11px]"
+                                                    >
+                                                        ลบ
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            );
         }
 
-        function showMsg(m, c) {
-            const el = document.getElementById('status');
-            const bgClass = c === 'green' ? 'bg-emerald-100 text-emerald-700' : c === 'blue' ? 'bg-sky-100 text-sky-700' : 'bg-rose-100 text-rose-700';
-            el.className = `mt-3 text-center text-xs font-semibold p-2.5 rounded-xl ${bgClass}`;
-            el.innerText = m;
-            el.classList.remove('hidden');
-        }
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
     </script>
 </body>
 </html>
