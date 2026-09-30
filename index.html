@@ -52,14 +52,14 @@
                 </div>
             </div>
             <button onclick="toggleAdminConfig()" class="text-xs bg-white/20 hover:bg-white/30 text-white px-3.5 py-2 rounded-xl border border-white/30 transition duration-200 flex items-center gap-1.5 backdrop-blur-md">
-                ⚙️️ <span class="hidden sm:inline">ตั้งค่า API</span>
+                ⚙ <span class="hidden sm:inline">ตั้งค่า API</span>
             </button>
         </div>
     </header>
 
     <!-- Config Panel -->
     <div id="configPanel" class="hidden max-w-4xl mx-auto m-4 p-5 bg-pink-100/90 border border-pink-300 rounded-2xl shadow-lg backdrop-blur-md">
-        <label class="block text-xs font-bold text-rose-900 mb-2 uppercase tracking-wider">🛠️️ Google Web App URL (ลงท้ายด้วย /exec):</label>
+        <label class="block text-xs font-bold text-rose-900 mb-2 uppercase tracking-wider">🛠 Google Web App URL (ลงท้ายด้วย /exec):</label>
         <div class="flex flex-col sm:flex-row gap-2">
             <input type="text" id="apiUrlInput" class="flex-1 p-3 border border-pink-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-pink-400 bg-white" placeholder="https://script.google.com/macros/s/.../exec">
             <button onclick="saveApiUrl()" class="pink-btn-gradient text-white px-6 py-3 rounded-xl text-sm font-semibold shadow-md hover:opacity-90 transition">บันทึก URL</button>
@@ -231,6 +231,15 @@
                     </div>
                     <div id="locationStatsList" class="space-y-3">
                         <p class="text-sm text-rose-300 text-center py-4">กำลังคำนวณสถิติ...</p>
+                    </div>
+                </div>
+
+                <!-- Admin Detailed Feedback Log -->
+                <div class="glass-pink p-6 sm:p-8 rounded-3xl cute-shadow">
+                    <h2 class="text-xl font-bold text-slate-800 mb-2 flex items-center gap-2">💬 รายการตรวจเวรและคำแนะนำจากครูทั้งหมด</h2>
+                    <p class="text-xs text-rose-400 mb-6">แอดมินสามารถตรวจสอบคะแนน และข้อคิดเห็นที่คุณครูพิมพ์ตอบกลับนักเรียนได้ที่นี่</p>
+                    <div id="adminAllReportsList" class="space-y-3 max-h-[450px] overflow-y-auto pr-1">
+                        <p class="text-sm text-rose-300 text-center py-4">กำลังโหลดประวัติ...</p>
                     </div>
                 </div>
 
@@ -418,16 +427,25 @@
                     return;
                 }
                 list.innerHTML = res.reports.map(r => `
-                    <div class="p-4 bg-white/80 rounded-2xl border border-rose-100 flex justify-between items-center text-sm hover:bg-rose-50/50 transition shadow-sm">
-                        <div>
-                            <div class="font-bold text-slate-800">${r.studentName} <span class="text-rose-500 font-medium">📍 ${r.location}</span></div>
-                            <div class="text-xs text-slate-400 mt-0.5">${r.timestamp} • ${r.status}</div>
+                    <div class="p-4 bg-white/80 rounded-2xl border border-rose-100 space-y-2 hover:bg-rose-50/50 transition shadow-sm text-sm">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <div class="font-bold text-slate-800">${r.studentName} <span class="text-rose-500 font-medium">📍 ${r.location}</span></div>
+                                <div class="text-xs text-slate-400 mt-0.5">${r.timestamp} • ${r.status}</div>
+                            </div>
+                            <div>
+                                <span class="px-3 py-1.5 rounded-xl text-xs font-bold ${r.inspectionStatus === 'ตรวจแล้ว' ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-100 text-rose-700'}">
+                                    ${r.inspectionStatus} ${r.score !== '-' ? `(${r.score} คะแนน)` : ''}
+                                </span>
+                            </div>
                         </div>
-                        <div>
-                            <span class="px-3 py-1.5 rounded-xl text-xs font-bold ${r.inspectionStatus === 'ตรวจแล้ว' ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-100 text-rose-700'}">
-                                ${r.inspectionStatus} ${r.score !== '-' ? `(${r.score} คะแนน)` : ''}
-                            </span>
-                        </div>
+
+                        ${r.inspectionStatus === 'ตรวจแล้ว' ? `
+                            <div class="mt-2 pt-2 border-t border-rose-100/70 text-xs bg-rose-50/60 p-3 rounded-xl border border-rose-100">
+                                <span class="font-bold text-rose-700">💬 คุณครูผู้ตรวจ (${r.teacherName || 'ครูประจำการ'}):</span>
+                                <p class="text-slate-600 mt-1 italic">${r.feedback && r.feedback !== '-' ? `"${r.feedback}"` : 'ไม่มีข้อคิดเห็นเพิ่มเติม'}</p>
+                            </div>
+                        ` : ''}
                     </div>
                 `).join('');
             }
@@ -518,9 +536,9 @@
 
         async function loadAdminData() {
             const res = await apiCall('getAdminOverview');
-            const reportsRes = await apiCall('getStudentReports');
 
             if (res.success) {
+                // Render Locations
                 const locList = document.getElementById('adminLocationList');
                 locList.innerHTML = res.locations.map(l => `
                     <li class="flex justify-between items-center bg-white p-3 rounded-xl border border-rose-100 font-medium">
@@ -529,6 +547,7 @@
                     </li>
                 `).join('');
 
+                // Render Teachers
                 const teacherList = document.getElementById('adminTeacherList');
                 teacherList.innerHTML = res.teachers.map(t => `
                     <li class="flex justify-between items-center bg-white p-3 rounded-xl border border-rose-100 font-medium">
@@ -537,11 +556,40 @@
                     </li>
                 `).join('');
 
-                if (reportsRes.success && reportsRes.reports) {
+                // Render Admin Detailed Feedback Logs
+                const adminReportsList = document.getElementById('adminAllReportsList');
+                if (res.allReports && res.allReports.length > 0) {
+                    adminReportsList.innerHTML = res.allReports.map(r => `
+                        <div class="p-4 bg-white rounded-2xl border border-rose-100 space-y-2 text-sm shadow-sm">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <span class="font-bold text-slate-800">${r.studentName}</span>
+                                    <span class="text-rose-500 text-xs font-semibold ml-1">📍 ${r.location}</span>
+                                    <div class="text-xs text-slate-400 mt-0.5">${r.timestamp} • ${r.status}</div>
+                                </div>
+                                <span class="px-2.5 py-1 rounded-xl text-xs font-bold ${r.inspectionStatus === 'ตรวจแล้ว' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}">
+                                    ${r.inspectionStatus} ${r.score !== '-' ? `(${r.score} คะแนน)` : ''}
+                                </span>
+                            </div>
+
+                            ${r.inspectionStatus === 'ตรวจแล้ว' ? `
+                                <div class="bg-rose-50/70 p-3 rounded-xl border border-rose-100 text-xs space-y-1">
+                                    <div class="font-bold text-rose-700">👩‍🏫 ครูผู้ตรวจ: <span class="text-slate-800 font-semibold">${r.teacherName || 'ไม่ระบุ'}</span></div>
+                                    <div class="text-slate-600"><b>💬 ข้อคิดเห็น:</b> <span class="italic">${r.feedback && r.feedback !== '-' ? r.feedback : 'ไม่มีข้อคิดเห็นเพิ่มเติม'}</span></div>
+                                </div>
+                            ` : '<p class="text-xs text-slate-400 italic">อยู่ระหว่างรอคุณครูเข้าตรวจ...</p>'}
+                        </div>
+                    `).join('');
+                } else {
+                    adminReportsList.innerHTML = '<p class="text-sm text-rose-300 text-center py-4">ยังไม่มีข้อมูลรายงานในระบบ</p>';
+                }
+
+                // Render Location Statistics
+                if (res.allReports) {
                     const counts = {};
                     res.locations.forEach(loc => counts[loc] = 0);
 
-                    reportsRes.reports.forEach(r => {
+                    res.allReports.forEach(r => {
                         if (counts[r.location] !== undefined) {
                             counts[r.location]++;
                         } else if (r.location) {
@@ -553,7 +601,7 @@
                         .map(loc => ({ location: loc, count: counts[loc] }))
                         .sort((a, b) => b.count - a.count);
 
-                    const totalReports = reportsRes.reports.length || 1;
+                    const totalReports = res.allReports.length || 1;
                     const statsContainer = document.getElementById('locationStatsList');
 
                     if (sortedStats.length === 0) {
