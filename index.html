@@ -182,37 +182,74 @@
 
         <!-- 3. Admin Section -->
         <section id="sec-admin" class="hidden space-y-6">
-            <div class="glass-card p-6 sm:p-8 rounded-3xl custom-shadow">
-                <div class="border-b border-slate-100 pb-4 mb-6">
-                    <h2 class="text-xl font-bold text-slate-800">⚙️ การจัดการระบบ (ผู้ดูแลระบบ)</h2>
-                    <p class="text-xs text-slate-400 mt-1">จัดการรายชื่อจุดตรวจและสิทธิ์บัญชีคุณครู</p>
+            <!-- Admin Login Form -->
+            <div id="adminLoginForm" class="glass-card p-8 rounded-3xl custom-shadow max-w-md mx-auto">
+                <div class="text-center mb-6">
+                    <div class="w-12 h-12 bg-amber-50 text-amber-600 rounded-2xl flex items-center justify-center text-2xl mx-auto mb-2">🛡️</div>
+                    <h2 class="text-xl font-bold text-slate-800">เข้าสู่ระบบผู้ดูแลระบบ</h2>
+                    <p class="text-xs text-slate-400 mt-1">กรุณากรอกรหัสผ่านเพื่อเข้าสู่ส่วนแอดมิน</p>
                 </div>
-                
-                <div class="grid md:grid-cols-2 gap-6">
-                    <!-- Manage Locations -->
-                    <div class="space-y-4 p-5 bg-slate-50/80 rounded-2xl border border-slate-200/60">
-                        <h3 class="font-bold text-sm text-slate-700 flex items-center gap-2">📍 จัดการจุดประจำเวร</h3>
-                        <div class="flex gap-2">
-                            <input type="text" id="newLocationInput" class="flex-1 p-3 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="เพิ่มจุดทำเวรใหม่...">
-                            <button onclick="handleAddLocation()" class="gradient-bg text-white px-4 py-3 rounded-xl text-sm font-semibold shadow-sm hover:opacity-95">เพิ่ม</button>
-                        </div>
-                        <ul id="adminLocationList" class="space-y-2 text-sm max-h-52 overflow-y-auto pt-2">
-                            <li class="text-slate-400 text-xs">กำลังโหลด...</li>
-                        </ul>
+                <form onsubmit="handleAdminLogin(event)" class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1">รหัสผ่านแอดมิน</label>
+                        <input type="password" id="adminPassInput" required placeholder="กรอกรหัสผ่าน..." class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-amber-500 focus:outline-none text-center text-lg tracking-widest">
                     </div>
+                    <button type="submit" class="w-full bg-amber-500 hover:bg-amber-600 text-white py-3.5 rounded-2xl font-bold shadow-md transition">ยืนยันรหัสผ่าน</button>
+                </form>
+            </div>
 
-                    <!-- Manage Teachers -->
-                    <div class="space-y-4 p-5 bg-slate-50/80 rounded-2xl border border-slate-200/60">
-                        <h3 class="font-bold text-sm text-slate-700 flex items-center gap-2">👨‍🏫 จัดการบัญชีครูประจำการ</h3>
-                        <div class="space-y-2">
-                            <input type="text" id="newTeacherName" class="w-full p-2.5 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none" placeholder="ชื่อ-นามสกุล ครู">
-                            <input type="text" id="newTeacherUser" class="w-full p-2.5 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none" placeholder="Username">
-                            <input type="password" id="newTeacherPass" class="w-full p-2.5 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none" placeholder="Password">
-                            <button onclick="handleAddTeacher()" class="w-full gradient-bg text-white py-2.5 rounded-xl text-sm font-semibold shadow-sm hover:opacity-95">เพิ่มบัญชีครู</button>
+            <!-- Admin Dashboard Content -->
+            <div id="adminDashboard" class="hidden space-y-6">
+                <!-- Analytics Card -->
+                <div class="glass-card p-6 sm:p-8 rounded-3xl custom-shadow">
+                    <div class="flex justify-between items-center mb-6">
+                        <div>
+                            <h2 class="text-xl font-bold text-slate-800">📊 สถิติจุดประจำเวรที่มีการใช้งานมากที่สุด</h2>
+                            <p class="text-xs text-slate-400 mt-1">สรุปอันดับจุดที่มีนักเรียนส่งรายงานเวรเข้ามามากที่สุด</p>
                         </div>
-                        <ul id="adminTeacherList" class="space-y-2 text-sm max-h-36 overflow-y-auto pt-2">
-                            <li class="text-slate-400 text-xs">กำลังโหลด...</li>
-                        </ul>
+                        <button onclick="loadAdminData()" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-600 px-3 py-1.5 rounded-xl">🔄 อัปเดต</button>
+                    </div>
+                    <div id="locationStatsList" class="space-y-3">
+                        <p class="text-sm text-slate-400 text-center py-4">กำลังคำนวณสถิติ...</p>
+                    </div>
+                </div>
+
+                <!-- Admin Settings -->
+                <div class="glass-card p-6 sm:p-8 rounded-3xl custom-shadow">
+                    <div class="border-b border-slate-100 pb-4 mb-6 flex justify-between items-center">
+                        <div>
+                            <h2 class="text-xl font-bold text-slate-800">⚙️ การจัดการระบบ</h2>
+                            <p class="text-xs text-slate-400 mt-1">จัดการรายชื่อจุดตรวจและสิทธิ์บัญชีคุณครู</p>
+                        </div>
+                        <button onclick="adminLogout()" class="text-xs bg-rose-50 text-rose-600 hover:bg-rose-100 px-3 py-1.5 rounded-xl font-bold">ออกจากส่วนแอดมิน</button>
+                    </div>
+                    
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <!-- Manage Locations -->
+                        <div class="space-y-4 p-5 bg-slate-50/80 rounded-2xl border border-slate-200/60">
+                            <h3 class="font-bold text-sm text-slate-700 flex items-center gap-2">📍 จัดการจุดประจำเวร</h3>
+                            <div class="flex gap-2">
+                                <input type="text" id="newLocationInput" class="flex-1 p-3 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="เพิ่มจุดทำเวรใหม่...">
+                                <button onclick="handleAddLocation()" class="gradient-bg text-white px-4 py-3 rounded-xl text-sm font-semibold shadow-sm hover:opacity-95">เพิ่ม</button>
+                            </div>
+                            <ul id="adminLocationList" class="space-y-2 text-sm max-h-52 overflow-y-auto pt-2">
+                                <li class="text-slate-400 text-xs">กำลังโหลด...</li>
+                            </ul>
+                        </div>
+
+                        <!-- Manage Teachers -->
+                        <div class="space-y-4 p-5 bg-slate-50/80 rounded-2xl border border-slate-200/60">
+                            <h3 class="font-bold text-sm text-slate-700 flex items-center gap-2">👨‍🏫 จัดการบัญชีครูประจำการ</h3>
+                            <div class="space-y-2">
+                                <input type="text" id="newTeacherName" class="w-full p-2.5 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none" placeholder="ชื่อ-นามสกุล ครู">
+                                <input type="text" id="newTeacherUser" class="w-full p-2.5 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none" placeholder="Username">
+                                <input type="password" id="newTeacherPass" class="w-full p-2.5 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none" placeholder="Password">
+                                <button onclick="handleAddTeacher()" class="w-full gradient-bg text-white py-2.5 rounded-xl text-sm font-semibold shadow-sm hover:opacity-95">เพิ่มบัญชีครู</button>
+                            </div>
+                            <ul id="adminTeacherList" class="space-y-2 text-sm max-h-36 overflow-y-auto pt-2">
+                                <li class="text-slate-400 text-xs">กำลังโหลด...</li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -228,6 +265,7 @@
 
         let apiUrl = DEFAULT_API_URL;
         let loggedInTeacher = null;
+        let isAdminLoggedIn = false;
 
         document.addEventListener('DOMContentLoaded', () => {
             const savedUrl = localStorage.getItem('school_duty_api');
@@ -260,7 +298,7 @@
             document.getElementById(`tab-${tab}`).className = 'py-3 rounded-xl text-sm font-bold transition-all duration-300 bg-white text-indigo-600 shadow-md';
 
             if (tab === 'student') loadStudentReports();
-            if (tab === 'admin') loadAdminData();
+            if (tab === 'admin' && isAdminLoggedIn) loadAdminData();
         }
 
         function toggleAbsentDetails(show) {
@@ -268,8 +306,8 @@
         }
 
         async function apiCall(action, data = {}) {
-            if (!apiUrl || apiUrl.includes('https://script.google.com/macros/s/AKfycbwBa210nAq49uJkemsJ1uxnD0KwcLFkd_wtXIH7I3GWEPcDL4oUv7PmqfVfZZeMCJAf/execนี้')) {
-                alert('กรุณาใส่ Web App URL ของคุณครูในโค้ดบรรทัดที่ 226 ก่อนครับ');
+            if (!apiUrl || apiUrl.includes('https://script.google.com/macros/s/AKfycbwBa210nAq49uJkemsJ1uxnD0KwcLFkd_wtXIH7I3GWEPcDL4oUv7PmqfVfZZeMCJAf/exec')) {
+                alert('กรุณาใส่ Web App URL ของคุณครูในโค้ดบรรทัดที่ 261 ก่อนครับ');
                 return { success: false };
             }
             try {
@@ -357,6 +395,7 @@
             }
         }
 
+        // Teacher System
         async function handleTeacherLogin(e) {
             e.preventDefault();
             const u = document.getElementById('teacherUsername').value;
@@ -420,9 +459,34 @@
             }
         }
 
+        // Admin Auth System
+        function handleAdminLogin(e) {
+            e.preventDefault();
+            const pass = document.getElementById('adminPassInput').value;
+            if (pass === '9321') {
+                isAdminLoggedIn = true;
+                document.getElementById('adminLoginForm').classList.add('hidden');
+                document.getElementById('adminDashboard').classList.remove('hidden');
+                document.getElementById('adminPassInput').value = '';
+                loadAdminData();
+            } else {
+                alert('รหัสผ่านแอดมินไม่ถูกต้อง!');
+            }
+        }
+
+        function adminLogout() {
+            isAdminLoggedIn = false;
+            document.getElementById('adminLoginForm').classList.remove('hidden');
+            document.getElementById('adminDashboard').classList.add('hidden');
+        }
+
+        // Admin Data & Analytics
         async function loadAdminData() {
             const res = await apiCall('getAdminOverview');
+            const reportsRes = await apiCall('getStudentReports');
+
             if (res.success) {
+                // Render Locations
                 const locList = document.getElementById('adminLocationList');
                 locList.innerHTML = res.locations.map(l => `
                     <li class="flex justify-between items-center bg-white p-3 rounded-xl border border-slate-200/60 font-medium">
@@ -431,6 +495,7 @@
                     </li>
                 `).join('');
 
+                // Render Teachers
                 const teacherList = document.getElementById('adminTeacherList');
                 teacherList.innerHTML = res.teachers.map(t => `
                     <li class="flex justify-between items-center bg-white p-3 rounded-xl border border-slate-200/60 font-medium">
@@ -438,6 +503,55 @@
                         <button onclick="handleDeleteTeacher('${t.username}')" class="text-xs text-rose-500 hover:underline font-bold">ลบ</button>
                     </li>
                 `).join('');
+
+                // Calculate & Render Analytics
+                if (reportsRes.success && reportsRes.reports) {
+                    const counts = {};
+                    res.locations.forEach(loc => counts[loc] = 0);
+
+                    reportsRes.reports.forEach(r => {
+                        if (counts[r.location] !== undefined) {
+                            counts[r.location]++;
+                        } else if (r.location) {
+                            counts[r.location] = 1;
+                        }
+                    });
+
+                    const sortedStats = Object.keys(counts)
+                        .map(loc => ({ location: loc, count: counts[loc] }))
+                        .sort((a, b) => b.count - a.count);
+
+                    const totalReports = reportsRes.reports.length || 1;
+                    const statsContainer = document.getElementById('locationStatsList');
+
+                    if (sortedStats.length === 0) {
+                        statsContainer.innerHTML = '<p class="text-sm text-slate-400 text-center py-4">ยังไม่มีข้อมูลสถิติ</p>';
+                        return;
+                    }
+
+                    statsContainer.innerHTML = sortedStats.map((item, index) => {
+                        const percentage = Math.round((item.count / totalReports) * 100);
+                        const isTop = index === 0 && item.count > 0;
+
+                        return `
+                            <div class="p-4 bg-white rounded-2xl border border-slate-200/60 space-y-2">
+                                <div class="flex justify-between items-center">
+                                    <div class="flex items-center gap-2">
+                                        <span class="w-6 h-6 rounded-lg ${isTop ? 'bg-amber-100 text-amber-700' : 'bg-slate-100 text-slate-600'} text-xs font-bold flex items-center justify-center">
+                                            #${index + 1}
+                                        </span>
+                                        <span class="font-bold text-slate-800 text-sm">📍 ${item.location}</span>
+                                        ${isTop ? '<span class="text-xs bg-amber-50 text-amber-600 font-bold px-2 py-0.5 rounded-full border border-amber-200">🏆 ยอดฮิต</span>' : ''}
+                                    </div>
+                                    <span class="text-sm font-bold text-indigo-600">${item.count} ครั้ง <span class="text-xs text-slate-400 font-normal">(${percentage}%)</span></span>
+                                </div>
+                                <div class="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden">
+                                    <div class="gradient-bg h-full rounded-full transition-all duration-500" style="width: ${percentage}%"></div>
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+                }
             }
         }
 
