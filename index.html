@@ -278,9 +278,6 @@
     </main>
 
     <script>
-        // =========================================================================
-        // 📌 Web App URL หลักของคุณครูฝังไว้เรียบร้อยแล้ว
-        // =========================================================================
         const DEFAULT_API_URL = 'https://script.google.com/macros/s/AKfycbwBa210nAq49uJkemsJ1uxnD0KwcLFkd_wtXIH7I3GWEPcDL4oUv7PmqfVfZZeMCJAf/exec'; 
 
         let apiUrl = DEFAULT_API_URL;
@@ -305,7 +302,6 @@
             }
             document.getElementById('apiUrlInput').value = apiUrl;
             
-            // Random Quote
             const randomQ = quotes[Math.floor(Math.random() * quotes.length)];
             document.getElementById('dailyQuote').innerText = randomQ;
 
@@ -397,7 +393,6 @@
 
             const res = await apiCall('submitReport', payload);
             if (res.success) {
-                // Trigger Confetti Celebration 🎉
                 confetti({
                     particleCount: 100,
                     spread: 70,
@@ -438,7 +433,6 @@
             }
         }
 
-        // Teacher System
         async function handleTeacherLogin(e) {
             e.preventDefault();
             const u = document.getElementById('teacherUsername').value;
@@ -502,7 +496,6 @@
             }
         }
 
-        // Admin Auth System
         function handleAdminLogin(e) {
             e.preventDefault();
             const pass = document.getElementById('adminPassInput').value;
@@ -523,13 +516,11 @@
             document.getElementById('adminDashboard').classList.add('hidden');
         }
 
-        // Admin Data & Analytics
         async function loadAdminData() {
             const res = await apiCall('getAdminOverview');
             const reportsRes = await apiCall('getStudentReports');
 
             if (res.success) {
-                // Render Locations
                 const locList = document.getElementById('adminLocationList');
                 locList.innerHTML = res.locations.map(l => `
                     <li class="flex justify-between items-center bg-white p-3 rounded-xl border border-rose-100 font-medium">
@@ -538,7 +529,6 @@
                     </li>
                 `).join('');
 
-                // Render Teachers
                 const teacherList = document.getElementById('adminTeacherList');
                 teacherList.innerHTML = res.teachers.map(t => `
                     <li class="flex justify-between items-center bg-white p-3 rounded-xl border border-rose-100 font-medium">
@@ -547,7 +537,6 @@
                     </li>
                 `).join('');
 
-                // Calculate & Render Analytics
                 if (reportsRes.success && reportsRes.reports) {
                     const counts = {};
                     res.locations.forEach(loc => counts[loc] = 0);
