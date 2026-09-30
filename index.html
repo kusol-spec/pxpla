@@ -3,134 +3,178 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ระบบตรวจเวรประจำจุด</title>
+    <title>ระบบตรวจเวรประจำจุด - School Duty System</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Kanit', sans-serif; }
+        body { font-family: 'Sarabun', 'Plus Jakarta Sans', sans-serif; }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+        }
+        .gradient-bg {
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #2563eb 100%);
+        }
+        .gradient-text {
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .custom-shadow {
+            box-shadow: 0 20px 40px -15px rgba(79, 70, 229, 0.12);
+        }
     </style>
 </head>
-<body class="bg-slate-50 min-h-screen">
+<body class="bg-slate-100 min-h-screen text-slate-800 pb-12">
 
-    <!-- Header -->
-    <header class="bg-indigo-600 text-white shadow-lg p-4">
-        <div class="max-w-4xl mx-auto flex justify-between items-center">
-            <h1 class="text-xl font-bold">🏫 ระบบตรวจเวรประจำจุด</h1>
-            <button onclick="toggleAdminConfig()" class="text-xs bg-indigo-700 hover:bg-indigo-800 px-3 py-1.5 rounded-lg border border-indigo-500">⚙️ ตั้งค่า API</button>
+    <!-- Top Header Navbar -->
+    <header class="gradient-bg text-white shadow-xl sticky top-0 z-50">
+        <div class="max-w-4xl mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center text-xl backdrop-blur-md border border-white/30 shadow-inner">
+                    🏫
+                </div>
+                <div>
+                    <h1 class="text-lg font-bold leading-tight">ระบบตรวจเวรประจำจุด</h1>
+                    <p class="text-xs text-indigo-100 font-light">School Duty Inspection System</p>
+                </div>
+            </div>
+            <button onclick="toggleAdminConfig()" class="text-xs bg-white/10 hover:bg-white/20 text-white px-3 py-2 rounded-xl border border-white/20 transition duration-200 flex items-center gap-1.5 backdrop-blur-md">
+                ⚙️ <span class="hidden sm:inline">ตั้งค่า API</span>
+            </button>
         </div>
     </header>
 
     <!-- Config Panel (ซ่อนไว้เป็นค่าเริ่มต้น) -->
-    <div id="configPanel" class="hidden max-w-4xl mx-auto m-4 p-4 bg-yellow-50 border border-yellow-200 rounded-xl shadow-sm">
-        <label class="block text-sm font-semibold text-gray-700 mb-1">Google Web App URL (ลงท้ายด้วย /exec):</label>
-        <div class="flex gap-2">
-            <input type="text" id="apiUrlInput" class="flex-1 p-2 border border-gray-300 rounded-lg text-sm" placeholder="https://script.google.com/macros/s/.../exec">
-            <button onclick="saveApiUrl()" class="bg-yellow-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-yellow-700 font-medium">บันทึก</button>
+    <div id="configPanel" class="hidden max-w-4xl mx-auto m-4 p-5 bg-amber-50/90 border border-amber-200/80 rounded-2xl shadow-lg backdrop-blur-md transition-all">
+        <label class="block text-xs font-bold text-amber-900 mb-2 uppercase tracking-wider">🛠️ Google Web App URL (ลงท้ายด้วย /exec):</label>
+        <div class="flex flex-col sm:flex-row gap-2">
+            <input type="text" id="apiUrlInput" class="flex-1 p-3 border border-amber-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 bg-white" placeholder="https://script.google.com/macros/s/.../exec">
+            <button onclick="saveApiUrl()" class="bg-amber-600 hover:bg-amber-700 text-white px-6 py-3 rounded-xl text-sm font-semibold shadow-md transition">บันทึก URL</button>
         </div>
     </div>
 
-    <!-- Main Content -->
-    <main class="max-w-4xl mx-auto p-4">
+    <!-- Main Container -->
+    <main class="max-w-4xl mx-auto px-4 pt-6">
 
-        <!-- Navigation Tabs -->
-        <div class="flex bg-white rounded-xl shadow-sm p-1.5 mb-6 border border-gray-100">
-            <button onclick="switchTab('student')" id="tab-student" class="flex-1 py-2.5 rounded-lg text-sm font-semibold transition-all duration-200 bg-indigo-600 text-white shadow">👨‍🎓 นักเรียนส่งรายงาน</button>
-            <button onclick="switchTab('teacher')" id="tab-teacher" class="flex-1 py-2.5 rounded-lg text-sm font-semibold transition-all duration-200 text-gray-500 hover:text-indigo-600">👨‍🏫 ครูตรวจเวร</button>
-            <button onclick="switchTab('admin')" id="tab-admin" class="flex-1 py-2.5 rounded-lg text-sm font-semibold transition-all duration-200 text-gray-500 hover:text-indigo-600">⚙️ ผู้ดูแลระบบ</button>
+        <!-- Modern Tab Switcher -->
+        <div class="grid grid-cols-3 gap-2 p-1.5 bg-slate-200/80 rounded-2xl mb-8 backdrop-blur-md">
+            <button onclick="switchTab('student')" id="tab-student" class="py-3 rounded-xl text-sm font-bold transition-all duration-300 bg-white text-indigo-600 shadow-md">
+                👨‍🎓 นักเรียน
+            </button>
+            <button onclick="switchTab('teacher')" id="tab-teacher" class="py-3 rounded-xl text-sm font-bold transition-all duration-300 text-slate-500 hover:text-indigo-600">
+                👨‍🏫 ครูตรวจเวร
+            </button>
+            <button onclick="switchTab('admin')" id="tab-admin" class="py-3 rounded-xl text-sm font-bold transition-all duration-300 text-slate-500 hover:text-indigo-600">
+                ⚙️ ผู้ดูแล
+            </button>
         </div>
 
         <!-- 1. Student Section -->
         <section id="sec-student" class="space-y-6">
-            <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-                <h2 class="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
-                    <span class="p-2 bg-indigo-50 rounded-lg text-indigo-600">📝</span> ส่งรายงานการทำเวรประจำวัน
-                </h2>
+            <div class="glass-card p-6 sm:p-8 rounded-3xl custom-shadow">
+                <div class="border-b border-slate-100 pb-4 mb-6">
+                    <h2 class="text-xl font-bold gradient-text flex items-center gap-2">
+                        ✨ ส่งรายงานการทำเวรประจำวัน
+                    </h2>
+                    <p class="text-xs text-slate-400 mt-1">กรอกข้อมูลและแนบรูปถ่ายการทำเวรประจำจุดให้ครบถ้วน</p>
+                </div>
                 
-                <form id="studentForm" onsubmit="handleStudentSubmit(event)" class="space-y-4">
+                <form id="studentForm" onsubmit="handleStudentSubmit(event)" class="space-y-5">
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">ชื่อ - นามสกุล นักเรียน <span class="text-red-500">*</span></label>
-                        <input type="text" id="studentName" required class="w-full p-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" placeholder="เช่น ด.ช. สมชาย ใจดี">
+                        <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">ชื่อ - นามสกุล นักเรียน <span class="text-rose-500">*</span></label>
+                        <input type="text" id="studentName" required class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-indigo-500 focus:bg-white focus:outline-none transition" placeholder="เช่น ด.ช. สมชาย ใจดี">
                     </div>
 
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">จุดประจำเวร <span class="text-red-500">*</span></label>
-                        <select id="studentLocation" required class="w-full p-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                        <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">จุดประจำเวร <span class="text-rose-500">*</span></label>
+                        <select id="studentLocation" required class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-indigo-500 focus:bg-white focus:outline-none transition">
                             <option value="">-- กำลังโหลดจุดทำเวร... --</option>
                         </select>
                     </div>
 
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">สถานะการมาทำเวรของกลุ่ม <span class="text-red-500">*</span></label>
+                        <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">สถานะการมาทำเวรของกลุ่ม <span class="text-rose-500">*</span></label>
                         <div class="grid grid-cols-2 gap-3">
-                            <label class="flex items-center gap-2 p-3 border border-gray-200 rounded-xl cursor-pointer hover:bg-gray-50">
-                                <input type="radio" name="dutyStatus" value="มาทำครบทุกคน" checked onclick="toggleAbsentDetails(false)" class="text-indigo-600">
-                                <span class="text-sm font-medium text-gray-700">มาทำครบทุกคน</span>
+                            <label class="flex items-center gap-3 p-4 bg-slate-50 border border-slate-200 rounded-2xl cursor-pointer hover:border-indigo-300 transition group">
+                                <input type="radio" name="dutyStatus" value="มาทำครบทุกคน" checked onclick="toggleAbsentDetails(false)" class="w-4 h-4 text-indigo-600 focus:ring-indigo-500">
+                                <span class="text-sm font-semibold text-slate-700 group-hover:text-indigo-600">มาทำครบทุกคน</span>
                             </label>
-                            <label class="flex items-center gap-2 p-3 border border-gray-200 rounded-xl cursor-pointer hover:bg-gray-50">
-                                <input type="radio" name="dutyStatus" value="มาทำไม่ครบ" onclick="toggleAbsentDetails(true)" class="text-indigo-600">
-                                <span class="text-sm font-medium text-gray-700">มาทำไม่ครบ</span>
+                            <label class="flex items-center gap-3 p-4 bg-slate-50 border border-slate-200 rounded-2xl cursor-pointer hover:border-indigo-300 transition group">
+                                <input type="radio" name="dutyStatus" value="มาทำไม่ครบ" onclick="toggleAbsentDetails(true)" class="w-4 h-4 text-indigo-600 focus:ring-indigo-500">
+                                <span class="text-sm font-semibold text-slate-700 group-hover:text-indigo-600">มาทำไม่ครบ</span>
                             </label>
                         </div>
                     </div>
 
                     <div id="absentBox" class="hidden">
-                        <label class="block text-sm font-medium text-gray-700 mb-1">รายชื่อคนที่ไม่มาทำเวร</label>
-                        <textarea id="absentDetails" rows="2" class="w-full p-2.5 border border-gray-300 rounded-xl" placeholder="ระบุชื่อเพื่อนที่ไม่มาทำเวร..."></textarea>
+                        <label class="block text-xs font-bold text-rose-600 uppercase tracking-wider mb-2">รายชื่อคนที่ไม่มาทำเวร</label>
+                        <textarea id="absentDetails" rows="2" class="w-full p-3.5 bg-rose-50/50 border border-rose-200 rounded-2xl focus:ring-2 focus:ring-rose-400 focus:outline-none transition text-sm" placeholder="ระบุชื่อเพื่อนที่ไม่มาทำเวร..."></textarea>
                     </div>
 
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">แนบรูปถ่ายการทำเวร <span class="text-red-500">*</span></label>
-                        <input type="file" id="photoInput" accept="image/*" required class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100">
+                        <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">แนบรูปถ่ายการทำเวร <span class="text-rose-500">*</span></label>
+                        <input type="file" id="photoInput" accept="image/*" required class="w-full text-sm text-slate-500 file:mr-4 file:py-3 file:px-5 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-indigo-50 file:text-indigo-600 hover:file:bg-indigo-100 transition cursor-pointer">
                     </div>
 
-                    <button type="submit" id="submitBtn" class="w-full bg-indigo-600 text-white py-3 rounded-xl font-semibold shadow hover:bg-indigo-700 transition duration-200">
+                    <button type="submit" id="submitBtn" class="w-full gradient-bg text-white py-4 rounded-2xl font-bold shadow-lg shadow-indigo-200 hover:opacity-95 transform active:scale-[0.99] transition duration-200 text-base">
                         🚀 ส่งรายงานการทำเวร
                     </button>
                 </form>
             </div>
 
             <!-- Student History -->
-            <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-                <div class="flex justify-between items-center mb-4">
-                    <h3 class="font-bold text-gray-800">📜 ประวัติการส่งรายงานย้อนหลัง</h3>
-                    <button onclick="loadStudentReports()" class="text-xs bg-gray-100 hover:bg-gray-200 text-gray-600 px-3 py-1.5 rounded-lg">🔄 รีเฟรช</button>
+            <div class="glass-card p-6 sm:p-8 rounded-3xl custom-shadow">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="font-bold text-slate-800 text-base flex items-center gap-2">
+                        📜 ประวัติการส่งรายงานย้อนหลัง
+                    </h3>
+                    <button onclick="loadStudentReports()" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-600 px-3.5 py-2 rounded-xl font-medium transition">🔄 รีเฟรช</button>
                 </div>
                 <div id="studentReportsList" class="space-y-3">
-                    <p class="text-sm text-gray-500 text-center py-4">กำลังโหลดข้อมูล...</p>
+                    <p class="text-sm text-slate-400 text-center py-6">กำลังโหลดข้อมูล...</p>
                 </div>
             </div>
         </section>
 
         <!-- 2. Teacher Section -->
         <section id="sec-teacher" class="hidden space-y-6">
-            <div id="teacherLoginForm" class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 max-w-md mx-auto">
-                <h2 class="text-lg font-bold text-gray-800 mb-4 text-center">🔐 เข้าสู่ระบบครูประจำการ</h2>
+            <div id="teacherLoginForm" class="glass-card p-8 rounded-3xl custom-shadow max-w-md mx-auto">
+                <div class="text-center mb-6">
+                    <div class="w-12 h-12 bg-indigo-50 text-indigo-600 rounded-2xl flex items-center justify-center text-2xl mx-auto mb-2">🔐</div>
+                    <h2 class="text-xl font-bold text-slate-800">เข้าสู่ระบบครูประจำการ</h2>
+                    <p class="text-xs text-slate-400 mt-1">กรุณากรอกบัญชีผู้ใช้เพื่อเข้าตรวจเวร</p>
+                </div>
                 <form onsubmit="handleTeacherLogin(event)" class="space-y-4">
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">ชื่อผู้ใช้ (Username)</label>
-                        <input type="text" id="teacherUsername" required class="w-full p-2.5 border border-gray-300 rounded-xl">
+                        <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1">ชื่อผู้ใช้ (Username)</label>
+                        <input type="text" id="teacherUsername" required class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-indigo-500 focus:outline-none">
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">รหัสผ่าน (Password)</label>
-                        <input type="password" id="teacherPassword" required class="w-full p-2.5 border border-gray-300 rounded-xl">
+                        <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1">รหัสผ่าน (Password)</label>
+                        <input type="password" id="teacherPassword" required class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-indigo-500 focus:outline-none">
                     </div>
-                    <button type="submit" class="w-full bg-indigo-600 text-white py-2.5 rounded-xl font-semibold hover:bg-indigo-700">เข้าสู่ระบบ</button>
+                    <button type="submit" class="w-full gradient-bg text-white py-3.5 rounded-2xl font-bold shadow-md hover:opacity-95 transition">เข้าสู่ระบบ</button>
                 </form>
             </div>
 
             <div id="teacherDashboard" class="hidden space-y-6">
-                <div class="flex justify-between items-center bg-indigo-50 p-4 rounded-xl border border-indigo-100">
-                    <div>
-                        <span class="text-xs text-indigo-500 block">ยินดีต้อนรับ</span>
-                        <span id="currentTeacherName" class="font-bold text-indigo-900">ครูประจำการ</span>
+                <div class="flex justify-between items-center glass-card p-5 rounded-2xl custom-shadow border-l-4 border-l-indigo-600">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-indigo-100 text-indigo-600 rounded-xl flex items-center justify-center font-bold">👨‍🏫</div>
+                        <div>
+                            <span class="text-xs text-slate-400 block">ยินดีต้อนรับ</span>
+                            <span id="currentTeacherName" class="font-bold text-slate-800 text-base">ครูประจำการ</span>
+                        </div>
                     </div>
-                    <button onclick="teacherLogout()" class="text-xs text-red-600 bg-white border border-red-200 px-3 py-1.5 rounded-lg hover:bg-red-50">ออกจากระบบ</button>
+                    <button onclick="teacherLogout()" class="text-xs text-rose-600 bg-rose-50 hover:bg-rose-100 px-4 py-2 rounded-xl font-semibold transition">ออกจากระบบ</button>
                 </div>
 
-                <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-                    <h3 class="font-bold text-gray-800 mb-4">📋 รายงานรอการตรวจ</h3>
+                <div class="glass-card p-6 sm:p-8 rounded-3xl custom-shadow">
+                    <h3 class="font-bold text-slate-800 text-base mb-6 flex items-center gap-2">📋 รายงานรอการตรวจ</h3>
                     <div id="pendingReportsList" class="space-y-4">
-                        <p class="text-sm text-gray-500 text-center py-4">กำลังโหลดข้อมูล...</p>
+                        <p class="text-sm text-slate-400 text-center py-6">กำลังโหลดข้อมูล...</p>
                     </div>
                 </div>
             </div>
@@ -138,33 +182,36 @@
 
         <!-- 3. Admin Section -->
         <section id="sec-admin" class="hidden space-y-6">
-            <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-                <h2 class="text-lg font-bold text-gray-800 mb-4">⚙️ การจัดการระบบ (ผู้ดูแลระบบ)</h2>
+            <div class="glass-card p-6 sm:p-8 rounded-3xl custom-shadow">
+                <div class="border-b border-slate-100 pb-4 mb-6">
+                    <h2 class="text-xl font-bold text-slate-800">⚙️ การจัดการระบบ (ผู้ดูแลระบบ)</h2>
+                    <p class="text-xs text-slate-400 mt-1">จัดการรายชื่อจุดตรวจและสิทธิ์บัญชีคุณครู</p>
+                </div>
                 
                 <div class="grid md:grid-cols-2 gap-6">
                     <!-- Manage Locations -->
-                    <div class="space-y-3 p-4 bg-gray-50 rounded-xl border border-gray-200">
-                        <h3 class="font-semibold text-sm text-gray-700">📍 จัดการจุดประจำเวร</h3>
+                    <div class="space-y-4 p-5 bg-slate-50/80 rounded-2xl border border-slate-200/60">
+                        <h3 class="font-bold text-sm text-slate-700 flex items-center gap-2">📍 จัดการจุดประจำเวร</h3>
                         <div class="flex gap-2">
-                            <input type="text" id="newLocationInput" class="flex-1 p-2 border border-gray-300 rounded-lg text-sm" placeholder="เพิ่มจุดทำเวรใหม่...">
-                            <button onclick="handleAddLocation()" class="bg-indigo-600 text-white px-3 py-2 rounded-lg text-sm font-medium hover:bg-indigo-700">เพิ่ม</button>
+                            <input type="text" id="newLocationInput" class="flex-1 p-3 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="เพิ่มจุดทำเวรใหม่...">
+                            <button onclick="handleAddLocation()" class="gradient-bg text-white px-4 py-3 rounded-xl text-sm font-semibold shadow-sm hover:opacity-95">เพิ่ม</button>
                         </div>
-                        <ul id="adminLocationList" class="space-y-1.5 text-sm max-h-48 overflow-y-auto pt-2">
-                            <li class="text-gray-400">กำลังโหลด...</li>
+                        <ul id="adminLocationList" class="space-y-2 text-sm max-h-52 overflow-y-auto pt-2">
+                            <li class="text-slate-400 text-xs">กำลังโหลด...</li>
                         </ul>
                     </div>
 
                     <!-- Manage Teachers -->
-                    <div class="space-y-3 p-4 bg-gray-50 rounded-xl border border-gray-200">
-                        <h3 class="font-semibold text-sm text-gray-700">👨‍🏫 จัดการบัญชีครูประจำการ</h3>
+                    <div class="space-y-4 p-5 bg-slate-50/80 rounded-2xl border border-slate-200/60">
+                        <h3 class="font-bold text-sm text-slate-700 flex items-center gap-2">👨‍🏫 จัดการบัญชีครูประจำการ</h3>
                         <div class="space-y-2">
-                            <input type="text" id="newTeacherName" class="w-full p-2 border border-gray-300 rounded-lg text-sm" placeholder="ชื่อ-นามสกุล ครู">
-                            <input type="text" id="newTeacherUser" class="w-full p-2 border border-gray-300 rounded-lg text-sm" placeholder="Username">
-                            <input type="password" id="newTeacherPass" class="w-full p-2 border border-gray-300 rounded-lg text-sm" placeholder="Password">
-                            <button onclick="handleAddTeacher()" class="w-full bg-indigo-600 text-white py-2 rounded-lg text-sm font-medium hover:bg-indigo-700">เพิ่มบัญชีครู</button>
+                            <input type="text" id="newTeacherName" class="w-full p-2.5 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none" placeholder="ชื่อ-นามสกุล ครู">
+                            <input type="text" id="newTeacherUser" class="w-full p-2.5 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none" placeholder="Username">
+                            <input type="password" id="newTeacherPass" class="w-full p-2.5 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none" placeholder="Password">
+                            <button onclick="handleAddTeacher()" class="w-full gradient-bg text-white py-2.5 rounded-xl text-sm font-semibold shadow-sm hover:opacity-95">เพิ่มบัญชีครู</button>
                         </div>
-                        <ul id="adminTeacherList" class="space-y-1.5 text-sm max-h-36 overflow-y-auto pt-2">
-                            <li class="text-gray-400">กำลังโหลด...</li>
+                        <ul id="adminTeacherList" class="space-y-2 text-sm max-h-36 overflow-y-auto pt-2">
+                            <li class="text-slate-400 text-xs">กำลังโหลด...</li>
                         </ul>
                     </div>
                 </div>
@@ -175,7 +222,7 @@
 
     <script>
         // =========================================================================
-        // 📌 นำ Web App URL ของคุณครู (ที่ลงท้ายด้วย /exec) มาวางแทนที่ในอัญประกาศ ' ' ด้านล่างนี้
+        // 📌 นำ Web App URL ของคุณครู (ลงท้ายด้วย /exec) มาวางแทนที่ตรงนี้
         // =========================================================================
         const DEFAULT_API_URL = 'https://script.google.com/macros/s/AKfycbwBa210nAq49uJkemsJ1uxnD0KwcLFkd_wtXIH7I3GWEPcDL4oUv7PmqfVfZZeMCJAf/exec'; 
 
@@ -184,9 +231,7 @@
 
         document.addEventListener('DOMContentLoaded', () => {
             const savedUrl = localStorage.getItem('school_duty_api');
-            if (savedUrl) {
-                apiUrl = savedUrl;
-            }
+            if (savedUrl) apiUrl = savedUrl;
             document.getElementById('apiUrlInput').value = apiUrl;
             initData();
         });
@@ -208,11 +253,11 @@
         function switchTab(tab) {
             ['student', 'teacher', 'admin'].forEach(t => {
                 document.getElementById(`sec-${t}`).classList.add('hidden');
-                document.getElementById(`tab-${t}`).className = 'flex-1 py-2.5 rounded-lg text-sm font-semibold transition-all duration-200 text-gray-500 hover:text-indigo-600';
+                document.getElementById(`tab-${t}`).className = 'py-3 rounded-xl text-sm font-bold transition-all duration-300 text-slate-500 hover:text-indigo-600';
             });
 
             document.getElementById(`sec-${tab}`).classList.remove('hidden');
-            document.getElementById(`tab-${tab}`).className = 'flex-1 py-2.5 rounded-lg text-sm font-semibold transition-all duration-200 bg-indigo-600 text-white shadow';
+            document.getElementById(`tab-${tab}`).className = 'py-3 rounded-xl text-sm font-bold transition-all duration-300 bg-white text-indigo-600 shadow-md';
 
             if (tab === 'student') loadStudentReports();
             if (tab === 'admin') loadAdminData();
@@ -222,10 +267,9 @@
             document.getElementById('absentBox').classList.toggle('hidden', !show);
         }
 
-        // Call API Helper
         async function apiCall(action, data = {}) {
-            if (!apiUrl || apiUrl.includes('วาง_WEB_APP_URL_ของคุณครูตรงนี้')) {
-                alert('กรุณาใส่ Web App URL ของคุณครูในโค้ดบรรทัดที่ 19 ก่อนครับ');
+            if (!apiUrl || apiUrl.includes('https://script.google.com/macros/s/AKfycbwBa210nAq49uJkemsJ1uxnD0KwcLFkd_wtXIH7I3GWEPcDL4oUv7PmqfVfZZeMCJAf/execนี้')) {
+                alert('กรุณาใส่ Web App URL ของคุณครูในโค้ดบรรทัดที่ 226 ก่อนครับ');
                 return { success: false };
             }
             try {
@@ -241,7 +285,6 @@
             }
         }
 
-        // Init Data
         async function initData() {
             const res = await apiCall('getInitialData');
             if (res.success && res.locations) {
@@ -254,7 +297,6 @@
             loadStudentReports();
         }
 
-        // Submit Form
         async function handleStudentSubmit(e) {
             e.preventDefault();
             const btn = document.getElementById('submitBtn');
@@ -291,23 +333,22 @@
             btn.innerText = '🚀 ส่งรายงานการทำเวร';
         }
 
-        // Load Student Reports
         async function loadStudentReports() {
             const list = document.getElementById('studentReportsList');
             const res = await apiCall('getStudentReports');
             if (res.success && res.reports) {
                 if (res.reports.length === 0) {
-                    list.innerHTML = '<p class="text-sm text-gray-500 text-center py-4">ยังไม่มีประวัติการส่งรายงาน</p>';
+                    list.innerHTML = '<p class="text-sm text-slate-400 text-center py-6">ยังไม่มีประวัติการส่งรายงาน</p>';
                     return;
                 }
                 list.innerHTML = res.reports.map(r => `
-                    <div class="p-3 bg-gray-50 rounded-xl border border-gray-100 flex justify-between items-center text-sm">
+                    <div class="p-4 bg-slate-50/80 rounded-2xl border border-slate-100 flex justify-between items-center text-sm hover:bg-slate-50 transition">
                         <div>
-                            <div class="font-semibold text-gray-800">${r.studentName} - <span class="text-indigo-600">${r.location}</span></div>
-                            <div class="text-xs text-gray-500">${r.timestamp} • ${r.status}</div>
+                            <div class="font-bold text-slate-800">${r.studentName} <span class="text-indigo-600 font-medium">📍 ${r.location}</span></div>
+                            <div class="text-xs text-slate-400 mt-0.5">${r.timestamp} • ${r.status}</div>
                         </div>
                         <div>
-                            <span class="px-2.5 py-1 rounded-full text-xs font-medium ${r.inspectionStatus === 'ตรวจแล้ว' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}">
+                            <span class="px-3 py-1.5 rounded-xl text-xs font-bold ${r.inspectionStatus === 'ตรวจแล้ว' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}">
                                 ${r.inspectionStatus} ${r.score !== '-' ? `(${r.score} คะแนน)` : ''}
                             </span>
                         </div>
@@ -316,7 +357,6 @@
             }
         }
 
-        // Teacher System
         async function handleTeacherLogin(e) {
             e.preventDefault();
             const u = document.getElementById('teacherUsername').value;
@@ -345,23 +385,23 @@
             const res = await apiCall('getPendingReports');
             if (res.success && res.reports) {
                 if (res.reports.length === 0) {
-                    list.innerHTML = '<p class="text-sm text-gray-500 text-center py-4">ไม่มีรายงานรอการตรวจ 👍</p>';
+                    list.innerHTML = '<p class="text-sm text-slate-400 text-center py-6">ไม่มีรายงานรอการตรวจ 👍</p>';
                     return;
                 }
                 list.innerHTML = res.reports.map(r => `
-                    <div class="p-4 bg-gray-50 rounded-xl border border-gray-200 space-y-3">
+                    <div class="p-5 bg-slate-50/80 rounded-2xl border border-slate-200/60 space-y-4">
                         <div class="flex justify-between items-start">
                             <div>
-                                <h4 class="font-bold text-gray-800">${r.studentName} (${r.location})</h4>
-                                <p class="text-xs text-gray-500">${r.timestamp} • ${r.status}</p>
-                                ${r.absentDetails !== '-' ? `<p class="text-xs text-red-500 mt-1">ขาด: ${r.absentDetails}</p>` : ''}
+                                <h4 class="font-bold text-slate-800 text-base">${r.studentName} <span class="text-indigo-600 text-sm font-semibold">(📍 ${r.location})</span></h4>
+                                <p class="text-xs text-slate-400 mt-1">${r.timestamp} • ${r.status}</p>
+                                ${r.absentDetails !== '-' ? `<p class="text-xs text-rose-500 font-medium mt-1">ขาด: ${r.absentDetails}</p>` : ''}
                             </div>
-                            ${r.photoUrl ? `<a href="${r.photoUrl}" target="_blank" class="text-xs bg-indigo-50 text-indigo-600 px-2.5 py-1 rounded-lg hover:underline">🖼️ ดูรูปถ่าย</a>` : ''}
+                            ${r.photoUrl ? `<a href="${r.photoUrl}" target="_blank" class="text-xs bg-indigo-50 text-indigo-600 px-3 py-1.5 rounded-xl font-bold hover:bg-indigo-100 transition">🖼️ ดูรูปถ่าย</a>` : ''}
                         </div>
-                        <div class="flex gap-2 items-center pt-2 border-t border-gray-200">
-                            <input type="number" id="score_${r.id}" max="10" min="0" placeholder="คะแนน (0-10)" class="w-28 p-1.5 border rounded-lg text-sm">
-                            <input type="text" id="feedback_${r.id}" placeholder="ความคิดเห็น..." class="flex-1 p-1.5 border rounded-lg text-sm">
-                            <button onclick="submitGrade('${r.id}')" class="bg-indigo-600 text-white px-3 py-1.5 rounded-lg text-sm hover:bg-indigo-700">ให้คะแนน</button>
+                        <div class="flex flex-col sm:flex-row gap-2 pt-3 border-t border-slate-200/60">
+                            <input type="number" id="score_${r.id}" max="10" min="0" placeholder="คะแนน (0-10)" class="sm:w-32 p-2.5 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none">
+                            <input type="text" id="feedback_${r.id}" placeholder="ความคิดเห็น..." class="flex-1 p-2.5 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none">
+                            <button onclick="submitGrade('${r.id}')" class="gradient-bg text-white px-5 py-2.5 rounded-xl text-sm font-bold shadow-md hover:opacity-95">ให้คะแนน</button>
                         </div>
                     </div>
                 `).join('');
@@ -380,23 +420,22 @@
             }
         }
 
-        // Admin System
         async function loadAdminData() {
             const res = await apiCall('getAdminOverview');
             if (res.success) {
                 const locList = document.getElementById('adminLocationList');
                 locList.innerHTML = res.locations.map(l => `
-                    <li class="flex justify-between items-center bg-white p-2 rounded border">
-                        <span>${l}</span>
-                        <button onclick="handleDeleteLocation('${l}')" class="text-xs text-red-500 hover:underline">ลบ</button>
+                    <li class="flex justify-between items-center bg-white p-3 rounded-xl border border-slate-200/60 font-medium">
+                        <span>📍 ${l}</span>
+                        <button onclick="handleDeleteLocation('${l}')" class="text-xs text-rose-500 hover:underline font-bold">ลบ</button>
                     </li>
                 `).join('');
 
                 const teacherList = document.getElementById('adminTeacherList');
                 teacherList.innerHTML = res.teachers.map(t => `
-                    <li class="flex justify-between items-center bg-white p-2 rounded border">
-                        <span>${t.name} (${t.username})</span>
-                        <button onclick="handleDeleteTeacher('${t.username}')" class="text-xs text-red-500 hover:underline">ลบ</button>
+                    <li class="flex justify-between items-center bg-white p-3 rounded-xl border border-slate-200/60 font-medium">
+                        <span>👨‍🏫 ${t.name} <span class="text-xs text-slate-400">(${t.username})</span></span>
+                        <button onclick="handleDeleteTeacher('${t.username}')" class="text-xs text-rose-500 hover:underline font-bold">ลบ</button>
                     </li>
                 `).join('');
             }
