@@ -174,15 +174,19 @@
     </main>
 
     <script>
-        // ----------------------------------------------------
-        // ⚠️ ใส่อัปเดต Web App URL ของคุณครูที่นี่ (ลงท้ายด้วย /exec)
-        // ----------------------------------------------------
-        const DEFAULT_API_URL = 'https://script.google.com/macros/s/AKfycb.../exec'; 
+        // =========================================================================
+        // 📌 นำ Web App URL ของคุณครู (ที่ลงท้ายด้วย /exec) มาวางแทนที่ในอัญประกาศ ' ' ด้านล่างนี้
+        // =========================================================================
+        const DEFAULT_API_URL = 'https://script.google.com/macros/s/AKfycbwBa210nAq49uJkemsJ1uxnD0KwcLFkd_wtXIH7I3GWEPcDL4oUv7PmqfVfZZeMCJAf/exec'; 
 
-        let apiUrl = localStorage.getItem('school_duty_api') || DEFAULT_API_URL;
+        let apiUrl = DEFAULT_API_URL;
         let loggedInTeacher = null;
 
         document.addEventListener('DOMContentLoaded', () => {
+            const savedUrl = localStorage.getItem('school_duty_api');
+            if (savedUrl) {
+                apiUrl = savedUrl;
+            }
             document.getElementById('apiUrlInput').value = apiUrl;
             initData();
         });
@@ -220,8 +224,8 @@
 
         // Call API Helper
         async function apiCall(action, data = {}) {
-            if (!apiUrl || apiUrl.includes('AKfycb...')) {
-                alert('กรุณาตั้งค่า API URL ของ Google Web App ให้ถูกต้องก่อนครับ');
+            if (!apiUrl || apiUrl.includes('วาง_WEB_APP_URL_ของคุณครูตรงนี้')) {
+                alert('กรุณาใส่ Web App URL ของคุณครูในโค้ดบรรทัดที่ 19 ก่อนครับ');
                 return { success: false };
             }
             try {
