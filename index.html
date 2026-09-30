@@ -234,6 +234,20 @@
                     </div>
                 </div>
 
+                <!-- Admin Manage Reports (ล้างประวัติรายงาน) -->
+                <div class="glass-pink p-6 sm:p-8 rounded-3xl cute-shadow">
+                    <div class="flex justify-between items-center mb-6 border-b border-rose-100 pb-4">
+                        <div>
+                            <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2">🗑️ จัดการและล้างประวัติรายงาน</h2>
+                            <p class="text-xs text-rose-400 mt-1">สามารถลบรายงานทีละรายการ หรือล้างข้อมูลทั้งหมดได้</p>
+                        </div>
+                        <button onclick="handleClearAllReports()" class="bg-rose-500 hover:bg-rose-600 text-white text-xs px-4 py-2 rounded-xl font-bold shadow-md transition">⚠️ ล้างประวัติทั้งหมด</button>
+                    </div>
+                    <div id="adminReportManagerList" class="space-y-3 max-h-80 overflow-y-auto pr-1">
+                        <p class="text-sm text-rose-300 text-center py-4">กำลังโหลดรายงาน...</p>
+                    </div>
+                </div>
+
                 <!-- Admin Settings -->
                 <div class="glass-pink p-6 sm:p-8 rounded-3xl cute-shadow">
                     <div class="border-b border-rose-100 pb-4 mb-6 flex justify-between items-center">
@@ -490,7 +504,7 @@
                                 <p class="text-xs text-slate-400 mt-1">${r.timestamp} • ${r.status}</p>
                                 ${r.absentDetails !== '-' ? `<p class="text-xs text-rose-500 font-medium mt-1">ขาด: ${r.absentDetails}</p>` : ''}
                             </div>
-                            ${r.photoUrl ? `<a href="${r.photoUrl}" target="_blank" class="text-xs bg-rose-100 text-rose-600 px-3 py-1.5 rounded-xl font-bold hover:bg-rose-200 transition">🖼️️ ดูรูปถ่าย</a>` : ''}
+                            ${r.photoUrl ? `<a href="${r.photoUrl}" target="_blank" class="text-xs bg-rose-100 text-rose-600 px-3 py-1.5 rounded-xl font-bold hover:bg-rose-200 transition">🖼 ดูรูปถ่าย</a>` : ''}
                         </div>
                         <div class="flex flex-col sm:flex-row gap-2 pt-3 border-t border-rose-100">
                             <input type="number" id="score_${r.id}" max="10" min="0" placeholder="คะแนน (0-10)" class="sm:w-32 p-2.5 bg-rose-50/30 border border-rose-200 rounded-xl text-sm focus:outline-none">
@@ -569,7 +583,7 @@
                     </li>
                 `).join('');
 
-                // Render Location Statistics
+                // Render Location Statistics & Manage Reports
                 if (res.allReports) {
                     const counts = {};
                     res.locations.forEach(loc => counts[loc] = 0);
@@ -591,32 +605,67 @@
 
                     if (sortedStats.length === 0) {
                         statsContainer.innerHTML = '<p class="text-sm text-rose-300 text-center py-4">ยังไม่มีข้อมูลสถิติค่ะ</p>';
-                        return;
+                    } else {
+                        statsContainer.innerHTML = sortedStats.map((item, index) => {
+                            const percentage = Math.round((item.count / totalReports) * 100);
+                            const isTop = index === 0 && item.count > 0;
+
+                            return `
+                                <div class="p-4 bg-white rounded-2xl border border-rose-100 space-y-2 shadow-sm">
+                                    <div class="flex justify-between items-center">
+                                        <div class="flex items-center gap-2">
+                                            <span class="w-6 h-6 rounded-lg ${isTop ? 'bg-rose-100 text-rose-700' : 'bg-slate-100 text-slate-600'} text-xs font-bold flex items-center justify-center">
+                                                #${index + 1}
+                                            </span>
+                                            <span class="font-bold text-slate-800 text-sm">📍 ${item.location}</span>
+                                            ${isTop ? '<span class="text-xs bg-rose-100 text-rose-600 font-bold px-2 py-0.5 rounded-full border border-rose-200">🏆 ขยันทำที่สุด</span>' : ''}
+                                        </div>
+                                        <span class="text-sm font-bold text-rose-500">${item.count} ครั้ง <span class="text-xs text-slate-400 font-normal">(${percentage}%)</span></span>
+                                    </div>
+                                    <div class="w-full bg-rose-100/60 h-2.5 rounded-full overflow-hidden">
+                                        <div class="pink-btn-gradient h-full rounded-full transition-all duration-500" style="width: ${percentage}%"></div>
+                                    </div>
+                                </div>
+                            `;
+                        }).join('');
                     }
 
-                    statsContainer.innerHTML = sortedStats.map((item, index) => {
-                        const percentage = Math.round((item.count / totalReports) * 100);
-                        const isTop = index === 0 && item.count > 0;
-
-                        return `
-                            <div class="p-4 bg-white rounded-2xl border border-rose-100 space-y-2 shadow-sm">
-                                <div class="flex justify-between items-center">
-                                    <div class="flex items-center gap-2">
-                                        <span class="w-6 h-6 rounded-lg ${isTop ? 'bg-rose-100 text-rose-700' : 'bg-slate-100 text-slate-600'} text-xs font-bold flex items-center justify-center">
-                                            #${index + 1}
-                                        </span>
-                                        <span class="font-bold text-slate-800 text-sm">📍 ${item.location}</span>
-                                        ${isTop ? '<span class="text-xs bg-rose-100 text-rose-600 font-bold px-2 py-0.5 rounded-full border border-rose-200">🏆 ขยันทำที่สุด</span>' : ''}
-                                    </div>
-                                    <span class="text-sm font-bold text-rose-500">${item.count} ครั้ง <span class="text-xs text-slate-400 font-normal">(${percentage}%)</span></span>
+                    // Render List of Reports in Admin for Deleting
+                    const adminReportList = document.getElementById('adminReportManagerList');
+                    if (res.allReports.length === 0) {
+                        adminReportList.innerHTML = '<p class="text-sm text-rose-300 text-center py-4">ไม่มีรายการรายงานในระบบ</p>';
+                    } else {
+                        adminReportList.innerHTML = res.allReports.map(r => `
+                            <div class="flex justify-between items-center p-3 bg-white rounded-xl border border-rose-100 text-xs">
+                                <div>
+                                    <span class="font-bold text-slate-800">${r.studentName}</span>
+                                    <span class="text-rose-500 font-semibold"> (📍 ${r.location})</span>
+                                    <div class="text-slate-400">${r.timestamp} • ${r.inspectionStatus}</div>
                                 </div>
-                                <div class="w-full bg-rose-100/60 h-2.5 rounded-full overflow-hidden">
-                                    <div class="pink-btn-gradient h-full rounded-full transition-all duration-500" style="width: ${percentage}%"></div>
-                                </div>
+                                <button onclick="handleDeleteSingleReport('${r.id}')" class="text-rose-500 hover:text-rose-700 font-bold px-2 py-1 bg-rose-50 rounded-lg">ลบรายการนี้</button>
                             </div>
-                        `;
-                    }).join('');
+                        `).join('');
+                    }
                 }
+            }
+        }
+
+        async function handleDeleteSingleReport(id) {
+            if (!confirm('ยืนยันลบรายงานรายการนี้?')) return;
+            const res = await apiCall('deleteSingleReport', { id });
+            if (res.success) {
+                loadAdminData();
+                loadStudentReports();
+            }
+        }
+
+        async function handleClearAllReports() {
+            if (!confirm('⚠️ คำเตือน: คุณต้องการล้างประวัติการส่งรายงานทั้งหมดใช่หรือไม่? ข้อมูลทั้งหมดจะถูกลบออกจากระบบ!')) return;
+            const res = await apiCall('clearAllReports');
+            if (res.success) {
+                alert('ล้างประวัติรายงานทั้งหมดเรียบร้อยแล้วค่ะ');
+                loadAdminData();
+                loadStudentReports();
             }
         }
 
