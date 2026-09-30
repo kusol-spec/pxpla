@@ -234,26 +234,17 @@
                     </div>
                 </div>
 
-                <!-- Admin Detailed Feedback Log -->
-                <div class="glass-pink p-6 sm:p-8 rounded-3xl cute-shadow">
-                    <h2 class="text-xl font-bold text-slate-800 mb-2 flex items-center gap-2">💬 รายการตรวจเวรและคำแนะนำจากครูทั้งหมด</h2>
-                    <p class="text-xs text-rose-400 mb-6">แอดมินสามารถตรวจสอบคะแนน และข้อคิดเห็นที่คุณครูพิมพ์ตอบกลับนักเรียนได้ที่นี่</p>
-                    <div id="adminAllReportsList" class="space-y-3 max-h-[450px] overflow-y-auto pr-1">
-                        <p class="text-sm text-rose-300 text-center py-4">กำลังโหลดประวัติ...</p>
-                    </div>
-                </div>
-
                 <!-- Admin Settings -->
                 <div class="glass-pink p-6 sm:p-8 rounded-3xl cute-shadow">
                     <div class="border-b border-rose-100 pb-4 mb-6 flex justify-between items-center">
                         <div>
                             <h2 class="text-xl font-bold text-slate-800">⚙️ การจัดการระบบ</h2>
-                            <p class="text-xs text-rose-400 mt-1">จัดการรายชื่อจุดตรวจและสิทธิ์บัญชีคุณครู</p>
+                            <p class="text-xs text-rose-400 mt-1">จัดการรายชื่อจุดตรวจ บัญชีครู และเปลี่ยนรหัสผ่านแอดมิน</p>
                         </div>
                         <button onclick="adminLogout()" class="text-xs bg-rose-100 text-rose-600 hover:bg-rose-200 px-3.5 py-1.5 rounded-xl font-bold">ออกจากส่วนแอดมิน</button>
                     </div>
                     
-                    <div class="grid md:grid-cols-2 gap-6">
+                    <div class="grid md:grid-cols-2 gap-6 mb-6">
                         <!-- Manage Locations -->
                         <div class="space-y-4 p-5 bg-rose-50/50 rounded-2xl border border-rose-200/60">
                             <h3 class="font-bold text-sm text-slate-700 flex items-center gap-2">📍 จัดการจุดประจำเวร</h3>
@@ -278,6 +269,15 @@
                             <ul id="adminTeacherList" class="space-y-2 text-sm max-h-36 overflow-y-auto pt-2">
                                 <li class="text-rose-300 text-xs">กำลังโหลด...</li>
                             </ul>
+                        </div>
+                    </div>
+
+                    <!-- Change Admin Password Section -->
+                    <div class="p-5 bg-rose-50/50 rounded-2xl border border-rose-200/60 space-y-4">
+                        <h3 class="font-bold text-sm text-slate-700 flex items-center gap-2">🔑 เปลี่ยนรหัสผ่านแอดมิน</h3>
+                        <div class="flex flex-col sm:flex-row gap-3">
+                            <input type="password" id="newAdminPasswordInput" placeholder="กรอกรหัสผ่านแอดมินใหม่..." class="flex-1 p-3 bg-white border border-rose-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-rose-400">
+                            <button onclick="handleChangeAdminPassword()" class="pink-btn-gradient text-white px-6 py-3 rounded-xl text-sm font-semibold shadow-sm hover:opacity-95">บันทึกรหัสผ่านใหม่</button>
                         </div>
                     </div>
                 </div>
@@ -490,7 +490,7 @@
                                 <p class="text-xs text-slate-400 mt-1">${r.timestamp} • ${r.status}</p>
                                 ${r.absentDetails !== '-' ? `<p class="text-xs text-rose-500 font-medium mt-1">ขาด: ${r.absentDetails}</p>` : ''}
                             </div>
-                            ${r.photoUrl ? `<a href="${r.photoUrl}" target="_blank" class="text-xs bg-rose-100 text-rose-600 px-3 py-1.5 rounded-xl font-bold hover:bg-rose-200 transition">🖼️ ดูรูปถ่าย</a>` : ''}
+                            ${r.photoUrl ? `<a href="${r.photoUrl}" target="_blank" class="text-xs bg-rose-100 text-rose-600 px-3 py-1.5 rounded-xl font-bold hover:bg-rose-200 transition">🖼️️ ดูรูปถ่าย</a>` : ''}
                         </div>
                         <div class="flex flex-col sm:flex-row gap-2 pt-3 border-t border-rose-100">
                             <input type="number" id="score_${r.id}" max="10" min="0" placeholder="คะแนน (0-10)" class="sm:w-32 p-2.5 bg-rose-50/30 border border-rose-200 rounded-xl text-sm focus:outline-none">
@@ -514,10 +514,12 @@
             }
         }
 
-        function handleAdminLogin(e) {
+        async function handleAdminLogin(e) {
             e.preventDefault();
             const pass = document.getElementById('adminPassInput').value;
-            if (pass === '9321') {
+            const res = await apiCall('adminLogin', { password: pass });
+
+            if (res.success) {
                 isAdminLoggedIn = true;
                 document.getElementById('adminLoginForm').classList.add('hidden');
                 document.getElementById('adminDashboard').classList.remove('hidden');
@@ -532,6 +534,17 @@
             isAdminLoggedIn = false;
             document.getElementById('adminLoginForm').classList.remove('hidden');
             document.getElementById('adminDashboard').classList.add('hidden');
+        }
+
+        async function handleChangeAdminPassword() {
+            const newPass = document.getElementById('newAdminPasswordInput').value.trim();
+            if (!newPass) return alert('กรุณากรอกรหัสผ่านใหม่ด้วยค่ะ');
+
+            const res = await apiCall('changeAdminPassword', { newPassword: newPass });
+            if (res.success) {
+                alert('เปลี่ยนรหัสผ่านแอดมินเรียบร้อยแล้วค่ะ! 🔑✨');
+                document.getElementById('newAdminPasswordInput').value = '';
+            }
         }
 
         async function loadAdminData() {
@@ -555,34 +568,6 @@
                         <button onclick="handleDeleteTeacher('${t.username}')" class="text-xs text-rose-500 hover:underline font-bold">ลบ</button>
                     </li>
                 `).join('');
-
-                // Render Admin Detailed Feedback Logs
-                const adminReportsList = document.getElementById('adminAllReportsList');
-                if (res.allReports && res.allReports.length > 0) {
-                    adminReportsList.innerHTML = res.allReports.map(r => `
-                        <div class="p-4 bg-white rounded-2xl border border-rose-100 space-y-2 text-sm shadow-sm">
-                            <div class="flex justify-between items-start">
-                                <div>
-                                    <span class="font-bold text-slate-800">${r.studentName}</span>
-                                    <span class="text-rose-500 text-xs font-semibold ml-1">📍 ${r.location}</span>
-                                    <div class="text-xs text-slate-400 mt-0.5">${r.timestamp} • ${r.status}</div>
-                                </div>
-                                <span class="px-2.5 py-1 rounded-xl text-xs font-bold ${r.inspectionStatus === 'ตรวจแล้ว' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}">
-                                    ${r.inspectionStatus} ${r.score !== '-' ? `(${r.score} คะแนน)` : ''}
-                                </span>
-                            </div>
-
-                            ${r.inspectionStatus === 'ตรวจแล้ว' ? `
-                                <div class="bg-rose-50/70 p-3 rounded-xl border border-rose-100 text-xs space-y-1">
-                                    <div class="font-bold text-rose-700">👩‍🏫 ครูผู้ตรวจ: <span class="text-slate-800 font-semibold">${r.teacherName || 'ไม่ระบุ'}</span></div>
-                                    <div class="text-slate-600"><b>💬 ข้อคิดเห็น:</b> <span class="italic">${r.feedback && r.feedback !== '-' ? r.feedback : 'ไม่มีข้อคิดเห็นเพิ่มเติม'}</span></div>
-                                </div>
-                            ` : '<p class="text-xs text-slate-400 italic">อยู่ระหว่างรอคุณครูเข้าตรวจ...</p>'}
-                        </div>
-                    `).join('');
-                } else {
-                    adminReportsList.innerHTML = '<p class="text-sm text-rose-300 text-center py-4">ยังไม่มีข้อมูลรายงานในระบบ</p>';
-                }
 
                 // Render Location Statistics
                 if (res.allReports) {
