@@ -128,9 +128,14 @@
                         </div>
                     </div>
 
-                    <div id="absentBox" class="hidden">
-                        <label class="block text-xs font-bold text-rose-600 uppercase tracking-wider mb-2">รายชื่อคนที่ไม่มาทำเวร</label>
-                        <textarea id="absentDetails" rows="2" class="w-full p-3.5 bg-rose-50/70 border border-rose-300 rounded-2xl focus:ring-2 focus:ring-rose-400 focus:outline-none transition text-sm" placeholder="ระบุชื่อเพื่อนที่ไม่มาทำเวร..."></textarea>
+                    <div id="absentBox" class="hidden space-y-3">
+                        <label class="block text-xs font-bold text-rose-600 uppercase tracking-wider">เลือกรายชื่อคนที่ไม่มาทำเวร</label>
+                        <input type="text" id="studentSearch" oninput="renderStudentChecklist()" placeholder="🔍 ค้นหาชื่อนักเรียน..." class="w-full p-3 bg-white border border-rose-300 rounded-2xl text-sm focus:ring-2 focus:ring-rose-400 focus:outline-none">
+                        <div id="studentChecklist" class="max-h-52 overflow-y-auto space-y-1 p-2 bg-rose-50/70 border border-rose-300 rounded-2xl text-sm">
+                            <p class="text-xs text-rose-300 text-center py-3">กำลังโหลดรายชื่อ...</p>
+                        </div>
+                        <div id="selectedAbsentChips" class="flex flex-wrap gap-1.5"></div>
+                        <textarea id="absentDetails" rows="2" class="w-full p-3.5 bg-rose-50/70 border border-rose-300 rounded-2xl focus:ring-2 focus:ring-rose-400 focus:outline-none transition text-sm" placeholder="ชื่ออื่นๆ ที่ไม่มีในรายชื่อ (ถ้ามี)..."></textarea>
                     </div>
 
                     <div>
@@ -234,7 +239,7 @@
                     </div>
                 </div>
 
-                <!-- Admin Manage Reports (ล้างประวัติรายงาน) -->
+                <!-- Admin Manage Reports -->
                 <div class="glass-pink p-6 sm:p-8 rounded-3xl cute-shadow">
                     <div class="flex justify-between items-center mb-6 border-b border-rose-100 pb-4">
                         <div>
@@ -306,6 +311,52 @@
         let apiUrl = DEFAULT_API_URL;
         let loggedInTeacher = null;
         let isAdminLoggedIn = false;
+
+        // ===== รายชื่อนักเรียนจาก Google Sheet =====
+        let studentList = [];
+        let selectedAbsent = new Set();
+
+        function setStudentList(list) {
+            studentList = (list || []).map(s =>
+                typeof s === 'string' ? s : (s.name || s.studentName || s['ชื่อ'] || Object.values(s)[0])
+            ).filter(Boolean);
+            renderStudentChecklist();
+        }
+
+        function renderStudentChecklist() {
+            const box = document.getElementById('studentChecklist');
+            const q = document.getElementById('studentSearch').value.trim().toLowerCase();
+            const items = studentList
+                .map((name, i) => ({ name, i }))
+                .filter(x => x.name.toLowerCase().includes(q));
+
+            if (studentList.length === 0) {
+                box.innerHTML = '<p class="text-xs text-rose-300 text-center py-3">ไม่พบรายชื่อนักเรียนจากชีท</p>';
+            } else if (items.length === 0) {
+                box.innerHTML = '<p class="text-xs text-rose-300 text-center py-3">ไม่พบชื่อที่ค้นหา</p>';
+            } else {
+                box.innerHTML = items.map(x => `
+                    <label class="flex items-center gap-2 p-2 rounded-xl hover:bg-white cursor-pointer">
+                        <input type="checkbox" class="w-4 h-4 accent-rose-500" ${selectedAbsent.has(x.name) ? 'checked' : ''} onchange="toggleAbsent(${x.i}, this.checked)">
+                        <span>${x.name}</span>
+                    </label>`).join('');
+            }
+
+            document.getElementById('selectedAbsentChips').innerHTML = [...selectedAbsent].map(n =>
+                `<span class="text-xs bg-rose-500 text-white px-2.5 py-1 rounded-full">${n}</span>`
+            ).join('');
+        }
+
+        function toggleAbsent(index, checked) {
+            const name = studentList[index];
+            if (checked) selectedAbsent.add(name); else selectedAbsent.delete(name);
+            renderStudentChecklist();
+        }
+
+        function getAbsentText() {
+            const extra = document.getElementById('absentDetails').value.trim();
+            return [...selectedAbsent, ...(extra ? [extra] : [])].join(', ');
+        }
 
         const quotes = [
             "ความสะอาดสร้างได้ ด้วยมือของพวกเราทุกคน 💕",
@@ -386,11 +437,25 @@
                     select.innerHTML += `<option value="${loc}">${loc}</option>`;
                 });
             }
+
+            // รายชื่อนักเรียนจากชีท (รองรับทั้งส่งมากับ getInitialData หรือแยก action getStudents)
+            if (res.success && res.students) {
+                setStudentList(res.students);
+            } else {
+                const r = await apiCall('getStudents');
+                setStudentList(r.success ? r.students : []);
+            }
             loadStudentReports();
         }
 
         async function handleStudentSubmit(e) {
             e.preventDefault();
+            const isIncomplete = document.querySelector('input[name="dutyStatus"]:checked').value === 'มาทำไม่ครบ';
+
+            if (isIncomplete && !getAbsentText()) {
+                return alert('กรุณาเลือกรายชื่อคนที่ไม่มาทำเวรด้วยนะคะ');
+            }
+
             const btn = document.getElementById('submitBtn');
             btn.disabled = true;
             btn.innerText = 'กำลังส่งรายงาน... 🌸';
@@ -410,7 +475,7 @@
                 studentName: document.getElementById('studentName').value,
                 location: document.getElementById('studentLocation').value,
                 status: document.querySelector('input[name="dutyStatus"]:checked').value,
-                absentDetails: document.getElementById('absentDetails').value,
+                absentDetails: isIncomplete ? getAbsentText() : '',
                 photoData
             };
 
@@ -426,6 +491,8 @@
                 alert('ส่งรายงานเรียบร้อยแล้วค่ะ ขอบคุณที่ช่วยดูแลโรงเรียนนะคะ 💖');
                 document.getElementById('studentForm').reset();
                 toggleAbsentDetails(false);
+                selectedAbsent.clear();
+                renderStudentChecklist();
                 loadStudentReports();
             }
             btn.disabled = false;
