@@ -202,6 +202,38 @@
                         <p class="text-sm text-rose-300 text-center py-6">กำลังโหลดข้อมูล...</p>
                     </div>
                 </div>
+
+                <!-- ครูย้ายสถานที่นักเรียน -->
+                <div class="glass-pink p-6 sm:p-8 rounded-3xl cute-shadow">
+                    <h3 class="font-bold text-slate-800 text-base mb-1 flex items-center gap-2">🔀 ย้ายสถานที่นักเรียน</h3>
+                    <p class="text-xs text-rose-400 mb-5">ติ๊กเลือกนักเรียน แล้วเลือกสถานที่ใหม่ที่ต้องการย้ายไป</p>
+
+                    <div class="grid sm:grid-cols-2 gap-2 mb-3">
+                        <input type="text" id="tmSearch" oninput="renderMoveList()" placeholder="🔍 ค้นหาชื่อนักเรียน..." class="p-3 bg-white border border-rose-300 rounded-xl text-sm focus:ring-2 focus:ring-rose-400 focus:outline-none">
+                        <select id="tmLocationFilter" onchange="renderMoveList()" class="p-3 bg-white border border-rose-300 rounded-xl text-sm focus:ring-2 focus:ring-rose-400 focus:outline-none">
+                            <option value="">ทุกสถานที่</option>
+                        </select>
+                    </div>
+
+                    <div class="flex justify-between items-center mb-2 text-xs">
+                        <span id="tmCount" class="text-rose-500 font-bold">เลือกแล้ว 0 คน</span>
+                        <div class="flex gap-2">
+                            <button type="button" onclick="selectAllMove(true)" class="bg-rose-100 hover:bg-rose-200 text-rose-700 px-3 py-1.5 rounded-lg font-bold">เลือกทั้งหมดที่แสดง</button>
+                            <button type="button" onclick="selectAllMove(false)" class="bg-slate-100 hover:bg-slate-200 text-slate-600 px-3 py-1.5 rounded-lg font-bold">ล้างที่เลือก</button>
+                        </div>
+                    </div>
+
+                    <div id="tmList" class="max-h-72 overflow-y-auto space-y-1 p-2 bg-rose-50/70 border border-rose-200 rounded-2xl text-sm">
+                        <p class="text-xs text-rose-300 text-center py-3">กำลังโหลดรายชื่อ...</p>
+                    </div>
+
+                    <div class="flex flex-col sm:flex-row gap-2 mt-4">
+                        <select id="tmNewLocation" class="flex-1 p-3 bg-white border border-rose-300 rounded-xl text-sm focus:ring-2 focus:ring-rose-400 focus:outline-none">
+                            <option value="">-- เลือกสถานที่ใหม่ --</option>
+                        </select>
+                        <button type="button" onclick="handleMoveStudents()" class="pink-btn-gradient text-white px-6 py-3 rounded-xl text-sm font-bold shadow-md hover:opacity-95">ย้ายสถานที่</button>
+                    </div>
+                </div>
             </div>
         </section>
 
@@ -315,12 +347,14 @@
         // ===== รายชื่อนักเรียนจาก Google Sheet =====
         let studentList = [];
         let selectedAbsent = new Set();
+        let teacherCreds = null;
+        let moveSelected = new Set();
 
         function setStudentList(list) {
             studentList = (list || []).map(s =>
                 typeof s === 'string'
-                    ? { name: s, location: '' }
-                    : { name: s.name || s.studentName || s['ชื่อ'] || '', location: s.location || '' }
+                    ? { id: '', name: s, location: '' }
+                    : { id: String(s.id || ''), name: s.name || s.studentName || s['ชื่อ'] || '', location: s.location || '' }
             ).filter(s => s.name);
             renderStudentChecklist();
         }
@@ -485,302 +519,3 @@
 
             const res = await apiCall('submitReport', payload);
             if (res.success) {
-                confetti({
-                    particleCount: 100,
-                    spread: 70,
-                    origin: { y: 0.6 },
-                    colors: ['#ff758c', '#ff7eb3', '#fda085', '#ffffff']
-                });
-
-                alert('ส่งรายงานเรียบร้อยแล้วค่ะ ขอบคุณที่ช่วยดูแลโรงเรียนนะคะ 💖');
-                document.getElementById('studentForm').reset();
-                toggleAbsentDetails(false);
-                selectedAbsent.clear();
-                renderStudentChecklist();
-                loadStudentReports();
-            }
-            btn.disabled = false;
-            btn.innerText = '🚀 ส่งรายงานการทำเวรเรียบร้อย';
-        }
-
-        async function loadStudentReports() {
-            const list = document.getElementById('studentReportsList');
-            const res = await apiCall('getStudentReports');
-            if (res.success && res.reports) {
-                if (res.reports.length === 0) {
-                    list.innerHTML = '<p class="text-sm text-rose-300 text-center py-6">ยังไม่มีประวัติการส่งรายงานค่ะ</p>';
-                    return;
-                }
-                list.innerHTML = res.reports.map(r => `
-                    <div class="p-4 bg-white/80 rounded-2xl border border-rose-100 space-y-2 hover:bg-rose-50/50 transition shadow-sm text-sm">
-                        <div class="flex justify-between items-start">
-                            <div>
-                                <div class="font-bold text-slate-800">${r.studentName} <span class="text-rose-500 font-medium">📍 ${r.location}</span></div>
-                                <div class="text-xs text-slate-400 mt-0.5">${r.timestamp} • ${r.status}</div>
-                            </div>
-                            <div>
-                                <span class="px-3 py-1.5 rounded-xl text-xs font-bold ${r.inspectionStatus === 'ตรวจแล้ว' ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-100 text-rose-700'}">
-                                    ${r.inspectionStatus} ${r.score !== '-' ? `(${r.score} คะแนน)` : ''}
-                                </span>
-                            </div>
-                        </div>
-
-                        ${r.inspectionStatus === 'ตรวจแล้ว' ? `
-                            <div class="mt-2 pt-2 border-t border-rose-100/70 text-xs bg-rose-50/60 p-3 rounded-xl border border-rose-100">
-                                <span class="font-bold text-rose-700">💬 คุณครูผู้ตรวจ (${r.teacherName || 'ครูประจำการ'}):</span>
-                                <p class="text-slate-600 mt-1 italic">${r.feedback && r.feedback !== '-' ? `"${r.feedback}"` : 'ไม่มีข้อคิดเห็นเพิ่มเติม'}</p>
-                            </div>
-                        ` : ''}
-                    </div>
-                `).join('');
-            }
-        }
-
-        async function handleTeacherLogin(e) {
-            e.preventDefault();
-            const u = document.getElementById('teacherUsername').value;
-            const p = document.getElementById('teacherPassword').value;
-
-            const res = await apiCall('teacherLogin', { username: u, password: p });
-            if (res.success) {
-                loggedInTeacher = res.teacherName;
-                document.getElementById('currentTeacherName').innerText = res.teacherName;
-                document.getElementById('teacherLoginForm').classList.add('hidden');
-                document.getElementById('teacherDashboard').classList.remove('hidden');
-                loadPendingReports();
-            } else {
-                alert('ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้องค่ะ');
-            }
-        }
-
-        function teacherLogout() {
-            loggedInTeacher = null;
-            document.getElementById('teacherLoginForm').classList.remove('hidden');
-            document.getElementById('teacherDashboard').classList.add('hidden');
-        }
-
-        async function loadPendingReports() {
-            const list = document.getElementById('pendingReportsList');
-            const res = await apiCall('getPendingReports');
-            if (res.success && res.reports) {
-                if (res.reports.length === 0) {
-                    list.innerHTML = '<p class="text-sm text-rose-400 text-center py-6">ไม่มีรายงานรอการตรวจแล้วค่ะ 👍🌸</p>';
-                    return;
-                }
-                list.innerHTML = res.reports.map(r => `
-                    <div class="p-5 bg-white/80 rounded-2xl border border-rose-200/60 space-y-4 shadow-sm">
-                        <div class="flex justify-between items-start">
-                            <div>
-                                <h4 class="font-bold text-slate-800 text-base">${r.studentName} <span class="text-rose-500 text-sm font-semibold">(📍 ${r.location})</span></h4>
-                                <p class="text-xs text-slate-400 mt-1">${r.timestamp} • ${r.status}</p>
-                                ${r.absentDetails !== '-' ? `<p class="text-xs text-rose-500 font-medium mt-1">ขาด: ${r.absentDetails}</p>` : ''}
-                            </div>
-                            ${r.photoUrl ? `<a href="${r.photoUrl}" target="_blank" class="text-xs bg-rose-100 text-rose-600 px-3 py-1.5 rounded-xl font-bold hover:bg-rose-200 transition">🖼 ดูรูปถ่าย</a>` : ''}
-                        </div>
-                        <div class="flex flex-col sm:flex-row gap-2 pt-3 border-t border-rose-100">
-                            <input type="number" id="score_${r.id}" max="10" min="0" placeholder="คะแนน (0-10)" class="sm:w-32 p-2.5 bg-rose-50/30 border border-rose-200 rounded-xl text-sm focus:outline-none">
-                            <input type="text" id="feedback_${r.id}" placeholder="ความคิดเห็น..." class="flex-1 p-2.5 bg-rose-50/30 border border-rose-200 rounded-xl text-sm focus:outline-none">
-                            <button onclick="submitGrade('${r.id}')" class="pink-btn-gradient text-white px-5 py-2.5 rounded-xl text-sm font-bold shadow-md hover:opacity-95">ให้คะแนน</button>
-                        </div>
-                    </div>
-                `).join('');
-            }
-        }
-
-        async function submitGrade(id) {
-            const score = document.getElementById(`score_${id}`).value;
-            const feedback = document.getElementById(`feedback_${id}`).value;
-            if (!score) return alert('กรุณาใส่คะแนนก่อนนะคะ');
-
-            const res = await apiCall('gradeReport', { id, score, feedback, teacherName: loggedInTeacher });
-            if (res.success) {
-                alert('ให้คะแนนเรียบร้อยค่ะ ✨');
-                loadPendingReports();
-            }
-        }
-
-        async function handleAdminLogin(e) {
-            e.preventDefault();
-            const pass = document.getElementById('adminPassInput').value;
-            const res = await apiCall('adminLogin', { password: pass });
-
-            if (res.success) {
-                isAdminLoggedIn = true;
-                document.getElementById('adminLoginForm').classList.add('hidden');
-                document.getElementById('adminDashboard').classList.remove('hidden');
-                document.getElementById('adminPassInput').value = '';
-                loadAdminData();
-            } else {
-                alert('รหัสผ่านแอดมินไม่ถูกต้องค่ะ!');
-            }
-        }
-
-        function adminLogout() {
-            isAdminLoggedIn = false;
-            document.getElementById('adminLoginForm').classList.remove('hidden');
-            document.getElementById('adminDashboard').classList.add('hidden');
-        }
-
-        async function handleChangeAdminPassword() {
-            const newPass = document.getElementById('newAdminPasswordInput').value.trim();
-            if (!newPass) return alert('กรุณากรอกรหัสผ่านใหม่ด้วยค่ะ');
-
-            const res = await apiCall('changeAdminPassword', { newPassword: newPass });
-            if (res.success) {
-                alert('เปลี่ยนรหัสผ่านแอดมินเรียบร้อยแล้วค่ะ! 🔑✨');
-                document.getElementById('newAdminPasswordInput').value = '';
-            }
-        }
-
-        async function loadAdminData() {
-            const res = await apiCall('getAdminOverview');
-
-            if (res.success) {
-                // Render Locations
-                const locList = document.getElementById('adminLocationList');
-                locList.innerHTML = res.locations.map(l => `
-                    <li class="flex justify-between items-center bg-white p-3 rounded-xl border border-rose-100 font-medium">
-                        <span>📍 ${l}</span>
-                        <button onclick="handleDeleteLocation('${l}')" class="text-xs text-rose-500 hover:underline font-bold">ลบ</button>
-                    </li>
-                `).join('');
-
-                // Render Teachers
-                const teacherList = document.getElementById('adminTeacherList');
-                teacherList.innerHTML = res.teachers.map(t => `
-                    <li class="flex justify-between items-center bg-white p-3 rounded-xl border border-rose-100 font-medium">
-                        <span>👩‍🏫 ${t.name} <span class="text-xs text-slate-400">(${t.username})</span></span>
-                        <button onclick="handleDeleteTeacher('${t.username}')" class="text-xs text-rose-500 hover:underline font-bold">ลบ</button>
-                    </li>
-                `).join('');
-
-                // Render Location Statistics & Manage Reports
-                if (res.allReports) {
-                    const counts = {};
-                    res.locations.forEach(loc => counts[loc] = 0);
-
-                    res.allReports.forEach(r => {
-                        if (counts[r.location] !== undefined) {
-                            counts[r.location]++;
-                        } else if (r.location) {
-                            counts[r.location] = 1;
-                        }
-                    });
-
-                    const sortedStats = Object.keys(counts)
-                        .map(loc => ({ location: loc, count: counts[loc] }))
-                        .sort((a, b) => b.count - a.count);
-
-                    const totalReports = res.allReports.length || 1;
-                    const statsContainer = document.getElementById('locationStatsList');
-
-                    if (sortedStats.length === 0) {
-                        statsContainer.innerHTML = '<p class="text-sm text-rose-300 text-center py-4">ยังไม่มีข้อมูลสถิติค่ะ</p>';
-                    } else {
-                        statsContainer.innerHTML = sortedStats.map((item, index) => {
-                            const percentage = Math.round((item.count / totalReports) * 100);
-                            const isTop = index === 0 && item.count > 0;
-
-                            return `
-                                <div class="p-4 bg-white rounded-2xl border border-rose-100 space-y-2 shadow-sm">
-                                    <div class="flex justify-between items-center">
-                                        <div class="flex items-center gap-2">
-                                            <span class="w-6 h-6 rounded-lg ${isTop ? 'bg-rose-100 text-rose-700' : 'bg-slate-100 text-slate-600'} text-xs font-bold flex items-center justify-center">
-                                                #${index + 1}
-                                            </span>
-                                            <span class="font-bold text-slate-800 text-sm">📍 ${item.location}</span>
-                                            ${isTop ? '<span class="text-xs bg-rose-100 text-rose-600 font-bold px-2 py-0.5 rounded-full border border-rose-200">🏆 ขยันทำที่สุด</span>' : ''}
-                                        </div>
-                                        <span class="text-sm font-bold text-rose-500">${item.count} ครั้ง <span class="text-xs text-slate-400 font-normal">(${percentage}%)</span></span>
-                                    </div>
-                                    <div class="w-full bg-rose-100/60 h-2.5 rounded-full overflow-hidden">
-                                        <div class="pink-btn-gradient h-full rounded-full transition-all duration-500" style="width: ${percentage}%"></div>
-                                    </div>
-                                </div>
-                            `;
-                        }).join('');
-                    }
-
-                    // Render List of Reports in Admin for Deleting
-                    const adminReportList = document.getElementById('adminReportManagerList');
-                    if (res.allReports.length === 0) {
-                        adminReportList.innerHTML = '<p class="text-sm text-rose-300 text-center py-4">ไม่มีรายการรายงานในระบบ</p>';
-                    } else {
-                        adminReportList.innerHTML = res.allReports.map(r => `
-                            <div class="flex justify-between items-center p-3 bg-white rounded-xl border border-rose-100 text-xs">
-                                <div>
-                                    <span class="font-bold text-slate-800">${r.studentName}</span>
-                                    <span class="text-rose-500 font-semibold"> (📍 ${r.location})</span>
-                                    <div class="text-slate-400">${r.timestamp} • ${r.inspectionStatus}</div>
-                                </div>
-                                <button onclick="handleDeleteSingleReport('${r.id}')" class="text-rose-500 hover:text-rose-700 font-bold px-2 py-1 bg-rose-50 rounded-lg">ลบรายการนี้</button>
-                            </div>
-                        `).join('');
-                    }
-                }
-            }
-        }
-
-        async function handleDeleteSingleReport(id) {
-            if (!confirm('ยืนยันลบรายงานรายการนี้?')) return;
-            const res = await apiCall('deleteSingleReport', { id });
-            if (res.success) {
-                loadAdminData();
-                loadStudentReports();
-            }
-        }
-
-        async function handleClearAllReports() {
-            if (!confirm('⚠️ คำเตือน: คุณต้องการล้างประวัติการส่งรายงานทั้งหมดใช่หรือไม่? ข้อมูลทั้งหมดจะถูกลบออกจากระบบ!')) return;
-            const res = await apiCall('clearAllReports');
-            if (res.success) {
-                alert('ล้างประวัติรายงานทั้งหมดเรียบร้อยแล้วค่ะ');
-                loadAdminData();
-                loadStudentReports();
-            }
-        }
-
-        async function handleAddLocation() {
-            const input = document.getElementById('newLocationInput');
-            if (!input.value) return;
-            const res = await apiCall('addLocation', { location: input.value });
-            if (res.success) {
-                input.value = '';
-                loadAdminData();
-                initData();
-            }
-        }
-
-        async function handleDeleteLocation(loc) {
-            if (!confirm(`ยืนยันการลบจุดตรวจ ${loc}?`)) return;
-            const res = await apiCall('deleteLocation', { location: loc });
-            if (res.success) {
-                loadAdminData();
-                initData();
-            }
-        }
-
-        async function handleAddTeacher() {
-            const name = document.getElementById('newTeacherName').value;
-            const username = document.getElementById('newTeacherUser').value;
-            const password = document.getElementById('newTeacherPass').value;
-
-            if (!name || !username || !password) return alert('กรอกข้อมูลให้ครบถ้วนนะคะ');
-
-            const res = await apiCall('addTeacher', { name, username, password });
-            if (res.success) {
-                document.getElementById('newTeacherName').value = '';
-                document.getElementById('newTeacherUser').value = '';
-                document.getElementById('newTeacherPass').value = '';
-                loadAdminData();
-            }
-        }
-
-        async function handleDeleteTeacher(username) {
-            if (!confirm(`ยืนยันการลบบัญชี ${username}?`)) return;
-            const res = await apiCall('deleteTeacher', { username });
-            if (res.success) loadAdminData();
-        }
-    </script>
-</body>
-</html>
