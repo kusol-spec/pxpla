@@ -3,345 +3,152 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ระบบตรวจเวรประจำจุด - Sweet Pink Edition 🌸</title>
+    <title>ระบบรายงานการทำเวร</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&family=Mitr:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Mitr', 'Kanit', sans-serif; }
-        .glass-pink {
-            background: rgba(255, 255, 255, 0.92);
-            backdrop-filter: blur(16px);
-            border: 1.5px solid rgba(255, 182, 193, 0.5);
-        }
-        .pink-gradient-bg {
-            background: linear-gradient(135deg, #ff758c 0%, #ff7eb3 50%, #fda085 100%);
-        }
-        .pink-btn-gradient {
-            background: linear-gradient(135deg, #f43f5e 0%, #fb7185 100%);
-        }
-        .pink-text-gradient {
-            background: linear-gradient(135deg, #e11d48 0%, #ff6b8b 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        .cute-shadow {
-            box-shadow: 0 15px 35px -10px rgba(244, 63, 94, 0.2);
-        }
+        .btn-absent { background-color: #fecdd3; color: #be123c; border: 1px solid #fda4af; }
+        .btn-absent.selected { background-color: #e11d48; color: white; }
     </style>
 </head>
-<body class="bg-rose-50/60 min-h-screen text-slate-700 pb-12">
+<body class="bg-gray-100 p-4 max-w-lg mx-auto text-gray-800">
 
-    <!-- Top Header Navbar -->
-    <header class="pink-gradient-bg text-white shadow-lg sticky top-0 z-50">
-        <div class="max-w-4xl mx-auto px-4 py-3.5 flex justify-between items-center">
-            <div class="flex items-center gap-3">
-                <div class="w-11 h-11 bg-white/20 rounded-2xl flex items-center justify-center text-2xl backdrop-blur-md border border-white/30 shadow-inner">
-                    🎀
-                </div>
-                <div>
-                    <h1 class="text-lg font-bold leading-tight drop-shadow-sm">ระบบตรวจเวรประจำจุด ✨</h1>
-                    <p class="text-xs text-rose-100 font-light">School Duty Inspection - Sweet Pink 🌸</p>
-                </div>
+    <div class="bg-white p-5 rounded-xl shadow mb-6 space-y-4">
+        <h2 class="text-lg font-bold text-rose-600 border-b pb-2">📋 รายงานการทำเวร</h2>
+
+        <!-- 1. เลือกจุดทำเวร -->
+        <div>
+            <label class="block text-sm font-semibold mb-1">จุดทำเวร:</label>
+            <select id="locationSelect" onchange="loadStudents()" class="w-full p-2 border rounded-lg">
+                <option value="">-- กำลังโหลดข้อมูล... --</option>
+            </select>
+        </div>
+
+        <!-- 2. ชื่อผู้ส่ง -->
+        <div>
+            <label class="block text-sm font-semibold mb-1">ชื่อผู้ส่งรายงาน:</label>
+            <input type="text" id="studentName" placeholder="กรอกชื่อ-นามสกุล" class="w-full p-2 border rounded-lg">
+        </div>
+
+        <!-- 3. สถานะ -->
+        <div>
+            <label class="block text-sm font-semibold mb-1">การมาทำเวร:</label>
+            <div class="flex gap-4">
+                <label><input type="radio" name="status" value="มาทำครบทุกคน" checked onclick="toggleAbsent(false)"> มาครบ</label>
+                <label><input type="radio" name="status" value="มาทำไม่ครบ" onclick="toggleAbsent(true)"> มาไม่ครบ</label>
             </div>
-            <button onclick="toggleAdminConfig()" class="text-xs bg-white/20 hover:bg-white/30 text-white px-3.5 py-2 rounded-xl border border-white/30 transition duration-200 flex items-center gap-1.5 backdrop-blur-md">
-                ⚙ <span class="hidden sm:inline">ตั้งค่า API</span>
-            </button>
         </div>
-    </header>
 
-    <!-- Config Panel -->
-    <div id="configPanel" class="hidden max-w-4xl mx-auto m-4 p-5 bg-pink-100/90 border border-pink-300 rounded-2xl shadow-lg backdrop-blur-md">
-        <label class="block text-xs font-bold text-rose-900 mb-2 uppercase tracking-wider">🛠 Google Web App URL (ลงท้ายด้วย /exec):</label>
-        <div class="flex flex-col sm:flex-row gap-2">
-            <input type="text" id="apiUrlInput" class="flex-1 p-3 border border-pink-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-pink-400 bg-white" placeholder="https://script.google.com/macros/s/.../exec">
-            <button onclick="saveApiUrl()" class="pink-btn-gradient text-white px-6 py-3 rounded-xl text-sm font-semibold shadow-md hover:opacity-90 transition">บันทึก URL</button>
+        <!-- 4. ปุ่มเลือกรายชื่อคนที่ไม่มา -->
+        <div id="absentBox" class="hidden p-3 bg-rose-50 border border-rose-200 rounded-lg space-y-2">
+            <label class="block text-xs font-bold text-rose-700">คลิกเลือกชื่อคนที่ไม่มาทำเวร:</label>
+            <div id="studentList" class="flex flex-wrap gap-2">
+                <span class="text-xs text-gray-400">กรุณาเลือกจุดทำเวรก่อน</span>
+            </div>
+            <div class="text-xs text-rose-800 pt-1 font-semibold">
+                คนที่ขาด: <span id="absentText">-</span>
+            </div>
         </div>
+
+        <button onclick="submitData()" class="w-full bg-rose-500 text-white py-2.5 rounded-lg font-bold hover:bg-rose-600">ส่งรายงาน</button>
     </div>
 
-    <!-- Main Container -->
-    <main class="max-w-4xl mx-auto px-4 pt-6">
-
-        <!-- Tab Switcher -->
-        <div class="grid grid-cols-3 gap-2 p-1.5 bg-rose-200/50 rounded-2xl mb-8 backdrop-blur-md border border-rose-200/80">
-            <button onclick="switchTab('student')" id="tab-student" class="py-3 rounded-xl text-sm font-bold transition-all duration-300 bg-white text-rose-600 shadow-md flex items-center justify-center gap-1.5">
-                <span>👨‍🎓</span> นักเรียน
-            </button>
-            <button onclick="switchTab('teacher')" id="tab-teacher" class="py-3 rounded-xl text-sm font-bold transition-all duration-300 text-rose-400 hover:text-rose-600 flex items-center justify-center gap-1.5">
-                <span>👨‍🏫</span> ครูตรวจเวร
-            </button>
-            <button onclick="switchTab('admin')" id="tab-admin" class="py-3 rounded-xl text-sm font-bold transition-all duration-300 text-rose-400 hover:text-rose-600 flex items-center justify-center gap-1.5">
-                <span>⚙️</span> ผู้ดูแล
-            </button>
-        </div>
-
-        <!-- 1. Student Section -->
-        <section id="sec-student" class="space-y-6">
-            <div class="glass-pink p-6 sm:p-8 rounded-3xl cute-shadow">
-                <div class="border-b border-rose-100 pb-4 mb-6 flex justify-between items-center">
-                    <div>
-                        <h2 class="text-xl font-bold pink-text-gradient flex items-center gap-2">
-                            🌸 ส่งรายงานการทำเวรประจำวัน
-                        </h2>
-                        <p class="text-xs text-rose-400 mt-1">ช่วยกันรักษาความสะอาด เพื่อโรงเรียนของเราน่าอยู่นะคะ 💕</p>
-                    </div>
-                    <span class="text-3xl">🧹</span>
-                </div>
-                
-                <form id="studentForm" onsubmit="handleStudentSubmit(event)" class="space-y-5">
-                    <div>
-                        <label class="block text-xs font-bold text-rose-700 uppercase tracking-wider mb-2">1. จุดประจำเวร <span class="text-rose-500">*</span></label>
-                        <select id="studentLocation" onchange="onLocationChange()" required class="w-full p-3.5 bg-rose-50/40 border border-rose-200 rounded-2xl focus:ring-2 focus:ring-rose-400 focus:bg-white focus:outline-none transition">
-                            <option value="">-- กำลังโหลดจุดทำเวร... --</option>
-                        </select>
-                    </div>
-
-                    <div>
-                        <label class="block text-xs font-bold text-rose-700 uppercase tracking-wider mb-2">2. ชื่อ - นามสกุล นักเรียนผู้ส่งรายงาน <span class="text-rose-500">*</span></label>
-                        <input type="text" id="studentName" required class="w-full p-3.5 bg-rose-50/40 border border-rose-200 rounded-2xl focus:ring-2 focus:ring-rose-400 focus:bg-white focus:outline-none transition" placeholder="เช่น ด.ช. สมชาย ใจดี">
-                    </div>
-
-                    <div>
-                        <label class="block text-xs font-bold text-rose-700 uppercase tracking-wider mb-2">3. สถานะการมาทำเวรของกลุ่ม <span class="text-rose-500">*</span></label>
-                        <div class="grid grid-cols-2 gap-3">
-                            <label class="flex items-center gap-3 p-4 bg-rose-50/40 border border-rose-200 rounded-2xl cursor-pointer hover:bg-rose-100/50 transition group">
-                                <input type="radio" name="dutyStatus" value="มาทำครบทุกคน" checked onclick="toggleAbsentBox(false)" class="w-4 h-4 text-rose-500 focus:ring-rose-400">
-                                <span class="text-sm font-semibold text-slate-700 group-hover:text-rose-600">มาทำครบทุกคน ✨</span>
-                            </label>
-                            <label class="flex items-center gap-3 p-4 bg-rose-50/40 border border-rose-200 rounded-2xl cursor-pointer hover:bg-rose-100/50 transition group">
-                                <input type="radio" name="dutyStatus" value="มาทำไม่ครบ" onclick="toggleAbsentBox(true)" class="w-4 h-4 text-rose-500 focus:ring-rose-400">
-                                <span class="text-sm font-semibold text-slate-700 group-hover:text-rose-600">มาทำไม่ครบ 💧</span>
-                            </label>
-                        </div>
-                    </div>
-
-                    <!-- รายชื่อคนที่ไม่มาทำเวร (กดเลือกชื่อได้ทันที) -->
-                    <div id="absentBox" class="hidden p-4 bg-rose-100/50 border border-rose-200 rounded-2xl space-y-3">
-                        <label class="block text-xs font-bold text-rose-700 uppercase tracking-wider">คลิกเลือกรายชื่อเพื่อนที่ไม่มาทำเวร:</label>
-                        <div id="studentButtons" class="flex flex-wrap gap-2">
-                            <span class="text-xs text-rose-400">👈 กรุณาเลือกจุดประจำเวรด้านบนก่อนนะคะ</span>
-                        </div>
-                        <div class="pt-2 border-t border-rose-200/60 text-xs text-rose-800 font-semibold">
-                            รายชื่อที่ไม่มา: <span id="selectedAbsentText" class="text-rose-600 font-bold">-</span>
-                        </div>
-                    </div>
-
-                    <div>
-                        <label class="block text-xs font-bold text-rose-700 uppercase tracking-wider mb-2">4. แนบรูปถ่ายการทำเวร <span class="text-rose-500">*</span></label>
-                        <input type="file" id="photoInput" accept="image/*" required class="w-full text-sm text-slate-500 file:mr-4 file:py-3 file:px-5 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-rose-100 file:text-rose-600 hover:file:bg-rose-200 transition cursor-pointer">
-                    </div>
-
-                    <button type="submit" id="submitBtn" class="w-full pink-btn-gradient text-white py-4 rounded-2xl font-bold shadow-lg shadow-rose-200 hover:opacity-95 transform active:scale-[0.99] transition duration-200 text-base flex items-center justify-center gap-2">
-                        🚀 ส่งรายงานการทำเวรเรียบร้อย
-                    </button>
-                </form>
-            </div>
-        </section>
-
-        <!-- 2. Teacher Section -->
-        <section id="sec-teacher" class="hidden space-y-6">
-            <!-- Random Student Tool -->
-            <div class="glass-pink p-6 sm:p-8 rounded-3xl cute-shadow">
-                <div class="flex justify-between items-center mb-4">
-                    <div>
-                        <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">🎲 สุ่มรายชื่อนักเรียนทำเวร</h2>
-                        <p class="text-xs text-rose-400 mt-1">สุ่มรายชื่อนักเรียนในระบบเข้าทำเวรตามจุดต่างๆ</p>
-                    </div>
-                    <button onclick="handleRandomDuty()" class="pink-btn-gradient text-white px-5 py-2.5 rounded-xl text-xs font-bold shadow-md hover:opacity-95">กดสุ่มรายชื่อ ✨</button>
-                </div>
-                <div id="randomResult" class="grid sm:grid-cols-2 gap-3 text-xs pt-2"></div>
-            </div>
-        </section>
-
-        <!-- 3. Admin Section -->
-        <section id="sec-admin" class="hidden space-y-6">
-            <div id="adminLoginForm" class="glass-pink p-8 rounded-3xl cute-shadow max-w-md mx-auto">
-                <div class="text-center mb-6">
-                    <div class="w-14 h-14 bg-rose-100 text-rose-500 rounded-3xl flex items-center justify-center text-3xl mx-auto mb-3 shadow-inner">🛡️</div>
-                    <h2 class="text-xl font-bold text-slate-800">เข้าสู่ระบบผู้ดูแลระบบ</h2>
-                </div>
-                <form onsubmit="handleAdminLogin(event)" class="space-y-4">
-                    <input type="password" id="adminPassInput" placeholder="กรอกรหัสผ่านแอดมิน..." required class="w-full p-3.5 bg-rose-50/40 border border-rose-200 rounded-2xl text-center text-lg font-bold text-rose-600 focus:outline-none">
-                    <button type="submit" class="w-full pink-btn-gradient text-white py-3.5 rounded-2xl font-bold shadow-md">เข้าสู่ระบบ</button>
-                </form>
-            </div>
-
-            <div id="adminDashboard" class="hidden space-y-6">
-                <div class="glass-pink p-6 rounded-3xl cute-shadow flex justify-between items-center">
-                    <h2 class="font-bold text-slate-800">🗑️ จัดการระบบแอดมิน</h2>
-                    <button onclick="handleClearAllReports()" class="bg-rose-500 text-white text-xs px-4 py-2 rounded-xl font-bold hover:bg-rose-600 transition shadow-md">⚠️ ล้างประวัติทั้งหมด</button>
-                </div>
-            </div>
-        </section>
-
-    </main>
+    <!-- ส่วนของคุณครู: สุ่มเวร -->
+    <div class="bg-white p-5 rounded-xl shadow space-y-3">
+        <h2 class="text-lg font-bold text-purple-600 border-b pb-2">🎲 สุ่มรายชื่อทำเวร (สำหรับครู)</h2>
+        <button onclick="randomDuty()" class="w-full bg-purple-500 text-white py-2 rounded-lg font-bold hover:bg-purple-600">กดสุ่มทำเวร</button>
+        <div id="randomResult" class="text-sm space-y-1"></div>
+    </div>
 
     <script>
-        let apiUrl = localStorage.getItem('school_duty_api') || '';
-        let locationStudents = [];
-        let selectedAbsents = [];
+        // *** วาง Web App URL จาก Apps Script ในเครื่องหมายคำพูดด้านล่างนี้ ***
+        const API_URL = "https://script.google.com/macros/s/AKfycby8ZPwze2gytfcDdO1JYEOZD75-90_oovqinETbDU-9FTg7SDO10JBb6NpDM_XUwuE/exec";
+
         let allLocations = [];
+        let absentList = [];
 
-        document.addEventListener('DOMContentLoaded', () => {
-            if (apiUrl) document.getElementById('apiUrlInput').value = apiUrl;
-            initData();
-        });
-
-        function toggleAdminConfig() {
-            document.getElementById('configPanel').classList.toggle('hidden');
-        }
-
-        function saveApiUrl() {
-            const url = document.getElementById('apiUrlInput').value.trim();
-            if (url) {
-                apiUrl = url;
-                localStorage.setItem('school_duty_api', url);
-                alert('บันทึก API URL เรียบร้อยแล้วค่ะ 💕');
-                initData();
-            }
-        }
-
-        function switchTab(tab) {
-            ['student', 'teacher', 'admin'].forEach(t => {
-                document.getElementById(`sec-${t}`).classList.add('hidden');
-                document.getElementById(`tab-${t}`).className = 'py-3 rounded-xl text-sm font-bold transition-all duration-300 text-rose-400 hover:text-rose-600 flex items-center justify-center gap-1.5';
-            });
-            document.getElementById(`sec-${tab}`).classList.remove('hidden');
-            document.getElementById(`tab-${tab}`).className = 'py-3 rounded-xl text-sm font-bold transition-all duration-300 bg-white text-rose-600 shadow-md flex items-center justify-center gap-1.5';
-        }
-
-        async function apiCall(action, data = {}) {
-            if (!apiUrl) return alert('กรุณาตั้งค่า API URL ก่อนนะคะ');
-            try {
-                const response = await fetch(apiUrl, {
-                    method: 'POST',
-                    body: JSON.stringify({ action, ...data })
-                });
-                return await response.json();
-            } catch (err) {
-                console.error(err);
-                return { success: false };
-            }
-        }
-
-        async function initData() {
-            const res = await apiCall('getInitialData');
-            if (res.success && res.locations) {
+        // โหลดจุดทำเวรตอนเปิดหน้าเว็บ
+        window.onload = async () => {
+            const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'getInitialData' }) }).then(r => r.json());
+            if (res.locations) {
                 allLocations = res.locations;
-                const select = document.getElementById('studentLocation');
-                select.innerHTML = '<option value="">-- เลือกจุดประจำเวร --</option>';
+                const select = document.getElementById('locationSelect');
+                select.innerHTML = '<option value="">-- เลือกจุดทำเวร --</option>';
                 res.locations.forEach(loc => select.innerHTML += `<option value="${loc}">${loc}</option>`);
             }
-        }
+        };
 
-        async function onLocationChange() {
-            const loc = document.getElementById('studentLocation').value;
+        // เมื่อเลือกจุด ให้ดึงรายชื่อคนในจุดนั้นมาทำปุ่ม
+        async function loadStudents() {
+            const loc = document.getElementById('locationSelect').value;
             if (!loc) return;
 
-            const res = await apiCall('getStudentsByLocation', { location: loc });
-            locationStudents = res.students || [];
-            selectedAbsents = [];
-            renderStudentButtons();
-        }
+            const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'getStudentsByLocation', location: loc }) }).then(r => r.json());
+            const container = document.getElementById('studentList');
+            absentList = [];
+            document.getElementById('absentText').innerText = '-';
 
-        function renderStudentButtons() {
-            const container = document.getElementById('studentButtons');
-            if (locationStudents.length === 0) {
-                container.innerHTML = '<span class="text-xs text-rose-400">ไม่พบรายชื่อนักเรียนประจำจุดนี้ในระบบ</span>';
+            if (!res.students || res.students.length === 0) {
+                container.innerHTML = '<span class="text-xs text-gray-400">ไม่มีรายชื่อนักเรียนในจุดนี้</span>';
                 return;
             }
-            container.innerHTML = locationStudents.map(name => `
-                <button type="button" onclick="toggleStudentSelect('${name}')" id="btn_${name}" class="px-3.5 py-2 bg-white border border-rose-300 text-rose-600 text-xs rounded-xl font-semibold shadow-sm hover:bg-rose-50 transition">
+
+            container.innerHTML = res.students.map(name => `
+                <button type="button" onclick="selectAbsent('${name}', this)" class="btn-absent px-3 py-1 text-xs rounded-lg font-medium">
                     + ${name}
                 </button>
             `).join('');
-            updateAbsentText();
         }
 
-        function toggleStudentSelect(name) {
-            const index = selectedAbsents.indexOf(name);
-            const btn = document.getElementById(`btn_${name}`);
-            if (index === -1) {
-                selectedAbsents.push(name);
-                btn.className = "px-3.5 py-2 bg-rose-500 text-white text-xs rounded-xl font-semibold shadow-md transition";
+        // กดเลือก/ยกเลิก รายชื่อคนที่ไม่มา
+        function selectAbsent(name, btn) {
+            const idx = absentList.indexOf(name);
+            if (idx === -1) {
+                absentList.push(name);
+                btn.classList.add('selected');
                 btn.innerText = `✓ ${name}`;
             } else {
-                selectedAbsents.splice(index, 1);
-                btn.className = "px-3.5 py-2 bg-white border border-rose-300 text-rose-600 text-xs rounded-xl font-semibold shadow-sm hover:bg-rose-50 transition";
+                absentList.splice(idx, 1);
+                btn.classList.remove('selected');
                 btn.innerText = `+ ${name}`;
             }
-            updateAbsentText();
+            document.getElementById('absentText').innerText = absentList.length > 0 ? absentList.join(', ') : '-';
         }
 
-        function updateAbsentText() {
-            document.getElementById('selectedAbsentText').innerText = selectedAbsents.length > 0 ? selectedAbsents.join(', ') : '-';
-        }
-
-        function toggleAbsentBox(show) {
+        function toggleAbsent(show) {
             document.getElementById('absentBox').classList.toggle('hidden', !show);
         }
 
-        async function handleStudentSubmit(e) {
-            e.preventDefault();
-            const btn = document.getElementById('submitBtn');
-            btn.disabled = true;
-            btn.innerText = 'กำลังส่งรายงาน... 🌸';
+        // ส่งรายงาน
+        async function submitData() {
+            const name = document.getElementById('studentName').value;
+            const loc = document.getElementById('locationSelect').value;
+            const status = document.querySelector('input[name="status"]:checked').value;
 
-            const photoFile = document.getElementById('photoInput').files[0];
-            let photoUrl = '';
+            if (!name || !loc) return alert('กรุณากรอกข้อมูลให้ครบถ้วน');
 
             const payload = {
-                studentName: document.getElementById('studentName').value,
-                location: document.getElementById('studentLocation').value,
-                status: document.querySelector('input[name="dutyStatus"]:checked').value,
-                absentDetails: selectedAbsents.join(', '),
-                photoUrl
+                action: 'submitReport',
+                studentName: name,
+                location: loc,
+                status: status,
+                absentDetails: absentList.join(', ')
             };
 
-            const res = await apiCall('submitReport', payload);
-            if (res.success) {
-                confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
-                alert('ส่งรายงานเรียบร้อยแล้วค่ะ ขอบคุณที่ช่วยดูแลโรงเรียนนะคะ 💖');
-                document.getElementById('studentForm').reset();
-                toggleAbsentBox(false);
-            }
-            btn.disabled = false;
-            btn.innerText = '🚀 ส่งรายงานการทำเวรเรียบร้อย';
+            await fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) });
+            alert('ส่งรายงานเรียบร้อยแล้ว');
+            location.reload();
         }
 
-        async function handleRandomDuty() {
-            if (allLocations.length === 0) return alert('ไม่พบข้อมูลจุดทำเวร');
-            const res = await apiCall('randomDuty', { locations: allLocations, count: 2 });
-            if (res.success) {
-                const div = document.getElementById('randomResult');
-                div.innerHTML = '';
-                for (let loc in res.result) {
-                    div.innerHTML += `
-                        <div class="p-3 bg-white/80 rounded-2xl border border-rose-200">
-                            <span class="font-bold text-rose-700 block mb-1">📍 ${loc}:</span>
-                            <span class="text-slate-600">${res.result[loc].join(', ') || 'ไม่มีนักเรียน'}</span>
-                        </div>
-                    `;
-                }
+        // สุ่มรายชื่อทำเวร
+        async function randomDuty() {
+            if (allLocations.length === 0) return alert('ยังไม่มีข้อมูลจุดทำเวร');
+            const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'randomDuty', locations: allLocations }) }).then(r => r.json());
+            
+            const resultDiv = document.getElementById('randomResult');
+            resultDiv.innerHTML = '';
+            for (let loc in res.result) {
+                resultDiv.innerHTML += `<div class="p-2 bg-purple-50 rounded border"><b>📍 ${loc}:</b> ${res.result[loc].join(', ') || 'ไม่มีรายชื่อ'}</div>`;
             }
-        }
-
-        async function handleAdminLogin(e) {
-            e.preventDefault();
-            const pass = document.getElementById('adminPassInput').value;
-            const res = await apiCall('adminLogin', { password: pass });
-            if (res.success) {
-                document.getElementById('adminLoginForm').classList.add('hidden');
-                document.getElementById('adminDashboard').classList.remove('hidden');
-            } else {
-                alert('รหัสผ่านแอดมินไม่ถูกต้องค่ะ');
-            }
-        }
-
-        async function handleClearAllReports() {
-            if (!confirm('ยืนยันการล้างประวัติรายงานทั้งหมดใช่หรือไม่?')) return;
-            const res = await apiCall('clearAllReports');
-            if (res.success) alert('ล้างประวัติการทำเวรเรียบร้อยแล้วค่ะ');
         }
     </script>
 </body>
