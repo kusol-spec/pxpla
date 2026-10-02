@@ -3,81 +3,105 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ระบบรายงานการทำเวร</title>
+    <title>ระบบรายงานการทำเวร 🎀</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
-        .btn-absent { background-color: #fecdd3; color: #be123c; border: 1px solid #fda4af; }
-        .btn-absent.selected { background-color: #e11d48; color: white; }
+        body { font-family: 'Prompt', sans-serif; }
+        .btn-absent { background-color: #fff1f2; color: #e11d48; border: 1px solid #fecdd3; }
+        .btn-absent.selected { background-color: #f43f5e; color: white; border-color: #f43f5e; }
     </style>
 </head>
-<body class="bg-gray-100 p-4 max-w-lg mx-auto text-gray-800">
+<body class="bg-[#fffbf7] p-4 max-w-md mx-auto text-slate-700 min-h-screen">
 
-    <div class="bg-white p-5 rounded-xl shadow mb-6 space-y-4">
-        <h2 class="text-lg font-bold text-rose-600 border-b pb-2">📋 รายงานการทำเวร</h2>
+    <!-- ส่วนส่งรายงาน -->
+    <div class="bg-white p-6 rounded-3xl border border-rose-100 shadow-sm mb-5 space-y-4">
+        <div class="text-center border-b border-rose-50 pb-3">
+            <h2 class="text-lg font-bold text-rose-500 flex items-center justify-center gap-1.5">
+                <span>🎀</span> รายงานการทำเวรประจำวัน
+            </h2>
+            <p class="text-xs text-rose-300 mt-0.5">ช่วยกันดูแลโรงเรียนของเรานะคะ</p>
+        </div>
 
         <!-- 1. เลือกจุดทำเวร -->
         <div>
-            <label class="block text-sm font-semibold mb-1">จุดทำเวร:</label>
-            <select id="locationSelect" onchange="loadStudents()" class="w-full p-2 border rounded-lg">
+            <label class="block text-xs font-semibold text-slate-600 mb-1.5">📍 เลือกจุดทำเวร</label>
+            <select id="locationSelect" onchange="loadStudents()" class="w-full p-2.5 bg-rose-50/30 border border-rose-100 rounded-2xl text-sm focus:outline-none focus:border-rose-300">
                 <option value="">-- กำลังโหลดข้อมูล... --</option>
             </select>
         </div>
 
         <!-- 2. ชื่อผู้ส่ง -->
         <div>
-            <label class="block text-sm font-semibold mb-1">ชื่อผู้ส่งรายงาน:</label>
-            <input type="text" id="studentName" placeholder="กรอกชื่อ-นามสกุล" class="w-full p-2 border rounded-lg">
+            <label class="block text-xs font-semibold text-slate-600 mb-1.5">👤 ชื่อผู้ส่งรายงาน</label>
+            <input type="text" id="studentName" placeholder="กรอกชื่อ-นามสกุล" class="w-full p-2.5 bg-rose-50/30 border border-rose-100 rounded-2xl text-sm focus:outline-none focus:border-rose-300">
         </div>
 
         <!-- 3. สถานะ -->
         <div>
-            <label class="block text-sm font-semibold mb-1">การมาทำเวร:</label>
-            <div class="flex gap-4">
-                <label><input type="radio" name="status" value="มาทำครบทุกคน" checked onclick="toggleAbsent(false)"> มาครบ</label>
-                <label><input type="radio" name="status" value="มาทำไม่ครบ" onclick="toggleAbsent(true)"> มาไม่ครบ</label>
+            <label class="block text-xs font-semibold text-slate-600 mb-1.5">✨ การมาทำเวร</label>
+            <div class="grid grid-cols-2 gap-2 text-xs">
+                <label class="flex items-center justify-center gap-2 p-2.5 bg-rose-50/30 border border-rose-100 rounded-2xl cursor-pointer hover:bg-rose-50">
+                    <input type="radio" name="status" value="มาทำครบทุกคน" checked onclick="toggleAbsent(false)" class="accent-rose-400">
+                    <span>มาครบทุกคน</span>
+                </label>
+                <label class="flex items-center justify-center gap-2 p-2.5 bg-rose-50/30 border border-rose-100 rounded-2xl cursor-pointer hover:bg-rose-50">
+                    <input type="radio" name="status" value="มาทำไม่ครบ" onclick="toggleAbsent(true)" class="accent-rose-400">
+                    <span>มาไม่ครบ</span>
+                </label>
             </div>
         </div>
 
         <!-- 4. ปุ่มเลือกรายชื่อคนที่ไม่มา -->
-        <div id="absentBox" class="hidden p-3 bg-rose-50 border border-rose-200 rounded-lg space-y-2">
-            <label class="block text-xs font-bold text-rose-700">คลิกเลือกชื่อคนที่ไม่มาทำเวร:</label>
-            <div id="studentList" class="flex flex-wrap gap-2">
-                <span class="text-xs text-gray-400">กรุณาเลือกจุดทำเวรก่อน</span>
+        <div id="absentBox" class="hidden p-3 bg-rose-50/50 border border-rose-100 rounded-2xl space-y-2">
+            <label class="block text-xs font-semibold text-rose-500">คลิกเลือกชื่อเพื่อนที่ไม่มาทำเวร:</label>
+            <div id="studentList" class="flex flex-wrap gap-1.5">
+                <span class="text-xs text-slate-400">กรุณาเลือกจุดทำเวรก่อนนะคะ</span>
             </div>
-            <div class="text-xs text-rose-800 pt-1 font-semibold">
-                คนที่ขาด: <span id="absentText">-</span>
+            <div class="text-xs text-rose-400 pt-1 border-t border-rose-100">
+                คนที่ไม่มา: <span id="absentText" class="font-medium text-rose-600">-</span>
             </div>
         </div>
 
-        <button onclick="submitData()" class="w-full bg-rose-500 text-white py-2.5 rounded-lg font-bold hover:bg-rose-600">ส่งรายงาน</button>
+        <button onclick="submitData()" class="w-full bg-rose-400 hover:bg-rose-500 text-white py-3 rounded-2xl text-sm font-semibold shadow-sm transition active:scale-[0.99]">
+            ส่งรายงานเรียบร้อย
+        </button>
     </div>
 
     <!-- ส่วนของคุณครู: สุ่มเวร -->
-    <div class="bg-white p-5 rounded-xl shadow space-y-3">
-        <h2 class="text-lg font-bold text-purple-600 border-b pb-2">🎲 สุ่มรายชื่อทำเวร (สำหรับครู)</h2>
-        <button onclick="randomDuty()" class="w-full bg-purple-500 text-white py-2 rounded-lg font-bold hover:bg-purple-600">กดสุ่มทำเวร</button>
-        <div id="randomResult" class="text-sm space-y-1"></div>
+    <div class="bg-white p-6 rounded-3xl border border-purple-100 shadow-sm space-y-3">
+        <div class="flex items-center justify-between border-b border-purple-50 pb-2">
+            <h2 class="text-sm font-bold text-purple-500 flex items-center gap-1.5">
+                <span>🎲</span> สุ่มรายชื่อทำเวร (สำหรับครู)
+            </h2>
+        </div>
+        <button onclick="randomDuty()" class="w-full bg-purple-400 hover:bg-purple-500 text-white py-2.5 rounded-2xl text-xs font-semibold transition active:scale-[0.99]">
+            สุ่มรายชื่อเข้าจุดทำเวร
+        </button>
+        <div id="randomResult" class="text-xs space-y-1.5 pt-1"></div>
     </div>
 
     <script>
         // *** วาง Web App URL จาก Apps Script ในเครื่องหมายคำพูดด้านล่างนี้ ***
-        const API_URL = "https://script.google.com/macros/s/AKfycby8ZPwze2gytfcDdO1JYEOZD75-90_oovqinETbDU-9FTg7SDO10JBb6NpDM_XUwuE/exec";
+        const API_URL = "นำ_WEB_APP_URL_มาวางตรงนี้";
 
         let allLocations = [];
         let absentList = [];
 
-        // โหลดจุดทำเวรตอนเปิดหน้าเว็บ
         window.onload = async () => {
-            const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'getInitialData' }) }).then(r => r.json());
-            if (res.locations) {
-                allLocations = res.locations;
-                const select = document.getElementById('locationSelect');
-                select.innerHTML = '<option value="">-- เลือกจุดทำเวร --</option>';
-                res.locations.forEach(loc => select.innerHTML += `<option value="${loc}">${loc}</option>`);
+            try {
+                const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'getInitialData' }) }).then(r => r.json());
+                if (res.locations) {
+                    allLocations = res.locations;
+                    const select = document.getElementById('locationSelect');
+                    select.innerHTML = '<option value="">-- เลือกจุดทำเวร --</option>';
+                    res.locations.forEach(loc => select.innerHTML += `<option value="${loc}">${loc}</option>`);
+                }
+            } catch (e) {
+                console.error(e);
             }
         };
 
-        // เมื่อเลือกจุด ให้ดึงรายชื่อคนในจุดนั้นมาทำปุ่ม
         async function loadStudents() {
             const loc = document.getElementById('locationSelect').value;
             if (!loc) return;
@@ -88,18 +112,17 @@
             document.getElementById('absentText').innerText = '-';
 
             if (!res.students || res.students.length === 0) {
-                container.innerHTML = '<span class="text-xs text-gray-400">ไม่มีรายชื่อนักเรียนในจุดนี้</span>';
+                container.innerHTML = '<span class="text-xs text-slate-400">ไม่มีรายชื่อนักเรียนในจุดนี้</span>';
                 return;
             }
 
             container.innerHTML = res.students.map(name => `
-                <button type="button" onclick="selectAbsent('${name}', this)" class="btn-absent px-3 py-1 text-xs rounded-lg font-medium">
+                <button type="button" onclick="selectAbsent('${name}', this)" class="btn-absent px-2.5 py-1 text-xs rounded-xl transition">
                     + ${name}
                 </button>
             `).join('');
         }
 
-        // กดเลือก/ยกเลิก รายชื่อคนที่ไม่มา
         function selectAbsent(name, btn) {
             const idx = absentList.indexOf(name);
             if (idx === -1) {
@@ -118,13 +141,12 @@
             document.getElementById('absentBox').classList.toggle('hidden', !show);
         }
 
-        // ส่งรายงาน
         async function submitData() {
             const name = document.getElementById('studentName').value;
             const loc = document.getElementById('locationSelect').value;
             const status = document.querySelector('input[name="status"]:checked').value;
 
-            if (!name || !loc) return alert('กรุณากรอกข้อมูลให้ครบถ้วน');
+            if (!name || !loc) return alert('กรุณากรอกข้อมูลให้ครบถ้วนนะคะ');
 
             const payload = {
                 action: 'submitReport',
@@ -135,11 +157,10 @@
             };
 
             await fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) });
-            alert('ส่งรายงานเรียบร้อยแล้ว');
+            alert('ส่งรายงานเรียบร้อยแล้วค่ะ 💕');
             location.reload();
         }
 
-        // สุ่มรายชื่อทำเวร
         async function randomDuty() {
             if (allLocations.length === 0) return alert('ยังไม่มีข้อมูลจุดทำเวร');
             const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'randomDuty', locations: allLocations }) }).then(r => r.json());
@@ -147,7 +168,11 @@
             const resultDiv = document.getElementById('randomResult');
             resultDiv.innerHTML = '';
             for (let loc in res.result) {
-                resultDiv.innerHTML += `<div class="p-2 bg-purple-50 rounded border"><b>📍 ${loc}:</b> ${res.result[loc].join(', ') || 'ไม่มีรายชื่อ'}</div>`;
+                resultDiv.innerHTML += `
+                    <div class="p-2.5 bg-purple-50/60 rounded-xl border border-purple-100">
+                        <span class="font-medium text-purple-600">📍 ${loc}:</span> 
+                        <span class="text-slate-600">${res.result[loc].join(', ') || 'ไม่มีรายชื่อ'}</span>
+                    </div>`;
             }
         }
     </script>
