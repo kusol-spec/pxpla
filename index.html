@@ -109,7 +109,7 @@
 
                     <div>
                         <label class="block text-xs font-bold text-rose-700 uppercase tracking-wider mb-2">จุดประจำเวร <span class="text-rose-500">*</span></label>
-                        <select id="studentLocation" required onchange="selectedAbsent.clear(); renderStudentChecklist()" class="w-full p-3.5 bg-rose-50/40 border border-rose-200 rounded-2xl focus:ring-2 focus:ring-rose-400 focus:bg-white focus:outline-none transition">
+                        <select id="studentLocation" required class="w-full p-3.5 bg-rose-50/40 border border-rose-200 rounded-2xl focus:ring-2 focus:ring-rose-400 focus:bg-white focus:outline-none transition">
                             <option value="">-- กำลังโหลดจุดทำเวร... --</option>
                         </select>
                     </div>
@@ -128,14 +128,9 @@
                         </div>
                     </div>
 
-                    <div id="absentBox" class="hidden space-y-3">
-                        <label class="block text-xs font-bold text-rose-600 uppercase tracking-wider">เลือกรายชื่อคนที่ไม่มาทำเวร</label>
-                        <input type="text" id="studentSearch" oninput="renderStudentChecklist()" placeholder="🔍 ค้นหาชื่อนักเรียน..." class="w-full p-3 bg-white border border-rose-300 rounded-2xl text-sm focus:ring-2 focus:ring-rose-400 focus:outline-none">
-                        <div id="studentChecklist" class="max-h-52 overflow-y-auto space-y-1 p-2 bg-rose-50/70 border border-rose-300 rounded-2xl text-sm">
-                            <p class="text-xs text-rose-300 text-center py-3">กำลังโหลดรายชื่อ...</p>
-                        </div>
-                        <div id="selectedAbsentChips" class="flex flex-wrap gap-1.5"></div>
-                        <textarea id="absentDetails" rows="2" class="w-full p-3.5 bg-rose-50/70 border border-rose-300 rounded-2xl focus:ring-2 focus:ring-rose-400 focus:outline-none transition text-sm" placeholder="ชื่ออื่นๆ ที่ไม่มีในรายชื่อ (ถ้ามี)..."></textarea>
+                    <div id="absentBox" class="hidden">
+                        <label class="block text-xs font-bold text-rose-600 uppercase tracking-wider mb-2">รายชื่อคนที่ไม่มาทำเวร</label>
+                        <textarea id="absentDetails" rows="2" class="w-full p-3.5 bg-rose-50/70 border border-rose-300 rounded-2xl focus:ring-2 focus:ring-rose-400 focus:outline-none transition text-sm" placeholder="ระบุชื่อเพื่อนที่ไม่มาทำเวร..."></textarea>
                     </div>
 
                     <div>
@@ -202,38 +197,6 @@
                         <p class="text-sm text-rose-300 text-center py-6">กำลังโหลดข้อมูล...</p>
                     </div>
                 </div>
-
-                <!-- ครูย้ายสถานที่นักเรียน -->
-                <div class="glass-pink p-6 sm:p-8 rounded-3xl cute-shadow">
-                    <h3 class="font-bold text-slate-800 text-base mb-1 flex items-center gap-2">🔀 ย้ายสถานที่นักเรียน</h3>
-                    <p class="text-xs text-rose-400 mb-5">ติ๊กเลือกนักเรียน แล้วเลือกสถานที่ใหม่ที่ต้องการย้ายไป</p>
-
-                    <div class="grid sm:grid-cols-2 gap-2 mb-3">
-                        <input type="text" id="tmSearch" oninput="renderMoveList()" placeholder="🔍 ค้นหาชื่อนักเรียน..." class="p-3 bg-white border border-rose-300 rounded-xl text-sm focus:ring-2 focus:ring-rose-400 focus:outline-none">
-                        <select id="tmLocationFilter" onchange="renderMoveList()" class="p-3 bg-white border border-rose-300 rounded-xl text-sm focus:ring-2 focus:ring-rose-400 focus:outline-none">
-                            <option value="">ทุกสถานที่</option>
-                        </select>
-                    </div>
-
-                    <div class="flex justify-between items-center mb-2 text-xs">
-                        <span id="tmCount" class="text-rose-500 font-bold">เลือกแล้ว 0 คน</span>
-                        <div class="flex gap-2">
-                            <button type="button" onclick="selectAllMove(true)" class="bg-rose-100 hover:bg-rose-200 text-rose-700 px-3 py-1.5 rounded-lg font-bold">เลือกทั้งหมดที่แสดง</button>
-                            <button type="button" onclick="selectAllMove(false)" class="bg-slate-100 hover:bg-slate-200 text-slate-600 px-3 py-1.5 rounded-lg font-bold">ล้างที่เลือก</button>
-                        </div>
-                    </div>
-
-                    <div id="tmList" class="max-h-72 overflow-y-auto space-y-1 p-2 bg-rose-50/70 border border-rose-200 rounded-2xl text-sm">
-                        <p class="text-xs text-rose-300 text-center py-3">กำลังโหลดรายชื่อ...</p>
-                    </div>
-
-                    <div class="flex flex-col sm:flex-row gap-2 mt-4">
-                        <select id="tmNewLocation" class="flex-1 p-3 bg-white border border-rose-300 rounded-xl text-sm focus:ring-2 focus:ring-rose-400 focus:outline-none">
-                            <option value="">-- เลือกสถานที่ใหม่ --</option>
-                        </select>
-                        <button type="button" onclick="handleMoveStudents()" class="pink-btn-gradient text-white px-6 py-3 rounded-xl text-sm font-bold shadow-md hover:opacity-95">ย้ายสถานที่</button>
-                    </div>
-                </div>
             </div>
         </section>
 
@@ -271,7 +234,7 @@
                     </div>
                 </div>
 
-                <!-- Admin Manage Reports -->
+                <!-- Admin Manage Reports (ล้างประวัติรายงาน) -->
                 <div class="glass-pink p-6 sm:p-8 rounded-3xl cute-shadow">
                     <div class="flex justify-between items-center mb-6 border-b border-rose-100 pb-4">
                         <div>
@@ -344,77 +307,6 @@
         let loggedInTeacher = null;
         let isAdminLoggedIn = false;
 
-        // ===== รายชื่อนักเรียนจาก Google Sheet =====
-        let studentList = [];
-        let selectedAbsent = new Set();
-        let teacherCreds = null;
-        let moveSelected = new Set();
-
-        function setStudentList(list) {
-            studentList = (list || []).map(s =>
-                typeof s === 'string'
-                    ? { id: '', name: s, location: '' }
-                    : { id: String(s.id || ''), name: s.name || s.studentName || s['ชื่อ'] || '', location: s.location || '' }
-            ).filter(s => s.name);
-            renderStudentChecklist();
-        }
-
-        function renderStudentChecklist() {
-            const box = document.getElementById('studentChecklist');
-            const q = document.getElementById('studentSearch').value.trim().toLowerCase();
-            const loc = document.getElementById('studentLocation').value;
-
-            const items = studentList
-                .map((s, i) => ({ ...s, i }))
-                .filter(x => (!loc || !x.location || x.location === loc) && x.name.toLowerCase().includes(q));
-
-            if (studentList.length === 0) {
-                box.innerHTML = '<p class="text-xs text-rose-300 text-center py-3">ไม่พบรายชื่อนักเรียนจากชีท</p>';
-            } else if (items.length === 0) {
-                box.innerHTML = '<p class="text-xs text-rose-300 text-center py-3">ไม่พบนักเรียนในจุดนี้ หรือไม่พบชื่อที่ค้นหา</p>';
-            } else {
-                box.innerHTML = items.map(x => `
-                    <label class="flex items-center gap-2 p-2 rounded-xl hover:bg-white cursor-pointer">
-                        <input type="checkbox" class="w-4 h-4 accent-rose-500" ${selectedAbsent.has(x.name) ? 'checked' : ''} onchange="toggleAbsent(${x.i}, this.checked)">
-                        <span>${x.name}</span>
-                    </label>`).join('');
-            }
-
-            document.getElementById('selectedAbsentChips').innerHTML = [...selectedAbsent].map(n =>
-                `<span class="text-xs bg-rose-500 text-white px-2.5 py-1 rounded-full">${n}</span>`
-            ).join('');
-        }
-
-        function toggleAbsent(index, checked) {
-            const name = studentList[index].name;
-            if (checked) selectedAbsent.add(name); else selectedAbsent.delete(name);
-            renderStudentChecklist();
-        }
-
-        function getAbsentText() {
-            const extra = document.getElementById('absentDetails').value.trim();
-            return [...selectedAbsent, ...(extra ? [extra] : [])].join(', ');
-        }
-
-        // ===== ย่อรูปก่อนส่ง (กันค้างจากไฟล์ใหญ่) =====
-        function compressImage(file, maxSize = 1280, quality = 0.7) {
-            return new Promise((resolve, reject) => {
-                const img = new Image();
-                const url = URL.createObjectURL(file);
-                img.onload = () => {
-                    const scale = Math.min(1, maxSize / Math.max(img.width, img.height));
-                    const c = document.createElement('canvas');
-                    c.width = Math.round(img.width * scale);
-                    c.height = Math.round(img.height * scale);
-                    c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
-                    URL.revokeObjectURL(url);
-                    resolve(c.toDataURL('image/jpeg', quality));
-                };
-                img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('โหลดรูปไม่สำเร็จ')); };
-                img.src = url;
-            });
-        }
-
         const quotes = [
             "ความสะอาดสร้างได้ ด้วยมือของพวกเราทุกคน 💕",
             "โรงเรียนสะอาด ตาใส คนอยู่อย่างมีความสุข ✨",
@@ -470,30 +362,22 @@
             document.getElementById('absentBox').classList.toggle('hidden', !show);
         }
 
-        async function apiCall(action, data = {}, timeoutMs = 60000) {
-            const ctrl = new AbortController();
-            const timer = setTimeout(() => ctrl.abort(), timeoutMs);
+        async function apiCall(action, data = {}) {
+            const targetUrl = apiUrl || DEFAULT_API_URL;
             try {
-                const response = await fetch(apiUrl || DEFAULT_API_URL, {
+                const response = await fetch(targetUrl, {
                     method: 'POST',
-                    body: JSON.stringify({ action, ...data }),
-                    signal: ctrl.signal
+                    body: JSON.stringify({ action, ...data })
                 });
                 return await response.json();
             } catch (err) {
                 console.error(err);
-                alert(err.name === 'AbortError'
-                    ? 'เซิร์ฟเวอร์ตอบช้าเกินไป ลองใหม่อีกครั้งนะคะ'
-                    : 'เกิดข้อผิดพลาดในการเชื่อมต่อเซิร์ฟเวอร์');
+                alert('เกิดข้อผิดพลาดในการเชื่อมต่อเซิร์ฟเวอร์');
                 return { success: false };
-            } finally {
-                clearTimeout(timer);
             }
         }
 
         async function initData() {
-            loadStudentReports(); // โหลดคู่ขนาน ไม่ต้องรอรายชื่อ
-
             const res = await apiCall('getInitialData');
             if (res.success && res.locations) {
                 const select = document.getElementById('studentLocation');
@@ -502,24 +386,11 @@
                     select.innerHTML += `<option value="${loc}">${loc}</option>`;
                 });
             }
-
-            // รายชื่อนักเรียนจากชีท (รองรับทั้งส่งมากับ getInitialData หรือแยก action getStudents)
-            if (res.success && res.students) {
-                setStudentList(res.students);
-            } else {
-                const r = await apiCall('getStudents');
-                setStudentList(r.success ? r.students : []);
-            }
+            loadStudentReports();
         }
 
         async function handleStudentSubmit(e) {
             e.preventDefault();
-            const isIncomplete = document.querySelector('input[name="dutyStatus"]:checked').value === 'มาทำไม่ครบ';
-
-            if (isIncomplete && !getAbsentText()) {
-                return alert('กรุณาเลือกรายชื่อคนที่ไม่มาทำเวรด้วยนะคะ');
-            }
-
             const btn = document.getElementById('submitBtn');
             btn.disabled = true;
             btn.innerText = 'กำลังส่งรายงาน... 🌸';
@@ -528,24 +399,22 @@
             let photoData = '';
 
             if (photoFile) {
-                try {
-                    photoData = await compressImage(photoFile);
-                } catch (err) {
-                    btn.disabled = false;
-                    btn.innerText = '🚀 ส่งรายงานการทำเวรเรียบร้อย';
-                    return alert('อ่านรูปไม่สำเร็จ ลองเลือกรูปใหม่อีกครั้งนะคะ');
-                }
+                photoData = await new Promise((resolve) => {
+                    const reader = new FileReader();
+                    reader.onload = e => resolve(e.target.result);
+                    reader.readAsDataURL(photoFile);
+                });
             }
 
             const payload = {
                 studentName: document.getElementById('studentName').value,
                 location: document.getElementById('studentLocation').value,
                 status: document.querySelector('input[name="dutyStatus"]:checked').value,
-                absentDetails: isIncomplete ? getAbsentText() : '',
+                absentDetails: document.getElementById('absentDetails').value,
                 photoData
             };
 
-            const res = await apiCall('submitReport', payload, 120000);
+            const res = await apiCall('submitReport', payload);
             if (res.success) {
                 confetti({
                     particleCount: 100,
@@ -557,8 +426,6 @@
                 alert('ส่งรายงานเรียบร้อยแล้วค่ะ ขอบคุณที่ช่วยดูแลโรงเรียนนะคะ 💖');
                 document.getElementById('studentForm').reset();
                 toggleAbsentDetails(false);
-                selectedAbsent.clear();
-                renderStudentChecklist();
                 loadStudentReports();
             }
             btn.disabled = false;
@@ -606,12 +473,10 @@
             const res = await apiCall('teacherLogin', { username: u, password: p });
             if (res.success) {
                 loggedInTeacher = res.teacherName;
-                teacherCreds = { username: u, password: p };
                 document.getElementById('currentTeacherName').innerText = res.teacherName;
                 document.getElementById('teacherLoginForm').classList.add('hidden');
                 document.getElementById('teacherDashboard').classList.remove('hidden');
                 loadPendingReports();
-                loadTeacherMoveData();
             } else {
                 alert('ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้องค่ะ');
             }
@@ -619,86 +484,8 @@
 
         function teacherLogout() {
             loggedInTeacher = null;
-            teacherCreds = null;
-            moveSelected.clear();
             document.getElementById('teacherLoginForm').classList.remove('hidden');
             document.getElementById('teacherDashboard').classList.add('hidden');
-        }
-
-        // ===== ครูย้ายสถานที่นักเรียน =====
-        async function loadTeacherMoveData() {
-            const res = await apiCall('getInitialData');
-            if (!res.success) return;
-            if (res.students) setStudentList(res.students);
-
-            const opts = (res.locations || []).map(l => `<option value="${l}">${l}</option>`).join('');
-            document.getElementById('tmNewLocation').innerHTML = '<option value="">-- เลือกสถานที่ใหม่ --</option>' + opts;
-            document.getElementById('tmLocationFilter').innerHTML =
-                '<option value="">ทุกสถานที่</option><option value="__none__">ยังไม่กำหนดสถานที่</option>' + opts;
-
-            moveSelected.clear();
-            renderMoveList();
-        }
-
-        function getMoveItems() {
-            const q = document.getElementById('tmSearch').value.trim().toLowerCase();
-            const f = document.getElementById('tmLocationFilter').value;
-            return studentList
-                .map((s, i) => ({ ...s, i }))
-                .filter(s => s.id && s.name.toLowerCase().includes(q) &&
-                    (!f || (f === '__none__' ? !s.location : s.location === f)));
-        }
-
-        function renderMoveList() {
-            const box = document.getElementById('tmList');
-            const items = getMoveItems();
-            const LIMIT = 200;
-
-            if (items.length === 0) {
-                box.innerHTML = '<p class="text-xs text-rose-300 text-center py-3">ไม่พบนักเรียน</p>';
-            } else {
-                box.innerHTML = items.slice(0, LIMIT).map(s => `
-                    <label class="flex items-center gap-2 p-2 rounded-xl hover:bg-white cursor-pointer">
-                        <input type="checkbox" class="w-4 h-4 accent-rose-500" ${moveSelected.has(s.id) ? 'checked' : ''} onchange="toggleMove(${s.i}, this.checked)">
-                        <span class="flex-1">${s.name}</span>
-                        <span class="text-xs px-2 py-0.5 rounded-full ${s.location ? 'bg-rose-100 text-rose-600' : 'bg-slate-100 text-slate-400'}">📍 ${s.location || 'ยังไม่กำหนด'}</span>
-                    </label>`).join('') +
-                    (items.length > LIMIT ? `<p class="text-xs text-slate-400 text-center py-2">แสดง ${LIMIT} จาก ${items.length} คน พิมพ์ค้นหาเพื่อกรองเพิ่ม</p>` : '');
-            }
-            document.getElementById('tmCount').innerText = `เลือกแล้ว ${moveSelected.size} คน`;
-        }
-
-        function toggleMove(index, checked) {
-            const id = studentList[index].id;
-            if (checked) moveSelected.add(id); else moveSelected.delete(id);
-            document.getElementById('tmCount').innerText = `เลือกแล้ว ${moveSelected.size} คน`;
-        }
-
-        function selectAllMove(on) {
-            if (on) getMoveItems().slice(0, 200).forEach(s => moveSelected.add(s.id));
-            else moveSelected.clear();
-            renderMoveList();
-        }
-
-        async function handleMoveStudents() {
-            const newLoc = document.getElementById('tmNewLocation').value;
-            if (!teacherCreds) return alert('กรุณาเข้าสู่ระบบครูใหม่อีกครั้งค่ะ');
-            if (moveSelected.size === 0) return alert('กรุณาเลือกนักเรียนอย่างน้อย 1 คนก่อนนะคะ');
-            if (!newLoc) return alert('กรุณาเลือกสถานที่ใหม่ก่อนนะคะ');
-            if (!confirm(`ย้ายนักเรียน ${moveSelected.size} คน ไปที่ "${newLoc}" ใช่ไหมคะ?`)) return;
-
-            const res = await apiCall('updateStudentLocations', {
-                username: teacherCreds.username,
-                password: teacherCreds.password,
-                ids: [...moveSelected],
-                location: newLoc
-            });
-            if (res.success) {
-                alert(`ย้ายสถานที่เรียบร้อยแล้ว ${res.updated} คนค่ะ ✨`);
-                loadTeacherMoveData();
-            } else {
-                alert('ย้ายไม่สำเร็จ: ' + (res.error || 'เกิดข้อผิดพลาด'));
-            }
         }
 
         async function loadPendingReports() {
