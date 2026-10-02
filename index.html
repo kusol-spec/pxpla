@@ -109,7 +109,7 @@
 
                     <div>
                         <label class="block text-xs font-bold text-rose-700 uppercase tracking-wider mb-2">จุดประจำเวร <span class="text-rose-500">*</span></label>
-                        <select id="studentLocation" required class="w-full p-3.5 bg-rose-50/40 border border-rose-200 rounded-2xl focus:ring-2 focus:ring-rose-400 focus:bg-white focus:outline-none transition">
+                        <select id="studentLocation" required onchange="selectedAbsent.clear(); renderStudentChecklist()" class="w-full p-3.5 bg-rose-50/40 border border-rose-200 rounded-2xl focus:ring-2 focus:ring-rose-400 focus:bg-white focus:outline-none transition">
                             <option value="">-- กำลังโหลดจุดทำเวร... --</option>
                         </select>
                     </div>
@@ -318,22 +318,26 @@
 
         function setStudentList(list) {
             studentList = (list || []).map(s =>
-                typeof s === 'string' ? s : (s.name || s.studentName || s['ชื่อ'] || Object.values(s)[0])
-            ).filter(Boolean);
+                typeof s === 'string'
+                    ? { name: s, location: '' }
+                    : { name: s.name || s.studentName || s['ชื่อ'] || '', location: s.location || '' }
+            ).filter(s => s.name);
             renderStudentChecklist();
         }
 
         function renderStudentChecklist() {
             const box = document.getElementById('studentChecklist');
             const q = document.getElementById('studentSearch').value.trim().toLowerCase();
+            const loc = document.getElementById('studentLocation').value;
+
             const items = studentList
-                .map((name, i) => ({ name, i }))
-                .filter(x => x.name.toLowerCase().includes(q));
+                .map((s, i) => ({ ...s, i }))
+                .filter(x => (!loc || !x.location || x.location === loc) && x.name.toLowerCase().includes(q));
 
             if (studentList.length === 0) {
                 box.innerHTML = '<p class="text-xs text-rose-300 text-center py-3">ไม่พบรายชื่อนักเรียนจากชีท</p>';
             } else if (items.length === 0) {
-                box.innerHTML = '<p class="text-xs text-rose-300 text-center py-3">ไม่พบชื่อที่ค้นหา</p>';
+                box.innerHTML = '<p class="text-xs text-rose-300 text-center py-3">ไม่พบนักเรียนในจุดนี้ หรือไม่พบชื่อที่ค้นหา</p>';
             } else {
                 box.innerHTML = items.map(x => `
                     <label class="flex items-center gap-2 p-2 rounded-xl hover:bg-white cursor-pointer">
@@ -348,7 +352,7 @@
         }
 
         function toggleAbsent(index, checked) {
-            const name = studentList[index];
+            const name = studentList[index].name;
             if (checked) selectedAbsent.add(name); else selectedAbsent.delete(name);
             renderStudentChecklist();
         }
